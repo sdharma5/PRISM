@@ -38,11 +38,6 @@ export default function EvidenceHeader({
         <>
           <dl className="mt-6 grid grid-cols-2 gap-6 sm:grid-cols-4">
             <Stat
-              label="Data coverage"
-              value={formatCoverage(report.modality_coverage)}
-              hint="Sources contributing"
-            />
-            <Stat
               label="Feature coverage"
               value={formatCoverage(assessment.feature_coverage)}
               hint="Observed, not imputed"
