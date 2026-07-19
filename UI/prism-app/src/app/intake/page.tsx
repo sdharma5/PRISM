@@ -27,7 +27,7 @@ import { Card, SectionHeading, StatusPill } from '@/components/prism/Primitives'
 import { ReportError, ReportLoading } from '@/components/prism/ReportStates'
 import { getIntakeSchema, getPatientReport, getEvents, confirmEvent, rejectEvent, type IntakeField, type IntakeSchema } from '@/lib/api'
 import { ApiError } from '@/lib/apiClient'
-import { loadAssessment, loadInjectedTemporal, loadReviewedEventIds, markEventsReviewed, saveAssessment } from '@/lib/reportStore'
+import { loadInjectedTemporal, loadReviewedEventIds, markEventsReviewed, saveAssessment } from '@/lib/reportStore'
 import { humanizeCode } from '@/lib/present'
 import type { WebsitePMOSProfileResponse } from '@/types/api'
 import type { HormonalHealthEvent } from '@/types'
@@ -39,6 +39,11 @@ type Stage = 'form' | 'review' | 'running' | 'result'
 type Answers = Record<string, string | boolean | undefined>
 
 const PATIENT_ID = 'sarah'
+
+// Captured once per page load: module state survives in-app navigation but is
+// re-initialised on a real browser refresh, which is exactly when we want the
+// form to reopen clean.
+let launchBaselined = false
 
 /**
  * Blank answers are dropped, not coerced. An untouched boolean is dropped too —
@@ -73,12 +78,29 @@ function fieldError(field: IntakeField, raw: string | boolean | undefined): stri
 export default function IntakePage() {
   const [schema, setSchema] = useState<IntakeSchema | null>(null)
   const [schemaError, setSchemaError] = useState<ApiError | null>(null)
-  const [answers, setAnswers] = useState<Answers>({})
+  const [answers, setAnswers] = useState<Answers>(() => {
+    try {
+      const draft = sessionStorage.getItem('prism.answersDraft')
+      return draft ? (JSON.parse(draft) as Answers) : {}
+    } catch {
+      return {}
+    }
+  })
 
-  // Re-open pre-filled — returning users are usually adding one value.
   useEffect(() => {
-    const stored = loadAssessment()
-    if (stored?.answers) setAnswers(stored.answers)
+    try { sessionStorage.setItem('prism.answersDraft', JSON.stringify(answers)) } catch { /* ignore */ }
+  }, [answers])
+
+  // On launch, treat every event already in the ledger as pre-existing so the
+  // form opens completely clean after a refresh — only events the patient adds
+  // this session are proposed for review. The form fields start blank too:
+  // nothing is restored from a previous run.
+  useEffect(() => {
+    if (launchBaselined) return
+    launchBaselined = true
+    getEvents(PATIENT_ID)
+      .then(evts => markEventsReviewed(evts.map(e => e.eventId)))
+      .catch(() => {})
   }, [])
   const [stage, setStage] = useState<Stage>('form')
   const [report, setReport] = useState<WebsitePMOSProfileResponse | null>(null)
