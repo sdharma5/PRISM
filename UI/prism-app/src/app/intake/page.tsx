@@ -78,14 +78,16 @@ function fieldError(field: IntakeField, raw: string | boolean | undefined): stri
 export default function IntakePage() {
   const [schema, setSchema] = useState<IntakeSchema | null>(null)
   const [schemaError, setSchemaError] = useState<ApiError | null>(null)
-  const [answers, setAnswers] = useState<Answers>(() => {
+  const [answers, setAnswers] = useState<Answers>({})
+
+  // Load draft from sessionStorage after mount (SSR-safe).
+  // sessionStorage survives tab navigation but is wiped on browser refresh.
+  useEffect(() => {
     try {
       const draft = sessionStorage.getItem('prism.answersDraft')
-      return draft ? (JSON.parse(draft) as Answers) : {}
-    } catch {
-      return {}
-    }
-  })
+      if (draft) setAnswers(JSON.parse(draft) as Answers)
+    } catch { /* ignore */ }
+  }, [])
 
   useEffect(() => {
     try { sessionStorage.setItem('prism.answersDraft', JSON.stringify(answers)) } catch { /* ignore */ }
@@ -133,14 +135,14 @@ export default function IntakePage() {
 
   async function decideEvent(eventId: string, decision: 'accepted' | 'rejected') {
     setEventBusy(prev => ({ ...prev, [eventId]: true }))
+    setEventDecisions(prev => ({ ...prev, [eventId]: decision }))
     try {
       if (decision === 'accepted') await confirmEvent(eventId)
       else await rejectEvent(eventId)
-      setEventDecisions(prev => ({ ...prev, [eventId]: decision }))
-      // Handled — don't re-prompt this event on a later visit.
       markEventsReviewed([eventId])
     } catch {
-      // Leave the decision unset so the buttons stay actionable on failure.
+      // Revert the optimistic update if the API call failed.
+      setEventDecisions(prev => { const next = { ...prev }; delete next[eventId]; return next })
     } finally {
       setEventBusy(prev => ({ ...prev, [eventId]: false }))
     }
