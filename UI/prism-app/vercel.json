@@ -4,12 +4,14 @@
   "installCommand": "npm install",
   "framework": "nextjs",
   "env": {
-    "NEXT_PUBLIC_PRISM_API_MODE": "mock",
+    "NEXT_PUBLIC_PRISM_API_MODE": "http",
+    "NEXT_PUBLIC_PRISM_API_URL": "https://prism-api-hackathon.fly.dev",
     "NEXT_DIST_DIR": ".next"
   },
   "build": {
     "env": {
-      "NEXT_PUBLIC_PRISM_API_MODE": "mock",
+      "NEXT_PUBLIC_PRISM_API_MODE": "http",
+      "NEXT_PUBLIC_PRISM_API_URL": "https://prism-api-hackathon.fly.dev",
       "NEXT_DIST_DIR": ".next"
     }
   }
