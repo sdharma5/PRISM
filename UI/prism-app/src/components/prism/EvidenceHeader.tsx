@@ -59,10 +59,6 @@ export default function EvidenceHeader({
               value={assessment.feature_coverage}
               tone={evidenceTone(assessment.evidence_level)}
             />
-            <p className="mt-2 text-xs text-neutral-500">
-              This assessment used {formatCoverage(assessment.feature_coverage)} observed
-              values; the remainder were filled with training-set medians.
-            </p>
           </div>
 
           {assessment.source && (
