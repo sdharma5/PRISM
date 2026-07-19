@@ -1,0 +1,440 @@
+{
+  "patient_id": "DEMO-001",
+  "pmos_evidence_probability": 0.8907657862368255,
+  "diagnostic_feature_evidence": {
+    "ovulatory_dysfunction": {
+      "axis": "ovulatory_dysfunction",
+      "level": "high",
+      "score": 0.5611325878139728,
+      "axis_status": "met",
+      "supporting_evidence": [
+        "cycle_length < 21.0",
+        "cycle_irregularity truthy true",
+        "temporal cycle irregularity = 0.68",
+        "predicted phase 'luteal' with state confidence 0.56",
+        "static reproductive composite z=-0.11",
+        "static metabolic composite z=+0.31",
+        "static ovarian composite z=+0.64"
+      ],
+      "missing_evidence": [
+        "menstrual_frequency_per_year",
+        "amenorrhea"
+      ],
+      "threshold_sources": {
+        "cycle_length > 35.0": "2023 International Evidence-based Guideline for the Assessment and Management of PMOS: cycles >35 days in adults are irregular.",
+        "cycle_length < 21.0": "2023 International Evidence-based Guideline: cycles <21 days in adults are irregular.",
+        "menstrual_frequency_per_year < 9.0": "Rotterdam 2003 / 2023 International Guideline: fewer than 8-9 cycles per year indicates oligo-anovulation.",
+        "cycle_irregularity truthy true": "Participant- or clinician-reported cycle irregularity flag.",
+        "amenorrhea truthy true": "2023 International Guideline: primary or secondary amenorrhoea is ovulatory dysfunction by definition."
+      },
+      "assay_dependent": false,
+      "caveats": [
+        "Regular cycles do not exclude anovulation; confirmation requires a mid-luteal progesterone measurement, which most datasets here lack.",
+        "Hormonal contraception masks the natural cycle and invalidates this axis."
+      ],
+      "notes": []
+    },
+    "hyperandrogenism_biochemical": {
+      "axis": "hyperandrogenism_biochemical",
+      "level": "insufficient_evidence",
+      "score": null,
+      "axis_status": "not_assessable",
+      "supporting_evidence": [],
+      "missing_evidence": [
+        "total_testosterone",
+        "free_testosterone",
+        "dheas"
+      ],
+      "threshold_sources": {
+        "total_testosterone > 2.5": "Placeholder upper reference limit in nmol/L for adult females. Assay- and laboratory-specific; must be replaced with the reference range of the measuring laboratory.",
+        "free_testosterone > 0.031": "Placeholder upper reference limit in nmol/L for calculated free testosterone. Assay- and calculation-formula-specific.",
+        "dheas > 9.2": "Placeholder upper reference limit in umol/L. DHEAS is strongly age-dependent and is a secondary marker only."
+      },
+      "assay_dependent": false,
+      "caveats": [
+        "Hormonal contraception suppresses androgens and raises SHBG; values measured on treatment cannot assess this axis.",
+        "Direct free-testosterone immunoassays are unreliable at female concentrations and should not be used for this assessment."
+      ],
+      "notes": []
+    },
+    "hyperandrogenism_clinical": {
+      "axis": "hyperandrogenism_clinical",
+      "level": "insufficient_evidence",
+      "score": null,
+      "axis_status": "not_assessable",
+      "supporting_evidence": [],
+      "missing_evidence": [
+        "ferriman_gallwey_score",
+        "hirsutism",
+        "androgenic_alopecia"
+      ],
+      "threshold_sources": {
+        "ferriman_gallwey_score >= 4.0": "2023 International Guideline: modified Ferriman-Gallwey cut-offs of 4-6 depending on ethnicity; the lower bound is used here so the axis is not silently insensitive in populations with lower baseline terminal hair density.",
+        "hirsutism truthy true": "Clinician- or participant-reported hirsutism flag.",
+        "androgenic_alopecia truthy true": "Female pattern hair loss; low specificity in isolation per the 2023 International Guideline."
+      },
+      "assay_dependent": false,
+      "caveats": [
+        "Acne alone is a poor discriminator in adolescents and is not sufficient for this axis.",
+        "Cosmetic hair removal masks hirsutism and biases this axis toward 'not met'."
+      ],
+      "notes": []
+    },
+    "polycystic_ovarian_morphology": {
+      "axis": "polycystic_ovarian_morphology",
+      "level": "high",
+      "score": 0.5931196938716263,
+      "axis_status": "met",
+      "supporting_evidence": [
+        "follicle_number_per_ovary >= 20.0",
+        "ovary_volume_ml >= 10.0",
+        "follicle number per ovary = 22 (PCOM threshold 20)",
+        "ovarian volume = 10.8 mL (PCOM threshold 10 mL)",
+        "static reproductive composite z=-0.11",
+        "static metabolic composite z=+0.31",
+        "static ovarian composite z=+0.64"
+      ],
+      "missing_evidence": [],
+      "threshold_sources": {
+        "follicle_number_per_ovary >= 20.0": "2023 International Evidence-based Guideline: FNPO >=20 on either ovary using an endovaginal transducer with frequency >=8 MHz. The older Rotterdam 2003 threshold of >=12 follicles applies only to lower-frequency equipment.",
+        "ovary_volume_ml >= 10.0": "Rotterdam 2003 and retained in the 2023 International Guideline: ovarian volume >=10 mL on either ovary, with no dominant follicle, corpus luteum or cyst present.",
+        "anti_mullerian_hormone > true": "The 2023 International Guideline accepts serum AMH as an alternative to ultrasound for defining PCOM in adults, but explicitly gives no universal cut-off: thresholds are assay- and population-specific. No default threshold is encoded, so this rule stays not-assessable until a dataset supplies one."
+      },
+      "assay_dependent": false,
+      "caveats": [
+        "Should not be assessed within 8 years of menarche, when multifollicular ovaries are common and non-pathological.",
+        "Not assessable on hormonal contraception, which alters ovarian morphology."
+      ],
+      "notes": []
+    }
+  },
+  "phenotype_domain_scores": {
+    "reproductive": -0.11164282661110182,
+    "metabolic": 0.3068897782372296,
+    "androgenic": null,
+    "ovarian": 0.6444091804317518,
+    "lh_amh_pattern": 0.0870995682176569,
+    "symptom_burden": 0.876391312342361
+  },
+  "phenotype_probabilities": {
+    "metabolic_leaning": 0.056797581493988954,
+    "lh_amh_leaning": 0.04214978516669168,
+    "androgenic_leaning": 0.2425664697454113,
+    "mixed": 0.2584861635939081,
+    "indeterminate": 0.4
+  },
+  "dominant_profile": "indeterminate",
+  "profile_similarities": {
+    "metabolic_leaning": 0.3489,
+    "lh_amh_leaning": 0.2744,
+    "androgenic_leaning": 0.7119,
+    "mixed": 0.7278
+  },
+  "assignment_entropy": 1.3562,
+  "indeterminate_reasons": [
+    "top two profiles are within 0.016 (mixed vs androgenic_leaning): the assignment is close to a coin flip"
+  ],
+  "profile_supporting_domains": {
+    "metabolic_leaning": [
+      "metabolic",
+      "symptom_burden"
+    ],
+    "lh_amh_leaning": [
+      "ovarian"
+    ],
+    "androgenic_leaning": [
+      "symptom_burden"
+    ],
+    "mixed": [
+      "symptom_burden",
+      "ovarian",
+      "metabolic"
+    ]
+  },
+  "stability_score": 0.0,
+  "subtype_flip_rate": null,
+  "explanation": {
+    "observed_evidence": {
+      "n_variables_observed": 30,
+      "variables_by_modality": {
+        "longitudinal_hormonal_state": [
+          "cycle_irregularity",
+          "cycle_phase_entropy"
+        ],
+        "ovarian_ultrasound": [
+          "follicle_number_per_ovary",
+          "measurement_feasible",
+          "ovary_volume_ml"
+        ],
+        "static_clinical": [
+          "age",
+          "anti_mullerian_hormone",
+          "bmi",
+          "cycle_length",
+          "diastolic_blood_pressure",
+          "fasting_glucose",
+          "follicle_count_left",
+          "follicle_count_right",
+          "follicle_stimulating_hormone",
+          "height",
+          "hip_circumference",
+          "lh_amh_pattern_score",
+          "lh_fsh_ratio",
+          "luteinizing_hormone",
+          "metabolic_score",
+          "ovarian_score",
+          "pmos_evidence_probability",
+          "progesterone",
+          "reproductive_score",
+          "resting_heart_rate",
+          "symptom_burden_score",
+          "systolic_blood_pressure",
+          "waist_circumference",
+          "waist_hip_ratio",
+          "weight"
+        ]
+      },
+      "available_modalities": [
+        "longitudinal_hormonal_state",
+        "ovarian_ultrasound",
+        "static_clinical"
+      ],
+      "note": "Speech and document inputs appear here as the clinical variables they populated, not as separate predictions -- they are ingestion modalities."
+    },
+    "learned_static_prediction": {
+      "available": true,
+      "pmos_evidence_probability": 0.8908,
+      "method": "logistic regression on the matched static clinical cohort",
+      "provenance": "static_clinical.pmos_head \u2014 the only component fit against a PMOS label",
+      "caveat": "Reproduces one clinic's recorded PMOS label on a cross-sectional cohort. That is not the same as diagnosing PMOS, and the figure carries no external validation."
+    },
+    "rotterdam_axis_assessment": {
+      "axes": {
+        "ovulatory_dysfunction": {
+          "status": "met",
+          "level": "high",
+          "supporting": [
+            "cycle_length < 21.0",
+            "cycle_irregularity truthy true",
+            "temporal cycle irregularity = 0.68",
+            "predicted phase 'luteal' with state confidence 0.56",
+            "static reproductive composite z=-0.11",
+            "static metabolic composite z=+0.31"
+          ],
+          "missing": [
+            "menstrual_frequency_per_year",
+            "amenorrhea"
+          ],
+          "thresholds_applied": {
+            "cycle_length > 35.0": "2023 International Evidence-based Guideline for the Assessment and Management of PMOS: cycles >35 days in adults are irregular.",
+            "cycle_length < 21.0": "2023 International Evidence-based Guideline: cycles <21 days in adults are irregular.",
+            "menstrual_frequency_per_year < 9.0": "Rotterdam 2003 / 2023 International Guideline: fewer than 8-9 cycles per year indicates oligo-anovulation.",
+            "cycle_irregularity truthy true": "Participant- or clinician-reported cycle irregularity flag.",
+            "amenorrhea truthy true": "2023 International Guideline: primary or secondary amenorrhoea is ovulatory dysfunction by definition."
+          },
+          "assay_dependent": false
+        },
+        "hyperandrogenism_biochemical": {
+          "status": "not_assessable",
+          "level": "insufficient_evidence",
+          "supporting": [],
+          "missing": [
+            "total_testosterone",
+            "free_testosterone",
+            "dheas"
+          ],
+          "thresholds_applied": {
+            "total_testosterone > 2.5": "Placeholder upper reference limit in nmol/L for adult females. Assay- and laboratory-specific; must be replaced with the reference range of the measuring laboratory.",
+            "free_testosterone > 0.031": "Placeholder upper reference limit in nmol/L for calculated free testosterone. Assay- and calculation-formula-specific.",
+            "dheas > 9.2": "Placeholder upper reference limit in umol/L. DHEAS is strongly age-dependent and is a secondary marker only."
+          },
+          "assay_dependent": false
+        },
+        "hyperandrogenism_clinical": {
+          "status": "not_assessable",
+          "level": "insufficient_evidence",
+          "supporting": [],
+          "missing": [
+            "ferriman_gallwey_score",
+            "hirsutism",
+            "androgenic_alopecia"
+          ],
+          "thresholds_applied": {
+            "ferriman_gallwey_score >= 4.0": "2023 International Guideline: modified Ferriman-Gallwey cut-offs of 4-6 depending on ethnicity; the lower bound is used here so the axis is not silently insensitive in populations with lower baseline terminal hair density.",
+            "hirsutism truthy true": "Clinician- or participant-reported hirsutism flag.",
+            "androgenic_alopecia truthy true": "Female pattern hair loss; low specificity in isolation per the 2023 International Guideline."
+          },
+          "assay_dependent": false
+        },
+        "polycystic_ovarian_morphology": {
+          "status": "met",
+          "level": "high",
+          "supporting": [
+            "follicle_number_per_ovary >= 20.0",
+            "ovary_volume_ml >= 10.0",
+            "follicle number per ovary = 22 (PCOM threshold 20)",
+            "ovarian volume = 10.8 mL (PCOM threshold 10 mL)",
+            "static reproductive composite z=-0.11",
+            "static metabolic composite z=+0.31"
+          ],
+          "missing": [],
+          "thresholds_applied": {
+            "follicle_number_per_ovary >= 20.0": "2023 International Evidence-based Guideline: FNPO >=20 on either ovary using an endovaginal transducer with frequency >=8 MHz. The older Rotterdam 2003 threshold of >=12 follicles applies only to lower-frequency equipment.",
+            "ovary_volume_ml >= 10.0": "Rotterdam 2003 and retained in the 2023 International Guideline: ovarian volume >=10 mL on either ovary, with no dominant follicle, corpus luteum or cyst present.",
+            "anti_mullerian_hormone > true": "The 2023 International Guideline accepts serum AMH as an alternative to ultrasound for defining PCOM in adults, but explicitly gives no universal cut-off: thresholds are assay- and population-specific. No default threshold is encoded, so this rule stays not-assessable until a dataset supplies one."
+          },
+          "assay_dependent": false
+        }
+      },
+      "met": [
+        "ovulatory_dysfunction",
+        "polycystic_ovarian_morphology"
+      ],
+      "not_met": [],
+      "not_assessable": [
+        "hyperandrogenism_biochemical",
+        "hyperandrogenism_clinical"
+      ],
+      "summary": "2 axis/axes met, 0 not met, 2 not assessable from the supplied evidence.",
+      "note": "Axis thresholds come from published guidance and are applied as rules. Meeting an axis is not a diagnosis; Rotterdam requires clinical adjudication and exclusion of other causes."
+    },
+    "phenotype_profile_similarity": {
+      "available": true,
+      "dominant_profile": "indeterminate",
+      "probabilities": {
+        "metabolic_leaning": 0.0568,
+        "lh_amh_leaning": 0.0421,
+        "androgenic_leaning": 0.2426,
+        "mixed": 0.2585,
+        "indeterminate": 0.4
+      },
+      "assignment_entropy": 1.3562,
+      "driving_domains": {
+        "metabolic_leaning": [
+          "metabolic",
+          "symptom_burden"
+        ],
+        "lh_amh_leaning": [
+          "ovarian"
+        ],
+        "androgenic_leaning": [
+          "symptom_burden"
+        ],
+        "mixed": [
+          "symptom_burden",
+          "ovarian",
+          "metabolic"
+        ]
+      },
+      "observed_domains": [
+        "lh_amh_pattern",
+        "metabolic",
+        "ovarian",
+        "reproductive",
+        "symptom_burden"
+      ],
+      "missing_domains": [
+        "androgenic"
+      ],
+      "indeterminate_reasons": [
+        "top two profiles are within 0.016 (mixed vs androgenic_leaning): the assignment is close to a coin flip"
+      ],
+      "note": "These are similarities to described research patterns, NOT validated clinical subtypes. No subtype label exists in this repository and no external validation has been performed."
+    },
+    "ultrasound_morphology_evidence": {
+      "available": true,
+      "domain": "ovarian_morphology",
+      "score": 0.598687660112452,
+      "agreement_with_other_sources": "strong",
+      "supporting": [
+        "follicle number per ovary = 22 (PCOM threshold 20)",
+        "ovarian volume = 10.8 mL (PCOM threshold 10 mL)",
+        "static reproductive composite z=-0.11",
+        "static metabolic composite z=+0.31",
+        "static ovarian composite z=+0.64"
+      ]
+    },
+    "current_temporal_state_evidence": {
+      "available": true,
+      "domain": "current_state",
+      "score": 0.5599780125288661,
+      "agreement_with_other_sources": "single_source",
+      "supporting": [
+        "temporal cycle irregularity = 0.68",
+        "predicted phase 'luteal' with state confidence 0.56"
+      ]
+    },
+    "conflicting_evidence": {
+      "n": 0,
+      "items": [],
+      "note": "Conflicts are surfaced, never averaged away. A disagreement between a long-term history and a short temporal window is usually a property of the observation periods, not a measurement error."
+    },
+    "missing_evidence": {
+      "variables": [
+        "amenorrhea",
+        "androgenic_alopecia",
+        "dheas",
+        "ferriman_gallwey_score",
+        "free_testosterone",
+        "hirsutism",
+        "menstrual_frequency_per_year",
+        "total_testosterone"
+      ],
+      "modalities": [],
+      "domains": [
+        "androgenic"
+      ]
+    },
+    "uncertainty": {
+      "assignment_entropy": 1.3562,
+      "stability": {
+        "stability_score": 0.0,
+        "subtype_flip_rate": null
+      },
+      "note": "No confidence interval is attached to the learned probability: it was fit on 432 patients from one clinic and its calibration outside that population is unknown."
+    },
+    "abstention": {
+      "abstained": false,
+      "reason": null,
+      "partial_profile_permitted": true
+    },
+    "method_summary": "The PMOS probability is the only learned component. Rotterdam axes are published thresholds applied as rules. Cross-modal coordination uses declared design weights. No cross-modal relationship was learned, because no cohort in this repository has matched multimodal patients."
+  },
+  "abstain": false,
+  "abstention_reason": null,
+  "available_modalities": [
+    "longitudinal_hormonal_state",
+    "ovarian_ultrasound",
+    "static_clinical"
+  ],
+  "missing_modalities": [],
+  "agreements": [
+    "reproductive: moderate",
+    "ovarian_morphology: strong"
+  ],
+  "conflicts": [],
+  "missing_evidence": [
+    "amenorrhea",
+    "androgenic_alopecia",
+    "dheas",
+    "ferriman_gallwey_score",
+    "free_testosterone",
+    "hirsutism",
+    "menstrual_frequency_per_year",
+    "total_testosterone"
+  ],
+  "learned_components_used": [
+    "static_clinical.pmos_head"
+  ],
+  "rule_based_components_used": [
+    "pmos_adapter.guideline_axis_thresholds",
+    "evidence_coordinator.design_rule_weights",
+    "pmos_adapter.prototype_similarity"
+  ],
+  "provenance_ids": [],
+  "clinician_review_status": "model_generated",
+  "warnings": [
+    "Cross-modal evidence was combined using transparent rules rather than a jointly trained fusion model.",
+    "Cross-modal interpretation is rule-based. No jointly trained multimodal model was used, and no accuracy figure applies to the combined result."
+  ]
+}

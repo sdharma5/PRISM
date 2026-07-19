@@ -1,0 +1,15 @@
+{
+  "target_models": {
+    "lh": "locf",
+    "e3g": "ridge_window",
+    "pdg": "locf"
+  },
+  "cycle_phase": "logistic_phase",
+  "selection_basis": "Winners of the frozen benchmark on held-out participants. LOCF beats ridge for LH and PdG; ridge narrowly beats LOCF for E3G.",
+  "classes": [
+    "follicular",
+    "luteal",
+    "menstrual",
+    "peri_ovulatory"
+  ]
+}

@@ -22,10 +22,11 @@ out/
 # Data and artifacts
 datasets/mcphases/
 datasets/usova3d/
-artifacts/
+Hack-Nation/artifacts/experiments/exp_usova3d*/
 *.parquet
 *.tar.gz
 *.zip
+*.pt
 
 # Toolchain
 .toolchain/

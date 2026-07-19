@@ -1,0 +1,11 @@
+config_path: configs/data/pmos_tabular.yaml
+data:
+  group_column: null
+  id_column: Patient File No.
+  label_column: PMOS (Y/N)
+  path: pmos_tabular/pmos_data.csv
+  root: null
+  synthetic:
+    missing_rate: 0.2
+    n: 300
+    seed: 0

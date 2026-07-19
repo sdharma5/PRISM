@@ -1,0 +1,10 @@
+{
+  "validation_errors": [],
+  "warnings": [],
+  "n_dropped": 12,
+  "n_events_emitted": 14066,
+  "unit_conversions_applied": {
+    "hip_circumference:in->cm": 541,
+    "waist_circumference:in->cm": 541
+  }
+}

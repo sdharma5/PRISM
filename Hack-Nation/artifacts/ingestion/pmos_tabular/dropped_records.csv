@@ -1,0 +1,13 @@
+record_index,reason,detail
+39,not_available,cycle_length: value 0.0 outside registry valid_range for cycle_length
+161,not_available,systolic_blood_pressure: value 12.0 outside registry valid_range for systolic_blood_pressure
+180,not_available,lh_fsh_ratio: value 61.875 outside registry valid_range for lh_fsh_ratio
+200,not_available,diastolic_blood_pressure: value 8.0 outside registry valid_range for diastolic_blood_pressure
+223,not_available,resting_heart_rate: value 18.0 outside registry valid_range for resting_heart_rate
+250,not_available,lh_fsh_ratio: value 327.0 outside registry valid_range for lh_fsh_ratio
+267,not_available,anti_mullerian_hormone: value 66.0 outside registry valid_range for anti_mullerian_hormone
+296,not_available,resting_heart_rate: value 13.0 outside registry valid_range for resting_heart_rate
+305,not_available,anti_mullerian_hormone: non-numeric value 'a'
+329,not_available,follicle_stimulating_hormone: value 5052.0 outside registry valid_range for follicle_stimulating_hormone
+329,not_available,lh_fsh_ratio: value 1372.826087 outside registry valid_range for lh_fsh_ratio
+455,not_available,luteinizing_hormone: value 2018.0 outside registry valid_range for luteinizing_hormone

@@ -1,0 +1,15 @@
+{
+  "channels": [
+    "lh",
+    "e3g",
+    "pdg",
+    "resting_heart_rate",
+    "wrist_temperature",
+    "hrv_rmssd",
+    "mean_glucose"
+  ],
+  "lookback_days": 14,
+  "window_layout": "[values(lookback x C), observed_mask(lookback x C)]",
+  "task_type": "causal_forecasting",
+  "missingness_rule": "Unobserved entries enter as 0 accompanied by their mask channel; they are never imputed silently."
+}

@@ -1,0 +1,52 @@
+{
+  "seed": 42,
+  "grouping_key": "volume_id",
+  "train_ids": [
+    "Vol1",
+    "Vol101",
+    "Vol102",
+    "Vol104",
+    "Vol106",
+    "Vol109",
+    "Vol111",
+    "Vol115",
+    "Vol117",
+    "Vol3",
+    "Vol4",
+    "Vol5"
+  ],
+  "validation_ids": [
+    "Vol119",
+    "Vol2"
+  ],
+  "test_ids": [
+    "Vol110",
+    "Vol6"
+  ],
+  "dataset_checksum": "bea5ec9e926b371267b2a15d0ec7f482d14c3e229d549882f3f980b3cbe29074",
+  "created_at": "2026-07-18T00:00:00Z",
+  "n_volumes": 16,
+  "spacing_calibrated_by_volume": {
+    "Vol1": true,
+    "Vol101": false,
+    "Vol102": false,
+    "Vol104": false,
+    "Vol106": false,
+    "Vol109": false,
+    "Vol110": false,
+    "Vol111": false,
+    "Vol115": false,
+    "Vol117": false,
+    "Vol119": false,
+    "Vol2": true,
+    "Vol3": true,
+    "Vol4": true,
+    "Vol5": true,
+    "Vol6": true
+  },
+  "caveats": [
+    "USOVA3D carries no patient identifier, so grouping is by VOLUME. If two volumes are the left and right ovary of one patient, they may fall in different splits. This cannot be detected from the data on disk.",
+    "Volumes with spacing exactly (1.0, 1.0, 1.0) are treated as UNCALIBRATED; millimetre-denominated metrics are not reported for them.",
+    "The test split must be evaluated once. Selecting hyperparameters against it would make the reported metric an optimistic in-sample number."
+  ]
+}

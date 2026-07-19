@@ -1,0 +1,71 @@
+{
+  "canonical_value": {
+    "f1": 1.0,
+    "false_negatives": 0,
+    "false_positives": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "support": 66,
+    "true_positives": 66
+  },
+  "collected_date": {
+    "f1": 1.0,
+    "false_negatives": 0,
+    "false_positives": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "support": 66,
+    "true_positives": 66
+  },
+  "corpus_id": "prism_document_eval_synthetic",
+  "n_documents": 25,
+  "n_extracted_values": 66,
+  "n_gold_values": 66,
+  "n_unmapped_tests": 0,
+  "notes": [
+    "Synthetic de-identified reports. No real patient data. Supports no real-world claim.",
+    "report-finding F1 (ultrasound/summary): 1.0 over 24 gold findings.",
+    "page-grounding checked on 66 value(s); 66 grounded.",
+    "0 validation error(s) raised.",
+    "Layout variety (table / line / two-page) is scripted, so these numbers are a regression guard on parsing and unit handling, not a real-world estimate."
+  ],
+  "page_grounding_accuracy": 1.0,
+  "reference_range": {
+    "f1": 1.0,
+    "false_negatives": 0,
+    "false_positives": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "support": 61,
+    "true_positives": 61
+  },
+  "source_value": {
+    "f1": 1.0,
+    "false_negatives": 0,
+    "false_positives": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "support": 66,
+    "true_positives": 66
+  },
+  "test_name": {
+    "f1": 1.0,
+    "false_negatives": 0,
+    "false_positives": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "support": 66,
+    "true_positives": 66
+  },
+  "unit": {
+    "f1": 1.0,
+    "false_negatives": 0,
+    "false_positives": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "support": 66,
+    "true_positives": 66
+  },
+  "unit_conversion_rate": 0.5,
+  "unsupported_value_rate": 0.0
+}

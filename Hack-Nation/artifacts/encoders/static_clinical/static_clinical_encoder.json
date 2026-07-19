@@ -1,0 +1,37 @@
+{
+  "model_version": "static-clinical-0.1.0",
+  "source_dataset": "kottarathil-2020",
+  "n_train": 432,
+  "n_features": 19,
+  "feature_names": [
+    "age",
+    "anti_mullerian_hormone",
+    "bmi",
+    "cycle_length",
+    "diastolic_blood_pressure",
+    "fasting_glucose",
+    "follicle_count_left",
+    "follicle_count_right",
+    "follicle_stimulating_hormone",
+    "height",
+    "hip_circumference",
+    "lh_fsh_ratio",
+    "luteinizing_hormone",
+    "progesterone",
+    "resting_heart_rate",
+    "systolic_blood_pressure",
+    "waist_circumference",
+    "waist_hip_ratio",
+    "weight"
+  ],
+  "metrics": {
+    "heldout_auroc": 0.8926940639269406,
+    "heldout_auprc": 0.8536030356906469,
+    "heldout_brier": 0.1270196367485137,
+    "heldout_positive_rate": 0.3302752293577982,
+    "heldout_n": 109,
+    "cv_auroc_mean": 0.889800638004451,
+    "cv_auroc_std": 0.026785795514396877,
+    "heldout_calibrated_brier": 0.11465871075127179
+  }
+}

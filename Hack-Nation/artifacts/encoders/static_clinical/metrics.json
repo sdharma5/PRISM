@@ -1,0 +1,186 @@
+{
+  "cohort": "/weka/scratch/uchitra1/users/a_s/mit_hackathon/Hack-Nation/../datasets/pmos_tabular/cohort_wide.csv",
+  "n_train": 432,
+  "held_out": {
+    "auroc": 0.8926940639269406,
+    "auprc": 0.8536030356906469,
+    "brier": 0.1270196367485137,
+    "positive_rate": 0.3302752293577982,
+    "n": 109
+  },
+  "cv_auroc_mean": 0.889800638004451,
+  "cv_auroc_std": 0.026785795514396877,
+  "cv_fold_auroc": [
+    0.8395883777239709,
+    0.9019024970273484,
+    0.8854679802955665,
+    0.9107142857142857,
+    0.9113300492610837
+  ],
+  "calibration": {
+    "raw": {
+      "auroc": 0.8926940639269406,
+      "auprc": 0.8536030356906469,
+      "brier": 0.1270196367485137,
+      "n": 109.0,
+      "positive_rate": 0.3302752293577982,
+      "reliability_bins": [
+        {
+          "bin": 0,
+          "n": 22,
+          "n_positive": 0,
+          "predicted_lower": 0.0027166182156694537,
+          "predicted_upper": 0.06148776303888767,
+          "mean_predicted": 0.02952044568477483,
+          "observed_rate": 0.0,
+          "observed_ci_lower": 1.3877787807814457e-17,
+          "observed_ci_upper": 0.14865952572596125,
+          "gap": -0.02952044568477483,
+          "interpretable": true
+        },
+        {
+          "bin": 1,
+          "n": 22,
+          "n_positive": 3,
+          "predicted_lower": 0.06162294538972821,
+          "predicted_upper": 0.15892776930840916,
+          "mean_predicted": 0.10302898611673988,
+          "observed_rate": 0.13636363636363635,
+          "observed_ci_lower": 0.04748917264236269,
+          "observed_ci_upper": 0.3333541187947,
+          "gap": 0.03333465024689647,
+          "interpretable": true
+        },
+        {
+          "bin": 2,
+          "n": 22,
+          "n_positive": 3,
+          "predicted_lower": 0.16725952708663944,
+          "predicted_upper": 0.41805649841025755,
+          "mean_predicted": 0.31138593434986067,
+          "observed_rate": 0.13636363636363635,
+          "observed_ci_lower": 0.04748917264236269,
+          "observed_ci_upper": 0.3333541187947,
+          "gap": -0.17502229798622432,
+          "interpretable": true
+        },
+        {
+          "bin": 3,
+          "n": 22,
+          "n_positive": 10,
+          "predicted_lower": 0.4205233540135643,
+          "predicted_upper": 0.8189847720853921,
+          "mean_predicted": 0.6349651724965905,
+          "observed_rate": 0.45454545454545453,
+          "observed_ci_lower": 0.26920014432004846,
+          "observed_ci_upper": 0.6534052671095845,
+          "gap": -0.18041971795113593,
+          "interpretable": true
+        },
+        {
+          "bin": 4,
+          "n": 21,
+          "n_positive": 20,
+          "predicted_lower": 0.8971395201809302,
+          "predicted_upper": 0.9994835951722576,
+          "mean_predicted": 0.9511160993209574,
+          "observed_rate": 0.9523809523809523,
+          "observed_ci_lower": 0.7733018341376452,
+          "observed_ci_upper": 0.9915442305280766,
+          "gap": 0.0012648530599949082,
+          "interpretable": true
+        }
+      ]
+    },
+    "n_bins": 5,
+    "binning": "equal_frequency",
+    "min_interpretable_bin_count": 20,
+    "calibrated": {
+      "auroc": 0.8926940639269406,
+      "auprc": 0.8536030356906469,
+      "brier": 0.11465871075127179,
+      "n": 109.0,
+      "positive_rate": 0.3302752293577982,
+      "reliability_bins": [
+        {
+          "bin": 0,
+          "n": 22,
+          "n_positive": 0,
+          "predicted_lower": 0.004260205921230347,
+          "predicted_upper": 0.05382636606925307,
+          "mean_predicted": 0.02887333150838706,
+          "observed_rate": 0.0,
+          "observed_ci_lower": 1.3877787807814457e-17,
+          "observed_ci_upper": 0.14865952572596125,
+          "gap": -0.02887333150838706,
+          "interpretable": true
+        },
+        {
+          "bin": 1,
+          "n": 22,
+          "n_positive": 3,
+          "predicted_lower": 0.05392341904960465,
+          "predicted_upper": 0.11869583258807914,
+          "mean_predicted": 0.0820126185659452,
+          "observed_rate": 0.13636363636363635,
+          "observed_ci_lower": 0.04748917264236269,
+          "observed_ci_upper": 0.3333541187947,
+          "gap": 0.05435101779769115,
+          "interpretable": true
+        },
+        {
+          "bin": 2,
+          "n": 22,
+          "n_positive": 3,
+          "predicted_lower": 0.12399131904476317,
+          "predicted_upper": 0.28531339342392936,
+          "mean_predicted": 0.2157076771995463,
+          "observed_rate": 0.13636363636363635,
+          "observed_ci_lower": 0.04748917264236269,
+          "observed_ci_upper": 0.3333541187947,
+          "gap": -0.07934404083590996,
+          "interpretable": true
+        },
+        {
+          "bin": 3,
+          "n": 22,
+          "n_positive": 10,
+          "predicted_lower": 0.28699724528405024,
+          "predicted_upper": 0.6408428492102974,
+          "mean_predicted": 0.46000180779773764,
+          "observed_rate": 0.45454545454545453,
+          "observed_ci_lower": 0.26920014432004846,
+          "observed_ci_upper": 0.6534052671095845,
+          "gap": -0.005456353252283108,
+          "interpretable": true
+        },
+        {
+          "bin": 4,
+          "n": 21,
+          "n_positive": 20,
+          "predicted_lower": 0.7526981951387839,
+          "predicted_upper": 0.9959642285963644,
+          "mean_predicted": 0.8619341223189917,
+          "observed_rate": 0.9523809523809523,
+          "observed_ci_lower": 0.7733018341376452,
+          "observed_ci_upper": 0.9915442305280766,
+          "gap": 0.09044683006196064,
+          "interpretable": true
+        }
+      ]
+    },
+    "calibrator": {
+      "method": "platt_scaling",
+      "coef": 0.8136325978439649,
+      "intercept": -0.6491414340642034,
+      "n_fit": 432,
+      "fit_source": "train_out_of_fold"
+    },
+    "caveats": [
+      "Bins with `interpretable: false` carry too few patients to support a claim about calibration in that score range; read the confidence interval, not the point estimate.",
+      "Calibration is uncertain wherever the cohort is sparsely represented, which on this cohort is the middle of the score range."
+    ]
+  },
+  "calibration_protocol": "Platt scaling fitted ONLY on out-of-fold predictions for the 432 training patients, then applied once, unchanged, to the 109 held-out patients. Nothing is fitted on held-out labels. Both raw_model_score and calibrated_model_score are retained.",
+  "caveat": "Metrics describe reproduction of one clinic's recorded PMOS label on a cross-sectional cohort. They are not diagnostic accuracy, and they do not transfer to the multimodal report, whose cross-modal combination is rule-based and carries no validated accuracy."
+}

@@ -1,0 +1,67 @@
+{
+  "seed": 42,
+  "grouping_key": "participant_id",
+  "train_ids": [
+    "mcphases:1",
+    "mcphases:10",
+    "mcphases:11",
+    "mcphases:12",
+    "mcphases:15",
+    "mcphases:18",
+    "mcphases:19",
+    "mcphases:2",
+    "mcphases:20",
+    "mcphases:22",
+    "mcphases:23",
+    "mcphases:24",
+    "mcphases:26",
+    "mcphases:29",
+    "mcphases:30",
+    "mcphases:34",
+    "mcphases:37",
+    "mcphases:40",
+    "mcphases:43",
+    "mcphases:44",
+    "mcphases:46",
+    "mcphases:47",
+    "mcphases:48",
+    "mcphases:49",
+    "mcphases:50",
+    "mcphases:8"
+  ],
+  "validation_ids": [
+    "mcphases:14",
+    "mcphases:16",
+    "mcphases:27",
+    "mcphases:32",
+    "mcphases:38",
+    "mcphases:41",
+    "mcphases:45",
+    "mcphases:6"
+  ],
+  "test_ids": [
+    "mcphases:13",
+    "mcphases:3",
+    "mcphases:33",
+    "mcphases:39",
+    "mcphases:4",
+    "mcphases:42",
+    "mcphases:7",
+    "mcphases:9"
+  ],
+  "dataset_checksum": "e30e66ee6b743df481c4431e282a5d534041685f2ba39d419b16564b371eef8f",
+  "created_at": "2026-07-19T00:47:12Z",
+  "n_participants": 42,
+  "n_days": 5701,
+  "days_by_split": {
+    "train": 3382,
+    "validation": 1172,
+    "test": 1147
+  },
+  "caveats": [
+    "Grouping is on participant_id ALONE. 20 of 42 participants appear in both the 2022 and 2024 study intervals; splitting on (participant, interval) would leak the same person across splits.",
+    "42 participants is a small cohort. A ~8-participant test split yields wide intervals; report per-participant results, not only pooled day-level means.",
+    "Normalization statistics must be fitted on training participants only \u2014 see fit_normalization_stats().",
+    "The test split is evaluated once. Selecting a model against it would make the reported number an in-sample estimate."
+  ]
+}

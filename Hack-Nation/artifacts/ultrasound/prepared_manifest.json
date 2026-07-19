@@ -1,0 +1,189 @@
+{
+  "config": "/Users/angela.ning/Desktop/hackathon/prism-hormonal-health/configs/data/ultrasound.yaml",
+  "source": "synthetic_phantom",
+  "n_studies": 6,
+  "n_valid": 6,
+  "n_without_spacing": 0,
+  "studies": [
+    {
+      "study_id": "PHANTOM000_L",
+      "patient_id": "PHANTOM000",
+      "laterality": "left",
+      "route": "transvaginal",
+      "deidentified": true,
+      "spacing_mm": [
+        1.0,
+        0.6,
+        0.6
+      ],
+      "measurement_spacing_mm": [
+        1.0,
+        0.6,
+        0.6
+      ],
+      "shape": [
+        48,
+        64,
+        64
+      ],
+      "valid": true,
+      "errors": [],
+      "warnings": [
+        "Acquisition mode: volume_3d."
+      ],
+      "transforms_applied": [
+        "intensity_normalize:percentile"
+      ]
+    },
+    {
+      "study_id": "PHANTOM001_L",
+      "patient_id": "PHANTOM001",
+      "laterality": "right",
+      "route": "transvaginal",
+      "deidentified": true,
+      "spacing_mm": [
+        1.0,
+        0.6,
+        0.6
+      ],
+      "measurement_spacing_mm": [
+        1.0,
+        0.6,
+        0.6
+      ],
+      "shape": [
+        48,
+        64,
+        64
+      ],
+      "valid": true,
+      "errors": [],
+      "warnings": [
+        "Acquisition mode: volume_3d."
+      ],
+      "transforms_applied": [
+        "intensity_normalize:percentile"
+      ]
+    },
+    {
+      "study_id": "PHANTOM002_L",
+      "patient_id": "PHANTOM002",
+      "laterality": "left",
+      "route": "transvaginal",
+      "deidentified": true,
+      "spacing_mm": [
+        1.0,
+        0.6,
+        0.6
+      ],
+      "measurement_spacing_mm": [
+        1.0,
+        0.6,
+        0.6
+      ],
+      "shape": [
+        48,
+        64,
+        64
+      ],
+      "valid": true,
+      "errors": [],
+      "warnings": [
+        "Acquisition mode: volume_3d."
+      ],
+      "transforms_applied": [
+        "intensity_normalize:percentile"
+      ]
+    },
+    {
+      "study_id": "PHANTOM003_L",
+      "patient_id": "PHANTOM003",
+      "laterality": "right",
+      "route": "transvaginal",
+      "deidentified": true,
+      "spacing_mm": [
+        1.0,
+        0.6,
+        0.6
+      ],
+      "measurement_spacing_mm": [
+        1.0,
+        0.6,
+        0.6
+      ],
+      "shape": [
+        48,
+        64,
+        64
+      ],
+      "valid": true,
+      "errors": [],
+      "warnings": [
+        "Acquisition mode: volume_3d."
+      ],
+      "transforms_applied": [
+        "intensity_normalize:percentile"
+      ]
+    },
+    {
+      "study_id": "PHANTOM004_L",
+      "patient_id": "PHANTOM004",
+      "laterality": "left",
+      "route": "transvaginal",
+      "deidentified": true,
+      "spacing_mm": [
+        1.0,
+        0.6,
+        0.6
+      ],
+      "measurement_spacing_mm": [
+        1.0,
+        0.6,
+        0.6
+      ],
+      "shape": [
+        48,
+        64,
+        64
+      ],
+      "valid": true,
+      "errors": [],
+      "warnings": [
+        "Acquisition mode: volume_3d."
+      ],
+      "transforms_applied": [
+        "intensity_normalize:percentile"
+      ]
+    },
+    {
+      "study_id": "PHANTOM005_L",
+      "patient_id": "PHANTOM005",
+      "laterality": "right",
+      "route": "transvaginal",
+      "deidentified": true,
+      "spacing_mm": [
+        1.0,
+        0.6,
+        0.6
+      ],
+      "measurement_spacing_mm": [
+        1.0,
+        0.6,
+        0.6
+      ],
+      "shape": [
+        48,
+        64,
+        64
+      ],
+      "valid": true,
+      "errors": [],
+      "warnings": [
+        "Acquisition mode: volume_3d."
+      ],
+      "transforms_applied": [
+        "intensity_normalize:percentile"
+      ]
+    }
+  ]
+}

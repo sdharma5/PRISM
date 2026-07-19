@@ -1,0 +1,253 @@
+{
+  "corpus_id": "prism_speech_eval_synthetic",
+  "medication_events": {
+    "f1": 1.0,
+    "false_negatives": 0,
+    "false_positives": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "support": 11,
+    "true_positives": 11
+  },
+  "n_gold_events": 96,
+  "n_predicted_events": 91,
+  "n_utterances": 88,
+  "negation": {
+    "f1": 1.0,
+    "false_negatives": 0,
+    "false_positives": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "support": 10,
+    "true_positives": 10
+  },
+  "notes": [
+    "Synthetic scripted corpus. No real speech. Supports no real-world performance claim.",
+    "1 mention(s) recognized but with no canonical patient variable.",
+    "5 question(s) suppressed (a question asserts nothing).",
+    "WER is 0.0 by construction with the scripted adapter; it is non-trivial only when a real ASR engine is substituted.",
+    "Scores near 1.0 are expected and are NOT evidence of a good extractor: the scripted utterances were written within the lexicon's surface-form coverage. This run is a regression guard on negation, temporality and attribution logic, not a performance estimate."
+  ],
+  "per_category": {
+    "approximate_date": {
+      "f1": 1.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 4,
+      "true_positives": 4
+    },
+    "clinician_question": {
+      "f1": 0.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "support": 0,
+      "true_positives": 0
+    },
+    "coverage_limit": {
+      "f1": 0.2857,
+      "false_negatives": 5,
+      "false_positives": 0,
+      "precision": 1.0,
+      "recall": 0.1667,
+      "support": 6,
+      "true_positives": 1
+    },
+    "cycle_timing": {
+      "f1": 1.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 7,
+      "true_positives": 7
+    },
+    "family_history": {
+      "f1": 1.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 9,
+      "true_positives": 9
+    },
+    "family_history_contrast": {
+      "f1": 1.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 2,
+      "true_positives": 2
+    },
+    "fertility_goal": {
+      "f1": 1.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 2,
+      "true_positives": 2
+    },
+    "hirsutism_behaviour": {
+      "f1": 1.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 1,
+      "true_positives": 1
+    },
+    "historical": {
+      "f1": 1.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 7,
+      "true_positives": 7
+    },
+    "historical_vs_present": {
+      "f1": 1.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 1,
+      "true_positives": 1
+    },
+    "medication_change": {
+      "f1": 1.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 1,
+      "true_positives": 1
+    },
+    "medication_current": {
+      "f1": 1.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 4,
+      "true_positives": 4
+    },
+    "medication_start": {
+      "f1": 1.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 2,
+      "true_positives": 2
+    },
+    "medication_stop": {
+      "f1": 1.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 3,
+      "true_positives": 3
+    },
+    "negated": {
+      "f1": 1.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 10,
+      "true_positives": 10
+    },
+    "numeric_cycle": {
+      "f1": 1.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 8,
+      "true_positives": 8
+    },
+    "numeric_score": {
+      "f1": 1.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 1,
+      "true_positives": 1
+    },
+    "numeric_weight": {
+      "f1": 1.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 2,
+      "true_positives": 2
+    },
+    "present": {
+      "f1": 1.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 14,
+      "true_positives": 14
+    },
+    "speaker_confusion": {
+      "f1": 1.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 6,
+      "true_positives": 6
+    },
+    "uncertain": {
+      "f1": 1.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 6,
+      "true_positives": 6
+    }
+  },
+  "speaker_attribution_accuracy": 1.0,
+  "symptom_extraction": {
+    "f1": 0.9733,
+    "false_negatives": 5,
+    "false_positives": 0,
+    "precision": 1.0,
+    "recall": 0.9479,
+    "support": 96,
+    "true_positives": 91
+  },
+  "temporality": {
+    "f1": 1.0,
+    "false_negatives": 0,
+    "false_positives": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "support": 11,
+    "true_positives": 11
+  },
+  "uncertainty": {
+    "f1": 1.0,
+    "false_negatives": 0,
+    "false_positives": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "support": 12,
+    "true_positives": 12
+  },
+  "unsupported_event_rate": 0.0,
+  "user_correction_rate": 0.0,
+  "word_error_rate": 0.0
+}

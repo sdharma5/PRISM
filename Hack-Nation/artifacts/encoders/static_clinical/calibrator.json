@@ -1,0 +1,7 @@
+{
+  "method": "platt_scaling",
+  "coef": 0.8136325978439649,
+  "intercept": -0.6491414340642034,
+  "n_fit": 432,
+  "fit_source": "train_out_of_fold"
+}

@@ -1,0 +1,45 @@
+{
+  "benchmark_version": "temporal_baseline_v1",
+  "split_version": "mcphases_participant_split_v1",
+  "residual_intervals": {
+    "lh": {
+      "lo": -3.8000000000000003,
+      "hi": 3.4000000000000004,
+      "n": 3154
+    },
+    "e3g": {
+      "lo": -71.86986773281421,
+      "hi": 79.96236123110042,
+      "n": 3154
+    },
+    "pdg": {
+      "lo": -5.8,
+      "hi": 5.699999999999999,
+      "n": 1058
+    }
+  },
+  "metrics": {
+    "hormones": {
+      "lh": {
+        "method": "locf",
+        "mae": 3.2653060997452417,
+        "n_observed": 1083
+      },
+      "e3g": {
+        "method": "ridge_window",
+        "mae": 50.63768711961671,
+        "n_observed": 1083
+      },
+      "pdg": {
+        "method": "locf",
+        "mae": 3.2549146933337183,
+        "n_observed": 393
+      }
+    },
+    "cycle_phase": {
+      "macro_f1": 0.5652859832072872,
+      "balanced_accuracy": 0.5753608505311838,
+      "n": 1134
+    }
+  }
+}

@@ -1,0 +1,13 @@
+# Resolved configuration for the persisted temporal state encoder.
+lookback_days: 14
+split_manifest: mcphases_participant_split_v1.json
+task_type: causal_forecasting
+target_models:
+  lh: locf
+  e3g: ridge_window
+  pdg: locf
+  cycle_phase: logistic_phase
+excluded_targets:
+  headaches: >-
+    Mixed ordinal labels and bare numerals ('2','3','High') with no
+    defensible source mapping. Excluded rather than blindly factorized.
