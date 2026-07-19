@@ -52,6 +52,7 @@ artifacts/figures/
 *.pt
 *.pth
 *.joblib
+!artifacts/encoders/**/*.joblib
 *.pkl
 
 # Local
