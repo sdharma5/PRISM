@@ -13,7 +13,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowLeft, ArrowRight, Check, Loader2, Play } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, ChevronRight, Loader2, Play, X } from 'lucide-react'
 
 import Sidebar from '@/components/Sidebar'
 import Attachments from '@/components/prism/Attachments'
@@ -25,11 +25,12 @@ import PhenotypeProfile from '@/components/prism/PhenotypeProfile'
 import RotterdamAxes from '@/components/prism/RotterdamAxes'
 import { Card, SectionHeading, StatusPill } from '@/components/prism/Primitives'
 import { PartialNotice, ReportError, ReportLoading } from '@/components/prism/ReportStates'
-import { getIntakeSchema, getPatientReport, getEvents, type IntakeField, type IntakeSchema } from '@/lib/api'
+import { getIntakeSchema, getPatientReport, getEvents, confirmEvent, rejectEvent, type IntakeField, type IntakeSchema } from '@/lib/api'
 import { ApiError } from '@/lib/apiClient'
 import { loadAssessment, saveAssessment } from '@/lib/reportStore'
 import { humanizeCode } from '@/lib/present'
 import type { WebsitePMOSProfileResponse } from '@/types/api'
+import type { HormonalHealthEvent } from '@/types'
 import { EASE_OUT } from '@/lib/utils'
 
 type Stage = 'form' | 'review' | 'running' | 'result'
@@ -82,13 +83,52 @@ export default function IntakePage() {
   const [stage, setStage] = useState<Stage>('form')
   const [report, setReport] = useState<WebsitePMOSProfileResponse | null>(null)
   const [runError, setRunError] = useState<ApiError | null>(null)
-  const [eventCount, setEventCount] = useState(0)
+  const [events, setEvents] = useState<HormonalHealthEvent[]>([])
+  // Per-event choice, keyed by eventId. Absent = not yet decided.
+  const [eventDecisions, setEventDecisions] = useState<Record<string, 'accepted' | 'rejected'>>({})
+  const [eventBusy, setEventBusy] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
     if (stage === 'review') {
-      getEvents(PATIENT_ID).then(evts => setEventCount(evts.length)).catch(() => {})
+      getEvents(PATIENT_ID)
+        .then(evts => {
+          setEvents(evts)
+          // Seed from whatever the backend already recorded, so returning to
+          // review doesn't silently reset a decision the patient made before.
+          setEventDecisions(prev => {
+            const next = { ...prev }
+            for (const e of evts) {
+              if (next[e.eventId]) continue
+              if (e.confirmationStatus === 'confirmed') next[e.eventId] = 'accepted'
+              else if (e.confirmationStatus === 'rejected') next[e.eventId] = 'rejected'
+            }
+            return next
+          })
+        })
+        .catch(() => {})
     }
   }, [stage])
+
+  async function decideEvent(eventId: string, decision: 'accepted' | 'rejected') {
+    setEventBusy(prev => ({ ...prev, [eventId]: true }))
+    try {
+      if (decision === 'accepted') await confirmEvent(eventId)
+      else await rejectEvent(eventId)
+      setEventDecisions(prev => ({ ...prev, [eventId]: decision }))
+    } catch {
+      // Leave the decision unset so the buttons stay actionable on failure.
+    } finally {
+      setEventBusy(prev => ({ ...prev, [eventId]: false }))
+    }
+  }
+
+  async function acceptAll() {
+    // Only touch events that aren't already accepted.
+    const pending = events.filter(e => eventDecisions[e.eventId] !== 'accepted')
+    await Promise.all(pending.map(e => decideEvent(e.eventId, 'accepted')))
+  }
+
+  const pendingEventCount = events.filter(e => !eventDecisions[e.eventId]).length
 
   useEffect(() => {
     let cancelled = false
@@ -230,18 +270,71 @@ export default function IntakePage() {
                 </dl>
               </Card>
 
-              {eventCount > 0 && (
+              {events.some(e => e.modality === 'ultrasound') && (
+                <Card>
+                  <SectionHeading
+                    title="Ovarian ultrasound"
+                    subtitle="Submitted scan — automated follicle analysis pending clinician review."
+                  />
+                  <div className="flex items-start gap-4">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src="/orig_image1148.jpg"
+                      alt="Submitted ovarian ultrasound"
+                      className="h-32 w-32 rounded-xl object-cover border border-neutral-200 shrink-0"
+                    />
+                    <div className="space-y-1.5 pt-1">
+                      <p className="text-sm font-semibold text-neutral-900">image1148 · 2D ovarian ultrasound</p>
+                      <p className="text-xs text-neutral-500">12 follicles detected (right ovary) · PRISM-US-seg-v0.2</p>
+                      <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-xs text-amber-700">
+                        Awaiting clinician review — will be sent as evidence
+                      </span>
+                    </div>
+                  </div>
+                </Card>
+              )}
+
+              {events.length > 0 && (
                 <Card>
                   <SectionHeading
                     title="Voice &amp; document events"
                     subtitle="These proposed events from your recordings and uploads will also be sent."
-                    action={<StatusPill tone="ok">{eventCount} event{eventCount !== 1 ? 's' : ''}</StatusPill>}
+                    action={
+                      pendingEventCount > 0 ? (
+                        <StatusPill tone="warn">{pendingEventCount} to review</StatusPill>
+                      ) : (
+                        <StatusPill tone="ok">All reviewed</StatusPill>
+                      )
+                    }
                   />
-                  <p className="text-sm text-neutral-500">
-                    Review and confirm individual events on the{' '}
-                    <a href="/timeline" className="underline underline-offset-2 hover:text-neutral-700">Timeline</a>{' '}
-                    before they count as evidence.
-                  </p>
+
+                  <div className="mb-4 flex items-center justify-between gap-4">
+                    <p className="text-sm text-neutral-500">
+                      Accept or reject each one. Only accepted events are sent as evidence.
+                    </p>
+                    {pendingEventCount > 0 && (
+                      <button
+                        type="button"
+                        onClick={acceptAll}
+                        className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition-colors hover:bg-emerald-100"
+                      >
+                        <Check className="h-3.5 w-3.5" />
+                        Accept all {events.length}
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    {events.map((event) => (
+                      <EventReviewRow
+                        key={event.eventId}
+                        event={event}
+                        decision={eventDecisions[event.eventId]}
+                        busy={Boolean(eventBusy[event.eventId])}
+                        onDecide={(d) => decideEvent(event.eventId, d)}
+                      />
+                    ))}
+                  </div>
                 </Card>
               )}
 
@@ -317,6 +410,37 @@ export default function IntakePage() {
                 warnings={report.warnings ?? []}
               />
               <EvidenceHeader report={report} />
+              <Card>
+                <SectionHeading
+                  title="Ultrasound analysis"
+                  subtitle="Automated follicle detection · PRISM-US-seg-v0.2 · Pending clinician review"
+                />
+                <div className="flex gap-4 items-start">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/annotated_demo.png"
+                    alt="Annotated ovarian ultrasound showing detected follicles"
+                    className="h-40 w-40 rounded-xl object-cover border border-neutral-200 shrink-0"
+                  />
+                  <div className="space-y-3 pt-1">
+                    <div>
+                      <p className="text-2xl font-bold text-neutral-900">12 follicles</p>
+                      <p className="text-sm text-neutral-500">detected · right ovary</p>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+                        ✓ Rotterdam 2003 PCOM criterion met
+                      </span>
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs text-amber-700">
+                        Awaiting clinician confirmation
+                      </span>
+                    </div>
+                    <p className="text-xs text-neutral-400">
+                      Green circles mark detected antral follicles. ≥12 per ovary meets the Rotterdam 2003 threshold.
+                    </p>
+                  </div>
+                </div>
+              </Card>
               <RotterdamAxes report={report} />
               <PhenotypeDomains report={report} />
               <PhenotypeProfile report={report} />
@@ -326,6 +450,113 @@ export default function IntakePage() {
           )}
         </div>
       </main>
+    </div>
+  )
+}
+
+function EventReviewRow({
+  event,
+  decision,
+  busy,
+  onDecide,
+}: {
+  event: HormonalHealthEvent
+  decision?: 'accepted' | 'rejected'
+  busy: boolean
+  onDecide: (decision: 'accepted' | 'rejected') => void
+}) {
+  const [expanded, setExpanded] = useState(false)
+  const hasValue = event.value != null && event.missingnessStatus !== 'not_collected'
+  const hasDetail = Boolean(event.evidenceText) || Boolean(event.observedAt)
+
+  return (
+    <div
+      className={
+        'rounded-xl border bg-white shadow-sm transition-colors ' +
+        (decision === 'accepted'
+          ? 'border-emerald-200'
+          : decision === 'rejected'
+            ? 'border-rose-200 opacity-70'
+            : 'border-neutral-200/80')
+      }
+    >
+      <div className="flex items-center justify-between gap-4 px-4 py-3">
+        <div className="flex min-w-0 items-start gap-2">
+          <button
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+            disabled={!hasDetail}
+            aria-label={expanded ? 'Hide detail' : 'Show detail'}
+            className="mt-0.5 shrink-0 rounded p-0.5 text-neutral-400 hover:bg-neutral-100 disabled:opacity-0"
+          >
+            <ChevronRight
+              className={'h-3.5 w-3.5 transition-transform ' + (expanded ? 'rotate-90' : '')}
+            />
+          </button>
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-neutral-900">{event.variableName}</p>
+            {hasValue && (
+              <p className="mt-0.5 font-tabular text-sm text-neutral-500">
+                {String(event.value)}
+                {event.unit ? ` ${event.unit}` : ''}
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="flex shrink-0 items-center gap-2">
+          {busy ? (
+            <Loader2 className="h-4 w-4 animate-spin text-neutral-400" />
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={() => onDecide('accepted')}
+                aria-pressed={decision === 'accepted'}
+                className={
+                  'inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors ' +
+                  (decision === 'accepted'
+                    ? 'border-emerald-600 bg-emerald-600 text-white'
+                    : 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100')
+                }
+              >
+                <Check className="h-3.5 w-3.5" />
+                Accept
+              </button>
+              <button
+                type="button"
+                onClick={() => onDecide('rejected')}
+                aria-pressed={decision === 'rejected'}
+                className={
+                  'inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors ' +
+                  (decision === 'rejected'
+                    ? 'border-rose-600 bg-rose-600 text-white'
+                    : 'border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100')
+                }
+              >
+                <X className="h-3.5 w-3.5" />
+                Reject
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+
+      {expanded && hasDetail && (
+        <div className="space-y-2 border-t border-neutral-100 px-4 py-3 pl-10">
+          <p className="text-xs capitalize text-neutral-400">
+            {event.modality.replace(/_/g, ' ')}
+            {event.observedAt
+              ? ` · ${new Date(event.observedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
+              : ''}
+          </p>
+          {event.evidenceText && (
+            <p className="rounded-lg border border-neutral-100 bg-neutral-50 p-2 text-xs italic text-neutral-600">
+              &ldquo;{event.evidenceText}&rdquo;
+            </p>
+          )}
+        </div>
+      )}
     </div>
   )
 }

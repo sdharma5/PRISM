@@ -321,7 +321,7 @@ function FileBlock({
           <div className="relative shrink-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={isDemo && outcome ? '/annotated_demo.png' : imagePreview}
+              src={imagePreview}
               alt="Ultrasound scan"
               className="h-24 w-24 rounded-lg object-cover border border-neutral-200"
             />
@@ -334,7 +334,6 @@ function FileBlock({
           {outcome?.status === 'completed' && isDemo && (
             <div className="flex flex-col gap-1.5 pt-1">
               <p className="text-sm font-semibold text-neutral-900">12 follicles detected</p>
-              <p className="text-xs text-neutral-500">Right ovary · image1148 · PRISM-US-seg-v0.2</p>
               <span className="inline-flex w-fit items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-xs text-amber-700">
                 Awaiting clinician review
               </span>
