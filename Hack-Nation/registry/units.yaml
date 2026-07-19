@@ -1,0 +1,178 @@
+# Unit registry. Every conversion here has a unit test in
+# tests/unit/test_unit_conversions.py. Conversions are multiplicative:
+#
+#   canonical_value = source_value * factor
+#
+# Aliases normalize the messy unit strings that appear in real lab reports.
+
+aliases:
+  "ng/dl": "ng/dL"
+  "ng/dL": "ng/dL"
+  "nanograms/deciliter": "ng/dL"
+  "nmol/l": "nmol/L"
+  "nmol/L": "nmol/L"
+  "mg/dl": "mg/dL"
+  "mg/dL": "mg/dL"
+  "mmol/l": "mmol/L"
+  "mmol/L": "mmol/L"
+  "miu/ml": "mIU/mL"
+  "mIU/ml": "mIU/mL"
+  "mIU/mL": "mIU/mL"
+  "iu/l": "IU/L"
+  "IU/L": "IU/L"
+  "uiu/ml": "uIU/mL"
+  "µIU/mL": "uIU/mL"
+  "uIU/mL": "uIU/mL"
+  "pmol/l": "pmol/L"
+  "pg/ml": "pg/mL"
+  "pg/mL": "pg/mL"
+  "ng/ml": "ng/mL"
+  "ng/mL": "ng/mL"
+  "ug/dl": "ug/dL"
+  "µg/dL": "ug/dL"
+  "ug/dL": "ug/dL"
+  "umol/l": "umol/L"
+  "µmol/L": "umol/L"
+  "kg/m2": "kg/m^2"
+  "kg/m^2": "kg/m^2"
+  "%": "percent"
+  "celsius": "degC"
+  "°C": "degC"
+  "fahrenheit": "degF"
+  "°F": "degF"
+
+# Per-analyte conversions. Molar conversions are analyte-specific because they
+# depend on molecular weight, so they are never applied generically.
+unit_conversions:
+  total_testosterone:
+    canonical_unit: "ng/dL"
+    from:
+      "nmol/L": 28.818   # ng/dL per nmol/L (MW 288.4)
+      "ng/dL": 1.0
+      "ng/mL": 100.0
+      "pg/mL": 0.1
+
+  free_testosterone:
+    canonical_unit: "pg/mL"
+    from:
+      "pg/mL": 1.0
+      "pmol/L": 0.2884
+      "ng/dL": 10.0
+
+  dheas:
+    canonical_unit: "ug/dL"
+    from:
+      "ug/dL": 1.0
+      "umol/L": 36.846   # MW 368.5, ug/dL per umol/L
+      "ng/mL": 0.1
+
+  shbg:
+    canonical_unit: "nmol/L"
+    from:
+      "nmol/L": 1.0
+      "ug/mL": 10.79
+
+  fasting_glucose:
+    canonical_unit: "mg/dL"
+    from:
+      "mg/dL": 1.0
+      "mmol/L": 18.016
+
+  cgm_mean_glucose:
+    canonical_unit: "mg/dL"
+    from:
+      "mg/dL": 1.0
+      "mmol/L": 18.016
+
+  hdl_cholesterol:
+    canonical_unit: "mg/dL"
+    from:
+      "mg/dL": 1.0
+      "mmol/L": 38.67
+
+  ldl_cholesterol:
+    canonical_unit: "mg/dL"
+    from:
+      "mg/dL": 1.0
+      "mmol/L": 38.67
+
+  triglycerides:
+    canonical_unit: "mg/dL"
+    from:
+      "mg/dL": 1.0
+      "mmol/L": 88.57
+
+  fasting_insulin:
+    canonical_unit: "uIU/mL"
+    from:
+      "uIU/mL": 1.0
+      "pmol/L": 0.1441
+
+  estradiol:
+    canonical_unit: "pg/mL"
+    from:
+      "pg/mL": 1.0
+      "pmol/L": 0.2724
+
+  progesterone:
+    canonical_unit: "ng/mL"
+    from:
+      "ng/mL": 1.0
+      "nmol/L": 0.3145
+
+  anti_mullerian_hormone:
+    canonical_unit: "ng/mL"
+    from:
+      "ng/mL": 1.0
+      "pmol/L": 0.14
+
+  luteinizing_hormone:
+    canonical_unit: "mIU/mL"
+    from:
+      "mIU/mL": 1.0
+      "IU/L": 1.0
+
+  follicle_stimulating_hormone:
+    canonical_unit: "mIU/mL"
+    from:
+      "mIU/mL": 1.0
+      "IU/L": 1.0
+
+  ovary_volume_ml:
+    canonical_unit: "mL"
+    from:
+      "mL": 1.0
+      "cm^3": 1.0
+
+  weight:
+    canonical_unit: "kg"
+    from:
+      "kg": 1.0
+      "lb": 0.45359237
+
+  height:
+    canonical_unit: "cm"
+    from:
+      "cm": 1.0
+      "m": 100.0
+      "in": 2.54
+
+  waist_circumference:
+    canonical_unit: "cm"
+    from:
+      "cm": 1.0
+      "in": 2.54
+
+  hip_circumference:
+    canonical_unit: "cm"
+    from:
+      "cm": 1.0
+      "in": 2.54
+
+# Affine conversions cannot be expressed as a factor and are handled explicitly.
+affine_conversions:
+  skin_temperature:
+    canonical_unit: "degC"
+    from:
+      "degC": { scale: 1.0, offset: 0.0 }
+      "degF": { scale: 0.5555555556, offset: -17.7777777778 }

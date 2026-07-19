@@ -1,0 +1,47 @@
+# Which encoder implementation the orchestrator loads for a production run.
+#
+# The `implementation` key is the safety-critical field. `trained_unet` requires
+# a real checkpoint and RAISES if one is absent; `heuristic` is the scipy
+# threshold segmenter, which learned nothing and exists for CI and development
+# smoke tests. The orchestrator must never substitute the second for the first
+# on its own -- a caller who asked for a trained model and silently received a
+# heuristic would get plausible numbers backed by no training whatsoever.
+
+version: "0.1.0"
+
+static_clinical_encoder:
+  enabled: true
+  implementation: trained_logistic
+  checkpoint_path: artifacts/encoders/static_clinical
+  model_version: static-clinical-0.1.0
+
+ultrasound_encoder:
+  # Disabled for inference. A checkpoint IS present on disk and loads cleanly,
+  # but the ovary segmentation head is still uncorrected and the branch has no
+  # true end-to-end held-out evaluation -- its reported follicle Dice is
+  # oracle-assisted and is not a deployable patient result. Loading it would
+  # make that score reachable from the API, so the encoder is not built at all.
+  # Re-enable only alongside a validated end-to-end checkpoint; the service
+  # reports this branch as validated_for_inference=false via /models/status.
+  enabled: false
+  implementation: trained_unet        # trained_unet | heuristic
+  checkpoint_path: artifacts/experiments/exp_usova3d_3d_unet/checkpoint_best.pt
+  model_version: ultrasound-usova3d-3d-v1
+  # Setting this true in a production config is a deliberate downgrade and is
+  # reported in the token's warnings and in the report's rule_based components.
+  allow_heuristic_fallback: false
+
+temporal_encoder:
+  enabled: true
+  # Target-specific: each output uses the model that actually won on held-out
+  # participants, not one architecture forced across all four.
+  #   LH  -> LOCF          (MAE 3.265, beats ridge 3.668)
+  #   E3G -> ridge window  (MAE 50.638, beats LOCF 52.090)
+  #   PdG -> LOCF          (MAE 3.255, beats ridge 3.306)
+  #   cycle phase -> logistic (macro F1 0.565, vs majority 0.115)
+  # 'echo_state' and 'trained_gru' are rejected by the registry until they beat
+  # this on the same frozen split.
+  implementation: target_specific_v1
+  checkpoint_path: artifacts/encoders/temporal_state_v1
+  model_version: temporal-state-v1
+  allow_heuristic_fallback: false

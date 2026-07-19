@@ -1,0 +1,27 @@
+[PAGE 1]
+SYNTHETIC REPORT - NOT A REAL PATIENT - GENERATED FOR PRISM TESTING
+SYNTHETIC ENDOCRINE LABORATORY REPORT
+Patient ID: SYNTH-DOC-0019
+Collected: 2023-07-07
+Reported: 2023-07-10
+
+[TABLE]
+Test | Result | Units | Reference Range
+Estradiol | 150 | pmol/L | 110 - 1500
+Progesterone | 2.8 | nmol/L | >30
+[/TABLE]
+
+[PAGE 2]
+SYNTHETIC REPORT - NOT A REAL PATIENT - GENERATED FOR PRISM TESTING
+SYNTHETIC ENDOCRINE LABORATORY REPORT
+Patient ID: SYNTH-DOC-0019
+Collected: 2023-07-07
+Reported: 2023-07-10
+
+[TABLE]
+Test | Result | Units | Reference Range
+Total Testosterone | 1.1 | nmol/L | 0.5 - 2.4
+Free Testosterone | 1.9 | pg/mL | 0.3 - 3.2
+[/TABLE]
+
+End of synthetic report.

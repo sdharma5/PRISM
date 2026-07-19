@@ -1,0 +1,256 @@
+version: 1.2.0
+domains:
+  reproductive:
+    label: Reproductive / ovulatory
+    description: Ovulatory function and menstrual pattern.
+    min_coverage_to_report: 0.34
+    evidence_source: mixed
+    symptom_only_qualifier: reported menstrual-pattern evidence
+    features:
+    - code: cycle_length
+      weight: 1.0
+      direction: 1
+      evidence_class: report
+    - code: cycle_irregularity
+      weight: 1.5
+      direction: 1
+      evidence_class: report
+    - code: menstrual_frequency_per_year
+      weight: 1.0
+      direction: -1
+      evidence_class: report
+    - code: amenorrhea
+      weight: 1.0
+      direction: 1
+      evidence_class: report
+    - code: infertility_history
+      weight: 0.75
+      direction: 1
+      evidence_class: report
+    - code: luteinizing_hormone
+      weight: 0.75
+      direction: 1
+      evidence_class: biochemical
+    - code: follicle_stimulating_hormone
+      weight: 0.5
+      direction: -1
+      evidence_class: biochemical
+    - code: lh_fsh_ratio
+      weight: 1.0
+      direction: 1
+      evidence_class: biochemical
+    - code: progesterone
+      weight: 0.5
+      direction: -1
+      evidence_class: biochemical
+  metabolic:
+    label: Metabolic
+    description: Adiposity, glycemic and lipid burden.
+    min_coverage_to_report: 0.34
+    evidence_source: mixed
+    symptom_only_qualifier: reported metabolic-symptom evidence
+    features:
+    - code: bmi
+      weight: 1.0
+      direction: 1
+      evidence_class: measurement
+    - code: waist_circumference
+      weight: 0.75
+      direction: 1
+      evidence_class: measurement
+    - code: waist_hip_ratio
+      weight: 0.75
+      direction: 1
+      evidence_class: measurement
+    - code: fasting_glucose
+      weight: 1.0
+      direction: 1
+      evidence_class: biochemical
+    - code: fasting_insulin
+      weight: 1.25
+      direction: 1
+      evidence_class: biochemical
+    - code: homa_ir
+      weight: 1.25
+      direction: 1
+      evidence_class: biochemical
+    - code: systolic_blood_pressure
+      weight: 0.5
+      direction: 1
+      evidence_class: measurement
+    - code: diastolic_blood_pressure
+      weight: 0.5
+      direction: 1
+      evidence_class: measurement
+    - code: hdl_cholesterol
+      weight: 0.75
+      direction: -1
+      evidence_class: biochemical
+    - code: triglycerides
+      weight: 0.75
+      direction: 1
+      evidence_class: biochemical
+    - code: weight_gain
+      weight: 0.5
+      direction: 1
+      evidence_class: report
+    - code: skin_darkening
+      weight: 0.25
+      direction: 1
+      evidence_class: report
+  clinical_androgenic_evidence:
+    label: Clinical androgenic evidence
+    description: Cutaneous and self-reported signs of androgen excess. This is clinical evidence only.
+      It is not biochemical hyperandrogenism and must never be reported as a measured androgen level.
+      Assessability does not depend on whether an androgen assay was drawn.
+    min_coverage_to_report: 0.25
+    evidence_source: symptoms
+    features:
+    - code: ferriman_gallwey_score
+      weight: 1.0
+      direction: 1
+      evidence_class: report
+    - code: hirsutism
+      weight: 1.0
+      direction: 1
+      evidence_class: report
+    - code: acne
+      weight: 0.5
+      direction: 1
+      evidence_class: report
+    - code: androgenic_alopecia
+      weight: 0.5
+      direction: 1
+      evidence_class: report
+    - code: hair_growth_face
+      weight: 0.5
+      direction: 1
+      evidence_class: report
+  biochemical_androgenic_evidence:
+    label: Biochemical androgenic evidence
+    description: Measured androgen excess. Unavailable whenever no androgen assay was drawn; it is
+      never inferred from cutaneous signs. Absence here does not reduce the assessability of
+      clinical_androgenic_evidence, which is scored on its own denominator.
+    min_coverage_to_report: 0.25
+    evidence_source: biochemical
+    features:
+    - code: total_testosterone
+      weight: 1.5
+      direction: 1
+      evidence_class: biochemical
+    - code: free_testosterone
+      weight: 1.25
+      direction: 1
+      evidence_class: biochemical
+    - code: dheas
+      weight: 0.75
+      direction: 1
+      evidence_class: biochemical
+    - code: shbg
+      weight: 1.0
+      direction: -1
+      evidence_class: biochemical
+  ovarian:
+    label: Ovarian / LH-AMH
+    description: Follicular reserve and ovarian morphology.
+    min_coverage_to_report: 0.25
+    evidence_source: imaging
+    features:
+    - code: anti_mullerian_hormone
+      weight: 1.5
+      direction: 1
+      evidence_class: biochemical
+    - code: luteinizing_hormone
+      weight: 1.0
+      direction: 1
+      evidence_class: biochemical
+    - code: follicle_stimulating_hormone
+      weight: 0.5
+      direction: -1
+      evidence_class: biochemical
+    - code: follicle_number_per_ovary
+      weight: 1.5
+      direction: 1
+      evidence_class: imaging
+    - code: follicle_count_left
+      weight: 0.75
+      direction: 1
+      evidence_class: imaging
+    - code: follicle_count_right
+      weight: 0.75
+      direction: 1
+      evidence_class: imaging
+    - code: ovary_volume_ml
+      weight: 1.0
+      direction: 1
+      evidence_class: imaging
+  lh_amh_pattern:
+    label: LH-AMH reproductive pattern
+    description: 'The reproductive-axis signature reported in phenotype-based PCOS subtyping: elevated
+      LH, elevated LH/FSH ratio and elevated AMH with comparatively unremarkable adiposity. Scored as
+      a DOMAIN so it can be reported continuously; it is a described pattern, not a validated clinical
+      subtype.'
+    min_coverage_to_report: 0.34
+    evidence_source: mixed
+    features:
+    - code: luteinizing_hormone
+      weight: 1.5
+      direction: 1
+      evidence_class: biochemical
+    - code: lh_fsh_ratio
+      weight: 1.5
+      direction: 1
+      evidence_class: biochemical
+    - code: anti_mullerian_hormone
+      weight: 1.5
+      direction: 1
+      evidence_class: biochemical
+    - code: follicle_stimulating_hormone
+      weight: 0.5
+      direction: -1
+      evidence_class: biochemical
+    - code: bmi
+      weight: 0.75
+      direction: -1
+      evidence_class: anthropometric
+  symptom_burden:
+    label: Symptom burden
+    description: Patient-reported symptom load. Entirely REPORT evidence with no assay component, so it
+      is never sufficient on its own for any diagnostic axis; it describes how much the patient is experiencing,
+      not what is causing it.
+    min_coverage_to_report: 0.34
+    evidence_source: symptoms
+    symptom_only_qualifier: patient-reported symptom burden
+    features:
+    - code: acne
+      weight: 1.0
+      direction: 1
+      evidence_class: report
+    - code: hair_growth_face
+      weight: 1.0
+      direction: 1
+      evidence_class: report
+    - code: androgenic_alopecia
+      weight: 1.0
+      direction: 1
+      evidence_class: report
+    - code: skin_darkening
+      weight: 1.0
+      direction: 1
+      evidence_class: report
+    - code: weight_gain
+      weight: 1.0
+      direction: 1
+      evidence_class: report
+    - code: fatigue
+      weight: 0.75
+      direction: 1
+      evidence_class: report
+    - code: pelvic_pain
+      weight: 0.75
+      direction: 1
+      evidence_class: report
+    - code: mood_change
+      weight: 0.5
+      direction: 1
+      evidence_class: report

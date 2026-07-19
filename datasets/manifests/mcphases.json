@@ -1,0 +1,27 @@
+{
+  "dataset": "mcphases",
+  "source": "physionet.org/content/mcphases/1.0.0/",
+  "license": "PhysioNet Restricted Health Data License 1.5.0",
+  "version": "1.0.0",
+  "status": "downloaded_and_verified",
+  "n_subjects": 42,
+  "n_hormone_selfreport_rows": 5659,
+  "key_hormones": [
+    "LH",
+    "estrogen",
+    "PDG"
+  ],
+  "key_files": {
+    "subject-info.csv": "participant demographics (birth_year, gender, ethnicity, education, menarche age)",
+    "hormones_and_selfreport.csv": "daily LH/estrogen/PDG + menstrual phase + self-reported symptoms",
+    "heart_rate.csv": "minute-level HR from wearable (1.9 GB)",
+    "sleep.csv": "sleep staging (53 MB)",
+    "glucose.csv": "CGM glucose readings (24 MB)",
+    "wrist_temperature.csv": "wrist temp timeseries (303 MB)"
+  },
+  "files_sha256": {
+    "subject-info.csv": "0eac68ca0b188d3280d19fd461cc44133edde0b4a6530362f9610039509420f7",
+    "hormones_and_selfreport.csv": "d1c35ede822bd91cc64b8cec9e4fb325dfc0488982730f4ce774ee2f8f3a2ab5"
+  },
+  "root": "/weka/scratch/uchitra1/users/a_s/mit_hackathon/datasets/mcphases/raw"
+}

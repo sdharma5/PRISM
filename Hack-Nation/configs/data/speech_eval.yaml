@@ -1,0 +1,37 @@
+# Scripted speech evaluation corpus.
+#
+# Everything here points at synthetic, in-repository data. The dataset id is
+# registered in registry/datasets.yaml, which prohibits any real-world
+# performance claim built on these numbers.
+
+dataset_id: prism_speech_eval_synthetic
+corpus_path: tests/fixtures/speech_eval/scripted_corpus.yaml
+jsonl_path: examples/speech_example/scripted_corpus.jsonl
+
+patient_id: SYNTH-SPEECH-001
+
+transcription:
+  # 'scripted' needs no model, no GPU and no network. 'whisper' is available but
+  # is never used in the test path.
+  adapter: scripted
+  words_per_second: 2.5
+  language: en
+
+extraction:
+  adapter: rule_based
+  lexicon_path: ingestion/speech/lexicon.yaml
+
+confirmation:
+  # Simulated reviewer behaviour for the evaluation run. Real confirmation is
+  # always a human action.
+  reviewer_id: eval_harness
+  auto_confirm: true
+
+audio:
+  # No audio ships with the corpus; the scripted adapter substitutes a nominal
+  # quality so the token's quality_score is reproducible.
+  assumed_quality_score: 0.9
+
+output:
+  metrics_path: artifacts/metrics/speech_extraction/metrics.json
+  token_path: artifacts/metrics/speech_extraction/symptom_token.json

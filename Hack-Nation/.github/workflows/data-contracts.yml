@@ -1,0 +1,70 @@
+name: Data contracts
+
+# A schema or registry change is a scientific change, not a refactor. This
+# workflow makes that explicit and blocks silent drift.
+
+on:
+  pull_request:
+    paths:
+      - "schemas/**"
+      - "registry/**"
+      - "ingestion/**"
+      - ".github/workflows/data-contracts.yml"
+  workflow_dispatch:
+
+jobs:
+  contracts:
+    name: Validate contracts and versions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install --upgrade pip
+      - run: pip install -e ".[dev]"
+
+      - name: Pydantic models import and validate
+        run: python -c "import schemas; print(f'{len(schemas.__all__)} contracts loaded')"
+
+      - name: Registry validation
+        run: python scripts/validate_registry.py
+
+      - name: Contract test suite
+        run: pytest tests/contract -v
+
+      - name: JSON Schema export is generatable
+        run: |
+          python - <<'PY'
+          import json
+          from schemas import HormonalHealthEvent, ModalityToken, PatientSnapshot
+          for model in (HormonalHealthEvent, ModalityToken, PatientSnapshot):
+              json.dumps(model.model_json_schema())
+          print("JSON Schema export OK")
+          PY
+
+      - name: Schema version bumped when a schema changed
+        run: |
+          set -euo pipefail
+          BASE="origin/${{ github.base_ref }}"
+          if git diff --quiet "$BASE" -- schemas/; then
+            echo "No schema change."
+            exit 0
+          fi
+          echo "schemas/ changed — requiring a schema_versions.yaml update."
+          if git diff --quiet "$BASE" -- registry/schema_versions.yaml; then
+            echo "::error::schemas/ changed but registry/schema_versions.yaml did not."
+            echo "Bump the version, state backward compatibility, and add a CHANGELOG entry."
+            exit 1
+          fi
+          if git diff --quiet "$BASE" -- CHANGELOG.md; then
+            echo "::error::Schema change without a CHANGELOG entry."
+            exit 1
+          fi
+          echo "Version ledger and changelog updated."
+
+      - name: Unit conversions are tested
+        run: pytest tests/unit/test_unit_conversions.py -v

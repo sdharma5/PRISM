@@ -1,0 +1,34 @@
+# Document-extraction evaluation on the synthetic report corpus.
+#
+# Runs offline against committed plain-text reports with page markers. The PDF
+# backend (PdfPlumberParser) is never exercised here on purpose: pinning the
+# metric to a text fixture keeps it reproducible when the PDF library changes.
+
+experiment_id: exp_document_extraction
+dataset_id: prism_document_eval_synthetic
+allowed_use: document_extraction_evaluation
+
+fixtures_dir: tests/fixtures/documents
+ground_truth: ground_truth.yaml
+
+parser:
+  adapter: text_fixture
+
+lab_extraction:
+  synonyms_path: ingestion/documents/test_synonyms.yaml
+  # Values that cannot be grounded to a page span are dropped and counted, never
+  # stored. See ingestion/documents/lab_extractor.py.
+  drop_ungrounded: true
+
+report_extraction:
+  enabled: true
+
+# Document extractions are machine reads awaiting clinician confirmation. The
+# evaluation token includes them so coverage can be measured, and says so in its
+# warnings. A modelling run must not set this.
+allow_unconfirmed: true
+token_patient_id: SYNTH-DOC-lab_0001
+
+output:
+  metrics_path: artifacts/metrics/document_extraction/metrics.json
+  token_path: artifacts/metrics/document_extraction/document_token.json

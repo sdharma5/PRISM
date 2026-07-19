@@ -1,0 +1,58 @@
+[
+  {
+    "document_id": "lab_0001",
+    "canonical_code": "total_testosterone",
+    "source_test_name": "Total Testosterone",
+    "value_source": 2.7,
+    "unit_source": "nmol/L",
+    "value_canonical": 77.8086,
+    "unit_canonical": "ng/dL",
+    "reference_low": 0.5,
+    "reference_high": 2.4,
+    "collected_date": "2024-03-14",
+    "reported_date": "2024-03-16",
+    "page": 1
+  },
+  {
+    "document_id": "lab_0001",
+    "canonical_code": "shbg",
+    "source_test_name": "SHBG",
+    "value_source": 28.0,
+    "unit_source": "nmol/L",
+    "value_canonical": 28.0,
+    "unit_canonical": "nmol/L",
+    "reference_low": 18.0,
+    "reference_high": 114.0,
+    "collected_date": "2024-03-14",
+    "reported_date": "2024-03-16",
+    "page": 1
+  },
+  {
+    "document_id": "lab_0001",
+    "canonical_code": "luteinizing_hormone",
+    "source_test_name": "LH",
+    "value_source": 12.4,
+    "unit_source": "IU/L",
+    "value_canonical": 12.4,
+    "unit_canonical": "mIU/mL",
+    "reference_low": 1.9,
+    "reference_high": 12.5,
+    "collected_date": "2024-03-14",
+    "reported_date": "2024-03-16",
+    "page": 1
+  },
+  {
+    "document_id": "lab_0001",
+    "canonical_code": "follicle_stimulating_hormone",
+    "source_test_name": "FSH",
+    "value_source": 5.1,
+    "unit_source": "IU/L",
+    "value_canonical": 5.1,
+    "unit_canonical": "mIU/mL",
+    "reference_low": 2.5,
+    "reference_high": 10.2,
+    "collected_date": "2024-03-14",
+    "reported_date": "2024-03-16",
+    "page": 1
+  }
+]

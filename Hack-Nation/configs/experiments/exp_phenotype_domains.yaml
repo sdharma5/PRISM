@@ -1,0 +1,47 @@
+# Phenotype-domain composites plus the masked-autoencoder embedding.
+#
+# The output is a set of research phenotype profiles exported as
+# static_clinical ModalityTokens. No label is used to build them.
+
+defaults:
+  - ../base.yaml
+  - ../models/tabular_autoencoder.yaml
+
+experiment_id: exp_phenotype_domains
+description: >-
+  Coverage-aware domain composites and a learned latent embedding, exported as
+  static_clinical modality tokens. Research profiles only.
+
+data:
+  dataset_id: pcos_tabular_public
+  dataset_version: kottarathil-2020
+  # Wide canonical cohort from scripts/build_cohort_table.py, relative to the
+  # resolved data root ($PRISM_DATA_ROOT). Remove to use the synthetic fixture.
+  path: pcos_tabular/cohort_wide.csv
+  synthetic:
+    n: 300
+    seed: 0
+    missing_rate: 0.25
+
+features:
+  add_missingness_indicators: false
+
+split:
+  strategy: repeated_stratified_kfold
+  n_splits: 4
+  n_repeats: 1
+  seeds: [0]
+
+phenotype:
+  export_tokens: true
+  max_tokens_written: 25
+  include_embedding: true
+
+model:
+  params:
+    latent_dim: 12
+    epochs: 150
+
+output:
+  root: artifacts/experiments
+  timestamped: true

@@ -1,0 +1,13 @@
+# Masked/denoising tabular autoencoder. Unsupervised: it never sees the label.
+model:
+  name: tabular_masked_autoencoder
+  class: models.tabular.masked_autoencoder.MaskedTabularAutoencoder
+  params:
+    latent_dim: 16
+    hidden_dim: 64
+    mask_rate_range: [0.1, 0.3]
+    epochs: 200
+    batch_size: 32
+    learning_rate: 0.003
+    weight_decay: 0.0001
+    activation: tanh

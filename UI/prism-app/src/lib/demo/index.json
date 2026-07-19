@@ -1,0 +1,23 @@
+[
+  {
+    "display_name": "Sarah",
+    "evidence_level": "moderate",
+    "key": "sarah",
+    "score_available": true,
+    "summary": "Irregular cycles and reported androgenic symptoms, with no androgen assay drawn. Two Rotterdam axes are met; the third is not assessable."
+  },
+  {
+    "display_name": "Priya",
+    "evidence_level": "low",
+    "key": "control",
+    "score_available": true,
+    "summary": "Regular cycles, no androgenic signs, unremarkable labs. The low-evidence path: little is met, and little is missing."
+  },
+  {
+    "display_name": "Maya",
+    "evidence_level": "moderate",
+    "key": "maya",
+    "score_available": true,
+    "summary": "Metabolic features with a full lab panel including androgens. Biochemical evidence is available here, unlike Sarah."
+  }
+]

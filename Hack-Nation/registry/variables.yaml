@@ -1,0 +1,539 @@
+# Canonical variable registry.
+#
+# Source columns map ONTO these codes. A source column with no mapping must be
+# listed in the adapter's excluded_source_columns with a reason — silent drops
+# are a validation failure.
+
+variables:
+  # --- Reproductive / ovulatory -----------------------------------------
+  cycle_length:
+    canonical_name: "Cycle length"
+    type: continuous
+    unit: day
+    canonical_unit: day
+    domain: [reproductive]
+    valid_range: { min: 1, max: 365 }
+    description: "Days from the first day of one menses to the first day of the next."
+
+  menses_duration:
+    canonical_name: "Menses duration"
+    type: continuous
+    unit: day
+    canonical_unit: day
+    domain: [reproductive]
+    valid_range: { min: 1, max: 14 }
+    # Distinct from cycle_length and easily confused with it. The Kottarathil
+    # 2020 column "Cycle length(days)" is this variable, not cycle_length --
+    # its values centre near 5 days, not near 28. That column fed the static
+    # encoder under the wrong canonical code; the fitted slot is now bridged
+    # back here by models.tabular.encoder.LEGACY_FEATURE_ALIASES.
+    description: "Days of menstrual bleeding within one cycle."
+
+  cycle_regularity:
+    canonical_name: "Cycle regularity"
+    type: categorical
+    categories: [regular, irregular, absent, unknown]
+    domain: [reproductive]
+    description: "Patient- or clinician-reported regularity of menstrual cycles."
+
+  cycle_irregularity:
+    canonical_name: "Cycle irregularity present"
+    type: binary
+    domain: [reproductive]
+    description: "Binary assertion that cycles are irregular."
+
+  menstrual_frequency_per_year:
+    canonical_name: "Menstrual frequency per year"
+    type: continuous
+    unit: count_per_year
+    canonical_unit: count_per_year
+    domain: [reproductive]
+    valid_range: { min: 0, max: 24 }
+
+  amenorrhea:
+    canonical_name: "Amenorrhea"
+    type: binary
+    domain: [reproductive]
+
+  infertility_history:
+    canonical_name: "Infertility history"
+    type: binary
+    domain: [reproductive]
+
+  pregnancy_history_count:
+    canonical_name: "Number of pregnancies"
+    type: integer
+    unit: count
+    canonical_unit: count
+    domain: [reproductive]
+    valid_range: { min: 0, max: 30 }
+
+  luteinizing_hormone:
+    canonical_name: "Luteinizing hormone"
+    type: continuous
+    unit: "mIU/mL"
+    canonical_unit: "mIU/mL"
+    domain: [reproductive, ovarian]
+    valid_range: { min: 0, max: 200 }
+
+  follicle_stimulating_hormone:
+    canonical_name: "Follicle stimulating hormone"
+    type: continuous
+    unit: "mIU/mL"
+    canonical_unit: "mIU/mL"
+    domain: [reproductive, ovarian]
+    valid_range: { min: 0, max: 200 }
+
+  lh_fsh_ratio:
+    canonical_name: "LH to FSH ratio"
+    type: continuous
+    unit: ratio
+    canonical_unit: ratio
+    domain: [reproductive, ovarian]
+    valid_range: { min: 0, max: 50 }
+
+  progesterone:
+    canonical_name: "Progesterone"
+    type: continuous
+    unit: "ng/mL"
+    canonical_unit: "ng/mL"
+    domain: [reproductive]
+    valid_range: { min: 0, max: 100 }
+
+  estradiol:
+    canonical_name: "Estradiol"
+    type: continuous
+    unit: "pg/mL"
+    canonical_unit: "pg/mL"
+    domain: [reproductive]
+    valid_range: { min: 0, max: 5000 }
+
+  # --- Metabolic ---------------------------------------------------------
+  bmi:
+    canonical_name: "Body mass index"
+    type: continuous
+    unit: "kg/m^2"
+    canonical_unit: "kg/m^2"
+    domain: [metabolic, anthropometric]
+    valid_range: { min: 8, max: 90 }
+
+  weight:
+    canonical_name: "Body weight"
+    type: continuous
+    unit: kg
+    canonical_unit: kg
+    domain: [anthropometric]
+    valid_range: { min: 20, max: 400 }
+
+  height:
+    canonical_name: "Height"
+    type: continuous
+    unit: cm
+    canonical_unit: cm
+    domain: [anthropometric]
+    valid_range: { min: 100, max: 250 }
+
+  waist_circumference:
+    canonical_name: "Waist circumference"
+    type: continuous
+    unit: cm
+    canonical_unit: cm
+    domain: [metabolic, anthropometric]
+    valid_range: { min: 30, max: 250 }
+
+  hip_circumference:
+    canonical_name: "Hip circumference"
+    type: continuous
+    unit: cm
+    canonical_unit: cm
+    domain: [metabolic, anthropometric]
+    valid_range: { min: 30, max: 250 }
+
+  waist_hip_ratio:
+    canonical_name: "Waist to hip ratio"
+    type: continuous
+    unit: ratio
+    canonical_unit: ratio
+    domain: [metabolic]
+    valid_range: { min: 0.3, max: 2.0 }
+
+  fasting_glucose:
+    canonical_name: "Fasting plasma glucose"
+    type: continuous
+    unit: "mg/dL"
+    canonical_unit: "mg/dL"
+    domain: [metabolic]
+    valid_range: { min: 20, max: 600 }
+
+  fasting_insulin:
+    canonical_name: "Fasting insulin"
+    type: continuous
+    unit: "uIU/mL"
+    canonical_unit: "uIU/mL"
+    domain: [metabolic]
+    valid_range: { min: 0, max: 300 }
+
+  homa_ir:
+    canonical_name: "HOMA-IR"
+    type: continuous
+    unit: index
+    canonical_unit: index
+    domain: [metabolic]
+    valid_range: { min: 0, max: 60 }
+
+  systolic_blood_pressure:
+    canonical_name: "Systolic blood pressure"
+    type: continuous
+    unit: mmHg
+    canonical_unit: mmHg
+    domain: [metabolic]
+    valid_range: { min: 50, max: 300 }
+
+  diastolic_blood_pressure:
+    canonical_name: "Diastolic blood pressure"
+    type: continuous
+    unit: mmHg
+    canonical_unit: mmHg
+    domain: [metabolic]
+    valid_range: { min: 20, max: 200 }
+
+  hdl_cholesterol:
+    canonical_name: "HDL cholesterol"
+    type: continuous
+    unit: "mg/dL"
+    canonical_unit: "mg/dL"
+    domain: [metabolic]
+    valid_range: { min: 5, max: 200 }
+
+  ldl_cholesterol:
+    canonical_name: "LDL cholesterol"
+    type: continuous
+    unit: "mg/dL"
+    canonical_unit: "mg/dL"
+    domain: [metabolic]
+    valid_range: { min: 5, max: 500 }
+
+  triglycerides:
+    canonical_name: "Triglycerides"
+    type: continuous
+    unit: "mg/dL"
+    canonical_unit: "mg/dL"
+    domain: [metabolic]
+    valid_range: { min: 10, max: 2000 }
+
+  # --- Androgenic --------------------------------------------------------
+  total_testosterone:
+    canonical_name: "Total testosterone"
+    type: continuous
+    unit: "ng/dL"
+    canonical_unit: "ng/dL"
+    domain: [biochemical_androgenic_evidence]
+    valid_range: { min: 0, max: 1000 }
+
+  free_testosterone:
+    canonical_name: "Free testosterone"
+    type: continuous
+    unit: "pg/mL"
+    canonical_unit: "pg/mL"
+    domain: [biochemical_androgenic_evidence]
+    valid_range: { min: 0, max: 100 }
+
+  dheas:
+    canonical_name: "DHEA sulfate"
+    type: continuous
+    unit: "ug/dL"
+    canonical_unit: "ug/dL"
+    domain: [biochemical_androgenic_evidence]
+    valid_range: { min: 0, max: 1500 }
+
+  shbg:
+    canonical_name: "Sex hormone binding globulin"
+    type: continuous
+    unit: "nmol/L"
+    canonical_unit: "nmol/L"
+    domain: [biochemical_androgenic_evidence]
+    valid_range: { min: 0, max: 400 }
+
+  hirsutism:
+    canonical_name: "Hirsutism"
+    type: binary
+    domain: [clinical_androgenic_evidence]
+    description: "Symptom-level report. Not equivalent to biochemical hyperandrogenism."
+
+  ferriman_gallwey_score:
+    canonical_name: "Ferriman-Gallwey score"
+    type: integer
+    unit: score
+    canonical_unit: score
+    domain: [clinical_androgenic_evidence]
+    valid_range: { min: 0, max: 36 }
+
+  acne:
+    canonical_name: "Acne"
+    type: binary
+    domain: [clinical_androgenic_evidence]
+
+  androgenic_alopecia:
+    canonical_name: "Hair loss / androgenic alopecia"
+    type: binary
+    domain: [clinical_androgenic_evidence]
+
+  # Acanthosis nigricans. Its primary interpretation is insulin resistance, so
+  # it sits in the metabolic domain; reading it as a sign of androgen excess
+  # would let a marker of hyperinsulinaemia inflate an androgenic score.
+  skin_darkening:
+    canonical_name: "Skin darkening"
+    type: binary
+    domain: [metabolic]
+
+  # --- Ovarian morphology ------------------------------------------------
+  anti_mullerian_hormone:
+    canonical_name: "Anti-Mullerian hormone"
+    type: continuous
+    unit: "ng/mL"
+    canonical_unit: "ng/mL"
+    domain: [ovarian]
+    valid_range: { min: 0, max: 50 }
+
+  follicle_number_per_ovary:
+    canonical_name: "Follicle number per ovary"
+    type: integer
+    unit: count
+    canonical_unit: count
+    domain: [ovarian_morphology]
+    valid_range: { min: 0, max: 100 }
+    description: >-
+      A complete per-ovary count. Only a full volumetric acquisition (or a
+      genuinely complete sweep) supports this. Never populate it from a single
+      2D cross-section — see follicle_number_per_section.
+
+  follicle_number_per_section:
+    canonical_name: "Follicle number per cross-section"
+    type: integer
+    unit: count
+    canonical_unit: count
+    domain: [ovarian_morphology]
+    valid_range: { min: 0, max: 60 }
+    description: >-
+      Follicles visible in a single 2D cross-section. This is what routine 2D
+      transvaginal imaging supports, and the 2023 international guideline
+      permits it precisely because complete per-ovary counting is often
+      unreliable. It is NOT interchangeable with follicle_number_per_ovary and
+      must never be substituted for it.
+
+  estimated_follicle_number_per_ovary:
+    canonical_name: "Estimated follicle number per ovary (cine tracking)"
+    type: integer
+    unit: count
+    canonical_unit: count
+    domain: [ovarian_morphology]
+    valid_range: { min: 0, max: 100 }
+    description: >-
+      Unique follicles estimated by tracking across cine-loop frames. An
+      estimate carrying tracking error (fragmentation and merging), not a
+      census. Report tracking coverage alongside it.
+
+  ovary_area_mm2:
+    canonical_name: "Ovarian cross-sectional area"
+    type: continuous
+    unit: "mm^2"
+    canonical_unit: "mm^2"
+    domain: [ovarian_morphology]
+    valid_range: { min: 0, max: 20000 }
+    description: >-
+      Area of the ovary in one 2D cross-section. Reported instead of volume
+      when the acquisition is a single frame, since volume needs three
+      dimensions.
+
+  follicle_count_left:
+    canonical_name: "Follicle count, left ovary"
+    type: integer
+    unit: count
+    canonical_unit: count
+    domain: [ovarian_morphology]
+    valid_range: { min: 0, max: 100 }
+
+  follicle_count_right:
+    canonical_name: "Follicle count, right ovary"
+    type: integer
+    unit: count
+    canonical_unit: count
+    domain: [ovarian_morphology]
+    valid_range: { min: 0, max: 100 }
+
+  ovary_volume_ml:
+    canonical_name: "Ovarian volume"
+    type: continuous
+    unit: mL
+    canonical_unit: mL
+    domain: [ovarian_morphology]
+    valid_range: { min: 0, max: 200 }
+
+  ovarian_morphology_evidence:
+    canonical_name: "Polycystic ovarian morphology evidence"
+    type: categorical
+    categories: [present, absent, indeterminate, not_assessed]
+    domain: [ovarian_morphology]
+
+  large_or_uncertain_cystic_structure:
+    canonical_name: "Large or uncertain cystic structure present"
+    type: binary
+    domain: [ovarian_morphology]
+    description: "Flag only. Carries no diagnostic interpretation."
+
+  # --- Longitudinal / device --------------------------------------------
+  urinary_lh:
+    canonical_name: "Urinary luteinizing hormone"
+    type: continuous
+    unit: "mIU/mL"
+    canonical_unit: "mIU/mL"
+    domain: [reproductive, longitudinal]
+
+  e3g:
+    canonical_name: "Estrone-3-glucuronide"
+    type: continuous
+    unit: "ng/mL"
+    canonical_unit: "ng/mL"
+    domain: [reproductive, longitudinal]
+
+  pdg:
+    canonical_name: "Pregnanediol glucuronide"
+    type: continuous
+    unit: "ug/mL"
+    canonical_unit: "ug/mL"
+    domain: [reproductive, longitudinal]
+
+  menstrual_flow:
+    canonical_name: "Menstrual flow"
+    type: ordinal
+    domain: [reproductive, longitudinal]
+    valid_range: { min: 0, max: 4 }
+
+  cycle_phase:
+    canonical_name: "Cycle phase"
+    type: categorical
+    categories: [menstrual, follicular, peri_ovulatory, luteal, unknown]
+    domain: [reproductive, longitudinal]
+
+  resting_heart_rate:
+    canonical_name: "Resting heart rate"
+    type: continuous
+    unit: bpm
+    canonical_unit: bpm
+    domain: [wearable]
+    valid_range: { min: 25, max: 220 }
+
+  hrv_rmssd:
+    canonical_name: "Heart rate variability (RMSSD)"
+    type: continuous
+    unit: ms
+    canonical_unit: ms
+    domain: [wearable]
+    valid_range: { min: 0, max: 400 }
+
+  sleep_duration_hours:
+    canonical_name: "Sleep duration"
+    type: continuous
+    unit: hour
+    canonical_unit: hour
+    domain: [wearable]
+    valid_range: { min: 0, max: 24 }
+
+  skin_temperature:
+    canonical_name: "Skin temperature"
+    type: continuous
+    unit: degC
+    canonical_unit: degC
+    domain: [wearable]
+    valid_range: { min: 25, max: 45 }
+
+  activity_steps:
+    canonical_name: "Daily step count"
+    type: integer
+    unit: count
+    canonical_unit: count
+    domain: [wearable]
+    valid_range: { min: 0, max: 100000 }
+
+  cgm_mean_glucose:
+    canonical_name: "CGM mean glucose"
+    type: continuous
+    unit: "mg/dL"
+    canonical_unit: "mg/dL"
+    domain: [cgm, metabolic]
+    valid_range: { min: 20, max: 600 }
+
+  cgm_glucose_sd:
+    canonical_name: "CGM glucose standard deviation"
+    type: continuous
+    unit: "mg/dL"
+    canonical_unit: "mg/dL"
+    domain: [cgm, metabolic]
+    valid_range: { min: 0, max: 300 }
+
+  cgm_time_in_range:
+    canonical_name: "CGM time in range"
+    type: continuous
+    unit: fraction
+    canonical_unit: fraction
+    domain: [cgm, metabolic]
+    valid_range: { min: 0, max: 1 }
+
+  # --- Symptoms and history ---------------------------------------------
+  fatigue:
+    canonical_name: "Fatigue"
+    type: binary
+    domain: [symptom]
+
+  mood_change:
+    canonical_name: "Mood change"
+    type: binary
+    domain: [symptom]
+
+  pelvic_pain:
+    canonical_name: "Pelvic pain"
+    type: binary
+    domain: [symptom]
+
+  weight_gain:
+    canonical_name: "Weight gain"
+    type: binary
+    domain: [symptom, metabolic]
+
+  hair_growth_face:
+    canonical_name: "Facial hair growth"
+    type: binary
+    domain: [clinical_androgenic_evidence]
+
+  family_history_pcos:
+    canonical_name: "Family history of PCOS"
+    type: binary
+    domain: [history]
+    description: "A relative's diagnosis. Must never be recorded as the patient's."
+
+  family_history_diabetes:
+    canonical_name: "Family history of diabetes"
+    type: binary
+    domain: [history]
+
+  medication_current:
+    canonical_name: "Current medication"
+    type: text
+    domain: [medication]
+
+  age:
+    canonical_name: "Age"
+    type: continuous
+    unit: year
+    canonical_unit: year
+    domain: [demographic]
+    valid_range: { min: 0, max: 120 }
+
+  # --- Labels ------------------------------------------------------------
+  pcos_binary:
+    canonical_name: "PCOS status (dataset label)"
+    type: binary
+    domain: [label]
+    description: >-
+      Dataset-provided label used to validate the pipeline. It is not a
+      re-adjudicated clinical diagnosis.

@@ -1,0 +1,15 @@
+[PAGE 1]
+SYNTHETIC REPORT - NOT A REAL PATIENT - GENERATED FOR PRISM TESTING
+SYNTHETIC ENDOCRINE LABORATORY REPORT
+Patient ID: SYNTH-DOC-0005
+Collected: 2024-02-19
+Reported: 2024-02-20
+
+[TABLE]
+Test | Result | Units | Reference Range
+Total Testosterone | 1.8 | nmol/L | 0.5 - 2.4
+DHEA-S | 9.4 | umol/L | 1 - 11.7
+SHBG | 42 | nmol/L | 18 - 114
+[/TABLE]
+
+End of synthetic report.

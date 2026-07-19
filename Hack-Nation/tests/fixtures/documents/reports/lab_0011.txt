@@ -1,0 +1,15 @@
+[PAGE 1]
+SYNTHETIC REPORT - NOT A REAL PATIENT - GENERATED FOR PRISM TESTING
+SYNTHETIC ENDOCRINE LABORATORY REPORT
+Patient ID: SYNTH-DOC-0011
+Collected: 2024-03-02
+Reported: 2024-03-04
+
+[TABLE]
+Test | Result | Units | Reference Range
+DHEA-S | 6.1 | umol/L | 1 - 11.7
+Fasting Glucose | 88 | mg/dL | 70 - 99
+Triglycerides | 2.4 | mmol/L | <1.7
+[/TABLE]
+
+End of synthetic report.

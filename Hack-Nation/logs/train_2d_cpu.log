@@ -1,0 +1,28 @@
+device: cpu
+split: reusing usova3d_volume_split_v1.json
+loading 12 train + 2 val volumes (annotator r1)
+model: 672,114 parameters
+
+training 40 epochs x 48 steps, patch (128, 128)
+
+epoch   1  loss 1.7292  ovary 0.7601  follicle 0.7890  *best
+epoch   2  loss 1.5558  ovary 0.8665  follicle 0.8397  *best
+epoch   3  loss 1.4779  ovary 0.8786  follicle 0.8414  *best
+epoch   4  loss 1.3300  ovary 0.8678  follicle 0.9276  *best
+epoch   5  loss 1.3430  ovary 0.8502  follicle 0.8668
+epoch   6  loss 1.2572  ovary 0.8699  follicle 0.8932
+epoch   7  loss 1.1963  ovary 0.9051  follicle 0.8864
+epoch   8  loss 1.1165  ovary 0.8940  follicle 0.9196
+epoch   9  loss 1.0510  ovary 0.8887  follicle 0.9205
+epoch  10  loss 1.0653  ovary 0.8716  follicle 0.8709
+epoch  11  loss 1.0626  ovary 0.8774  follicle 0.8896
+epoch  12  loss 0.9930  ovary 0.8785  follicle 0.8652
+epoch  13  loss 0.9970  ovary 0.8967  follicle 0.7370
+epoch  14  loss 1.0313  ovary 0.8556  follicle 0.8975
+epoch  15  loss 0.9492  ovary 0.8726  follicle 0.8831
+epoch  16  loss 0.9293  ovary 0.8445  follicle 0.8548
+
+early stop: no val_follicle_dice improvement in 12 epochs
+
+best val_follicle_dice: 0.9276
+checkpoint -> /weka/scratch/uchitra1/users/a_s/mit_hackathon/Hack-Nation/artifacts/experiments/exp_usova3d_2d_unet/checkpoint_best.pt

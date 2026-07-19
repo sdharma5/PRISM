@@ -1,0 +1,127 @@
+name: CI
+
+# Runs entirely on committed synthetic fixtures. No clinical dataset is ever
+# available to CI, by design — if a test needs private data, it is the wrong test.
+#
+# Uses actions/setup-python + pip rather than a third-party installer action:
+# this exact install path is verifiable locally in a clean venv, and CI that
+# cannot be reproduced on a laptop is CI nobody can debug.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHONHASHSEED: "0"
+
+jobs:
+  quality:
+    name: Format, lint, types
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install --upgrade pip
+      - run: pip install -e ".[dev]"
+      - name: Format check
+        run: ruff format --check .
+      - name: Lint
+        run: ruff check .
+      - name: Type check
+        run: mypy schemas ingestion models training evaluation
+        continue-on-error: true   # advisory until annotations are complete
+
+  test:
+    name: Tests (py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - run: python -m pip install --upgrade pip
+      - run: pip install -e ".[dev]"
+      - name: Unit and contract tests
+        run: pytest tests/unit tests/contract
+      - name: Integration tests
+        run: pytest tests/integration
+
+  minimal-deps:
+    name: Tests without optional extras
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      # Every module must degrade to a documented fallback when torch, xgboost,
+      # pydicom, whisper and pdfplumber are absent. This job keeps that true.
+      - run: python -m pip install --upgrade pip
+      - run: pip install -e ".[dev]"
+      - name: Confirm optional deps really are absent
+        run: |
+          python - <<'PY'
+          import importlib
+          for mod in ("torch", "xgboost", "pydicom", "pdfplumber"):
+              try:
+                  importlib.import_module(mod)
+              except ImportError:
+                  print(f"{mod}: absent (expected)")
+              else:
+                  raise SystemExit(f"{mod} is installed — this job must run without it.")
+          PY
+      - name: Run suite on fallbacks
+        run: pytest tests/unit tests/contract tests/smoke
+
+  registry:
+    name: Registry validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install --upgrade pip
+      - run: pip install -e ".[dev]"
+      - run: python scripts/validate_registry.py
+
+  no-clinical-data:
+    name: No clinical data committed
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reject data files that should never be in git
+        run: |
+          set -euo pipefail
+          if git ls-files | grep -E '^(data|raw|private)/' ; then
+            echo "::error::Files committed under a raw data path."
+            exit 1
+          fi
+          # uv.lock is a legitimate large text file; exclude it from the size gate.
+          if git ls-files | grep -v '^uv.lock$' | while read -r f; do
+               [ -f "$f" ] && [ "$(stat -c%s "$f")" -gt 2097152 ] && echo "$f"
+             done | grep . ; then
+            echo "::error::File larger than 2MB committed — clinical data must never be in git."
+            exit 1
+          fi
+          if git ls-files | grep -iE '\.(dcm|dicom|nii|nii\.gz|wav|mp3|m4a)$' ; then
+            echo "::error::Raw imaging or audio committed."
+            exit 1
+          fi
+          echo "No clinical data detected."

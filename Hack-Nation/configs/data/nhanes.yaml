@@ -1,0 +1,50 @@
+# NHANES 2021-2023 data configuration.
+#
+# Public CDC download, not committed to this repository. NHANES is used here as a
+# POPULATION REFERENCE and a unit-harmonization stress test — never as a PCOS
+# cohort. It carries no PCOS ascertainment, so any prevalence or case/control
+# claim built on it would be inventing a label the survey does not contain. The
+# registry enforces this: the adapter fails closed on a prohibited use.
+dataset_id: nhanes_2021_2023
+dataset_version: "2021-2023"
+
+# Canonical data location keys. `data.root` is the directory holding the
+# downloaded XPT/CSV components; `data.path` is an optional specific file,
+# resolved relative to `data.root` when it is not absolute.
+#
+# Precedence for both, highest first:
+#   --data-root flag  >  $PRISM_DATA_ROOT  >  the values below
+#
+# Nothing auto-loads .env; export the variable or source the file. See
+# .env.example.
+data:
+  root: null
+  path: null
+  id_column: SEQN
+
+# Declared in registry/datasets.yaml; the adapter fails closed on prohibited use.
+allowed_uses:
+  - population_reference
+  - unit_harmonization
+  - external_stress_testing
+  - missingness_analysis
+
+# NHANES is a complex multistage probability sample. Unweighted means from it are
+# not population estimates, so the design variables travel with the data.
+survey_design:
+  weight_column: WTMEC2YR
+  strata_column: SDMVSTRA
+  psu_column: SDMVPSU
+  # 2021-2023 is a single 2-year cycle; combining cycles requires rescaling the
+  # weights, which is why the cycle count is explicit rather than assumed.
+  n_cycles_combined: 1
+
+missingness:
+  # NHANES codes refusals and "don't know" as sentinel numerics (7, 9, 77, 99,
+  # 777, 999, ...) per variable. Reading them as values is the classic NHANES
+  # error and silently shifts every mean, so they are mapped to missing on load.
+  forbid_silent_zero_fill: true
+  treat_refused_dontknow_as_missing: true
+
+output:
+  dir: artifacts/ingestion/nhanes

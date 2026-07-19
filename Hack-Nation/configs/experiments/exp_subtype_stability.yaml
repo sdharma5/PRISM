@@ -1,0 +1,83 @@
+# Experiment: exploratory phenotype discovery + stability stress-testing.
+#
+# Run with:
+#   python scripts/discover_phenotypes.py     --config configs/experiments/exp_subtype_stability.yaml
+#   python scripts/run_stability_analysis.py  --config configs/experiments/exp_subtype_stability.yaml
+#
+# Defaults to synthetic data so the pipeline runs end to end on a fresh clone.
+# When `data.path` points at a real file the scripts use it; when it does not
+# exist they fall back to synthetic and stamp that fact into every artifact, so a
+# synthetic run can never be mistaken for a result.
+
+experiment_id: exp_subtype_stability
+description: >-
+  Discover data-driven profiles among PCOS-positive training participants, choose
+  K on measured evidence, and quantify how much of the grouping survives
+  resampling, ablation and plausible measurement noise. Discovered groups are
+  exploratory patterns within one cohort and are never validated clinical
+  subtypes.
+
+data:
+  # Canonical data location keys. Set `path` to a real CSV to use it; the scripts
+  # fall back to synthetic when it is null or absent. Overridden by --data-root
+  # and $PRISM_DATA_ROOT.
+  root: null
+  # Wide canonical cohort from scripts/build_cohort_table.py, relative to the
+  # resolved data root ($PRISM_DATA_ROOT).
+  path: pcos_tabular/cohort_wide.csv
+  id_column: patient_id
+  label_column: pcos_binary
+  # Clustering is restricted to PCOS-positive participants. Clustering a mixed
+  # case/control cohort would make the dominant axis case-vs-control, which would
+  # then be misread as a phenotype axis.
+  pcos_positive_only: true
+  features: null   # null = every numeric column
+  synthetic:
+    n_per_group: 45
+    noise: 0.35
+    missing_rate: 0.05
+    seed: 0
+
+clustering:
+  representations: [raw_standardized, domain_scores, feature_subset]
+  feature_subset:
+    name: core_endocrine_metabolic
+    features:
+      - bmi
+      - waist_circumference
+      - fasting_insulin
+      - homa_ir
+      - total_testosterone
+      - shbg
+      - luteinizing_hormone
+      - anti_mullerian_hormone
+  embedding_path: null
+  algorithms: [kmeans, gaussian_mixture, agglomerative, consensus]
+  k_values: [2, 3, 4, 5, 6]
+  seeds: [0, 1, 2]
+  consensus_resamples: 25
+
+stability:
+  n_bootstrap: 25
+  n_noise_replicates: 5
+
+# Feature -> modality, for leave-one-modality-out ablation. The realistic missing
+# pattern in this domain is losing a whole acquisition channel, not one variable.
+modalities:
+  bmi: anthropometry
+  waist_circumference: anthropometry
+  fasting_insulin: laboratory_metabolic
+  homa_ir: laboratory_metabolic
+  total_testosterone: laboratory_endocrine
+  shbg: laboratory_endocrine
+  luteinizing_hormone: laboratory_endocrine
+  anti_mullerian_hormone: laboratory_endocrine
+
+output:
+  artifact_dir: artifacts/experiments/exp_subtype_stability
+
+limitations:
+  - Single cohort; no external replication of the discovered groups.
+  - No exclusion of other causes of oligo-anovulation or androgen excess.
+  - Biochemical thresholds are assay-specific placeholders.
+  - Synthetic fallback data is geometry, not biology.

@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+    font-feature-settings: "tnum" 1, "kern" 1;
+  }
+
+  body {
+    background-color: white;
+    color: #0a0a0a;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@media print {
+  body { background: white !important; color: black !important; }
+  body::before { display: none !important; }
+  .print\:hidden { display: none !important; }
+  .print\:block { display: block !important; }
+  @page { margin: 0.75in; size: letter; }
+}
+
+@layer utilities {
+  .font-tabular {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+  }
+  .gradient-prism {
+    background: linear-gradient(135deg, #6d28d9 0%, #4f46e5 100%);
+  }
+  .glass-dark {
+    @apply bg-white/[0.04] backdrop-blur-xl border border-white/[0.07];
+  }
+}

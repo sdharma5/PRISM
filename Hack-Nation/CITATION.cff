@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+title: "PRISM: Personalized Reproductive and Integrated Systemic Model"
+message: "If you use this software, please cite it and the underlying datasets under their own terms."
+type: software
+authors:
+  - name: "PRISM contributors"
+repository-code: "https://github.com/AngelaNing1/Hack-Nation"
+license: Apache-2.0
+version: 0.1.0
+date-released: "2026-07-18"
+keywords:
+  - hormonal health
+  - polycystic ovary syndrome
+  - multimodal machine learning
+  - provenance
+  - reproducible research
+abstract: >-
+  PRISM is a modular, condition-agnostic pipeline that converts tabular clinical
+  records, spoken symptom narration, clinical documents, ovarian ultrasound, and
+  longitudinal hormone/wearable/CGM data into standardized, traceable evidence,
+  and trains separate reusable representations for stable clinical phenotype,
+  time-varying hormonal state, ovarian morphology, confirmed symptom events, and
+  parsed document events. It is a research artifact and is not validated for
+  clinical use.

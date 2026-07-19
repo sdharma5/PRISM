@@ -1,0 +1,1 @@
+self.__NEXT_FONT_MANIFEST="{\"pages\":{},\"app\":{\"/weka/scratch/uchitra1/users/a_s/mit_hackathon/UI/prism-app/src/app/layout\":[\"static/media/636a5ac981f94f8b-s.p.woff2\"]},\"appUsingSizeAdjust\":true,\"pagesUsingSizeAdjust\":false}"

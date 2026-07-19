@@ -1,0 +1,78 @@
+# 2D slice model — deployment-oriented counterpart to the 3D scientific baseline.
+# Slices are derived from the SAME volume-level split; a volume never
+# contributes slices to more than one split.
+
+experiment_id: exp_usova3d_2d_unet
+description: 'Dual-head 2D U-Net on slices extracted from USOVA3D volumes. Deployment-oriented:
+  routine PCOS ultrasound is 2D. Slices are derived AFTER the volume-level split,
+  so no volume contributes slices to more than one split.'
+data:
+  dataset_id: usova3d
+  root: ../datasets/usova3d/raw
+  annotator: r1
+  split_manifest: artifacts/splits/usova3d_volume_split_v1.json
+  cache_volumes: true
+split:
+  seed: 42
+  grouping_key: volume_id
+  n_validation: 2
+  n_test: 2
+model:
+  dims: 2
+  in_channels: 1
+  base_channels: 16
+  depth: 3
+patch:
+  size:
+  - 128
+  - 128
+  foreground_fraction: 0.5
+  sliding_window_overlap: 0.25
+loss:
+  lambda_ovary: 1.0
+  lambda_follicle: 1.0
+  lambda_outside: 0.1
+  dice_weight: 1.0
+  bce_weight: 1.0
+  focal_gamma: 2.0
+  focal_alpha: 0.75
+  use_ground_truth_ovary_anchor: true
+augmentation:
+  enabled: true
+  flip_axes:
+  - 1
+  max_rotation_degrees: 10
+  max_translation_voxels: 4
+  scale_range:
+  - 0.9
+  - 1.1
+  intensity_scale_range:
+  - 0.9
+  - 1.1
+  gamma_range:
+  - 0.8
+  - 1.25
+  speckle_noise_std: 0.05
+  elastic_deformation: false
+training:
+  epochs: 40
+  batch_size: 8
+  learning_rate: 0.001
+  weight_decay: 1.0e-05
+  seed: 42
+  early_stopping_patience: 12
+  monitor: val_follicle_dice
+  monitor_mode: max
+  mixed_precision: auto
+  num_workers: 0
+inference:
+  ovary_threshold: 0.5
+  follicle_threshold: 0.5
+evaluation:
+  report_both_annotators: true
+  per_volume_metrics: true
+  physical_metrics_require_calibrated_spacing: true
+output:
+  dir: artifacts/experiments/exp_usova3d_2d_unet
+  save_overlays: true
+  save_predictions: true

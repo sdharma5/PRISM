@@ -1,0 +1,70 @@
+# Ultrasound morphology extraction experiment.
+experiment_id: exp_ultrasound
+description: >-
+  Descriptive ovarian morphology extraction with quality gating, evaluated on all
+  three acquisition pathways. 2D transvaginal imaging is the primary input: a
+  single frame yields a per-section follicle count and cross-sectional area, a
+  cine loop adds an ESTIMATED per-ovary count via cross-frame tracking, and a 3D
+  volume (optional enhanced mode) is the only input yielding a true per-ovary
+  count and an ovarian volume. Research artifact only; every output is
+  model_generated and requires clinician confirmation.
+
+data: configs/data/ultrasound.yaml
+model: configs/models/ultrasound_segmentation.yaml
+
+seeds: [0, 1, 2]
+output_dir: artifacts/experiments/exp_ultrasound
+
+evaluation:
+  # Counts are scored PER METHOD and never pooled. per_section_count_mae and
+  # unique_track_count_mae measure different physical quantities on different
+  # supports; their average would describe nothing, and would hide a model that
+  # reads frames well but tracks badly.
+  metrics:
+    # --- 2D single frame (primary) ---
+    - per_section_count_mae
+    - per_section_count_exact_match
+    - ovary_area_mape
+    - frame_ovary_dice
+    - frame_follicle_dice
+    # --- 2D cine loop (primary) ---
+    - unique_track_count_mae
+    - unique_track_count_bias
+    - tracking_fragmentation_rate   # one follicle split across several tracks
+    - tracking_merge_rate           # several follicles collapsed into one track
+    - mean_tracking_coverage
+    - mean_tracking_confidence
+    - cine_representative_per_section_count_mae
+    # --- 3D volume (optional enhanced mode) ---
+    - per_ovary_count_mae
+    - volume_mae_ml
+    - volume_ovary_dice
+    - volume_follicle_dice
+    # --- shared safety metrics ---
+    - follicle_voxels_outside_ovary
+    - quality_gate_sensitivity
+    - quality_gate_unsafe_acceptance_rate
+  instance_iou_threshold: 0.3
+  diameter_tolerance_mm: 1.0
+  # Frame-span overlap is not enough to identify a track: several follicles are
+  # visible simultaneously in any real sweep. Matching is by per-frame centroid.
+  track_match_max_distance_mm: 5.0
+
+limitations:
+  - "Validated only on synthetic phantoms; no real ovarian ultrasound is used here."
+  - "Follicle counts depend on acquisition route and are not comparable across routes."
+  - "All outputs are model_generated and are not clinically confirmed."
+  - "No pathological interpretation of any structure is offered or permitted."
+  - >-
+    A per-section count and a per-ovary count are different quantities. The
+    method travels with every number and they must never be averaged together.
+  - >-
+    The cine unique-follicle count is an ESTIMATE. Tracking cannot detect a probe
+    sweep that re-images the same plane (over-counts) or a sweep that does not
+    traverse the whole ovary (under-counts); neither is visible in
+    tracking_coverage, which measures frame coverage only.
+  - >-
+    2D pretraining slices derived from USOVA3D volumes are legitimate for
+    learning appearance but are NOT an independent 2D test set. A resliced plane
+    differs from a live B-mode frame in speckle texture and resolution
+    anisotropy.

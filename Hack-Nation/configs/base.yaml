@@ -1,0 +1,51 @@
+# Base configuration shared by every experiment.
+#
+# Experiment configs list this file under `defaults:` and override only what they
+# change, so a run's provenance is one short diff rather than a full copy.
+
+project: prism-hormonal-health
+seed: 42
+
+data:
+  # When `path` is null the pipeline falls back to the synthetic fixture cohort,
+  # which is what makes every experiment runnable in a fresh checkout.
+  path: null
+  format: csv
+  dataset_id: pcos_tabular_public
+  dataset_version: "unknown"
+  id_column: patient_id
+  label_column: pcos_binary
+  group_column: null
+  synthetic:
+    n: 300
+    seed: 0
+    missing_rate: 0.2
+
+features:
+  include_groups: null            # null = every registered group
+  add_missingness_indicators: true
+  per_status_indicators: false
+  min_observed_fraction: 0.05
+
+preprocessing:
+  numeric_impute_strategy: median
+  scale: true
+  add_indicator: true
+
+split:
+  strategy: repeated_stratified_kfold
+  n_splits: 5
+  n_repeats: 1
+  seeds: [0, 1, 2]
+  holdout_fraction: 0.0
+
+evaluation:
+  threshold: 0.5
+  calibration_bins: 10
+  subgroup_columns: []
+
+output:
+  root: artifacts/experiments
+  timestamped: true
+  save_checkpoints: false
+  predictions_format: csv

@@ -1,0 +1,439 @@
+# PRISM speech symptom lexicon.
+#
+# WHY A LEXICON RATHER THAN A MODEL: the default extractor must be auditable and
+# fully deterministic. A clinician reviewing a flagged extraction has to be able
+# to point at the exact line that produced it. An LLM extractor may be plugged in
+# later (see LlmExtractor), but it is held to the same evidence-span contract.
+#
+# CONTRACT FOR EVERY CONCEPT ENTRY
+#   code:        canonical variable code from registry/variables.yaml, or null
+#                when the registry has no patient-level variable for it. A null
+#                code is NEVER invented: the mention is recorded as unmapped.
+#   family_code: the code to use when the mention is attributed to a relative.
+#                A concept with no family_code can never become a family event.
+#   value:       the value asserted by a non-negated mention (default true).
+#   phrases:     surface forms, matched as whole-token sequences (case-insensitive).
+#
+# WHY code IS NULL FOR pcos AND diabetes: `pcos_binary` is a *dataset-provided
+# label*, not a patient self-report, and there is no patient diabetes-diagnosis
+# variable in the registry. Mapping "I have PCOS" onto the label column would
+# contaminate every evaluation that uses that label as ground truth. So the
+# mention is surfaced as unmapped, while "my mother has PCOS" maps cleanly onto
+# family_history_pcos.
+
+version: "1.0.0"
+
+config:
+  # ConText-style scope windows, in tokens, searched backwards from the match
+  # and forward from the cue, both clipped at a clause terminator.
+  negation_scope_tokens: 6
+  uncertainty_scope_tokens: 8
+  historical_scope_tokens: 10
+  family_scope_tokens: 12
+
+# Thresholds for deciding whether a NUMERIC cycle statement asserts irregularity.
+#
+# WHY THESE LIVE HERE: patients very often express irregularity numerically and
+# never say the word — "my periods have been between 45 and 70 days apart" is a
+# textbook irregularity report containing no lexical cue at all. Deciding that
+# from a number is a clinical judgement, so the cutoffs are configuration a
+# clinician can review and change, not constants buried in Python.
+#
+# SOURCE OF THE NUMBERS: the FIGO / Fraser et al. normal-menstrual-cycle
+# definition — cycle length 24-38 days with intercycle variability of 9 days or
+# less. The older and still widely used research cutoff for oligomenorrhoea is
+# >35 days (Rotterdam / NIH PCOS criteria); 38 is the more conservative modern
+# bound and is chosen deliberately so that borderline cycles are NOT flagged as
+# irregular on the machine's own authority.
+#
+# HOW THEY ARE APPLIED (see RuleBasedExtractor._range_asserts_irregularity):
+# a stated RANGE asserts irregularity when its spread exceeds
+# max_normal_variability_days, or either endpoint falls outside
+# [normal_cycle_min_days, normal_cycle_max_days].
+#
+# A SINGLE point value NEVER asserts irregularity, however long it is. A patient
+# whose cycle is reliably 45 days has oligomenorrhoea, not irregularity — those
+# are different findings, and the registry has no oligomenorrhoea variable to
+# put the first one in. Inventing an irregularity claim to fill that gap would
+# be the pipeline asserting something the patient did not say.
+cycle_thresholds:
+  normal_cycle_min_days: 24
+  normal_cycle_max_days: 38
+  max_normal_variability_days: 9
+
+cues:
+  # Negation triggers. "not sure" is deliberately absent: it is uncertainty, not
+  # negation, and is caught by pseudo_negation below before negation is applied.
+  negation:
+    - "no"
+    - "not"
+    - "never"
+    - "none"
+    - "nothing"
+    - "denies"
+    - "denied"
+    - "without"
+    - "dont"
+    - "doesnt"
+    - "didnt"
+    - "havent"
+    - "hasnt"
+    - "isnt"
+    - "arent"
+    - "wasnt"
+    - "negative for"
+    - "free of"
+    - "ruled out"
+    - "no history of"
+    - "no evidence of"
+
+  # Phrases that contain a negation token but do not negate a finding.
+  pseudo_negation:
+    - "not sure"
+    - "not certain"
+    - "no idea"
+    - "not only"
+    - "no doubt"
+    - "not really sure"
+
+  # A negation or uncertainty scope stops at these words.
+  terminators:
+    - "but"
+    - "however"
+    - "although"
+    - "though"
+    - "except"
+    - "yet"
+    - "aside from"
+    - "other than"
+    - "besides"
+
+  uncertainty:
+    - "i think"
+    - "i guess"
+    - "maybe"
+    - "possibly"
+    - "probably"
+    - "might"
+    - "might be"
+    - "not sure"
+    - "not certain"
+    - "kind of"
+    - "sort of"
+    - "i suppose"
+    - "or so"
+    - "hard to say"
+    - "cant remember"
+    - "i believe"
+
+  historical:
+    - "used to"
+    - "back then"
+    - "years ago"
+    - "in high school"
+    - "in college"
+    - "as a teenager"
+    - "previously"
+    - "in the past"
+    - "before i"
+    - "no longer"
+    - "history of"
+    - "at the time"
+    - "growing up"
+
+  # Cues that keep a mention in the present tense even when a historical cue
+  # appears elsewhere in the clause ("I've had acne since high school").
+  still_present:
+    - "still"
+    - "since"
+    - "currently"
+    - "right now"
+    - "these days"
+    - "ongoing"
+
+  # Relation surface form -> normalized relation label.
+  family_relations:
+    mother: mother
+    mom: mother
+    mum: mother
+    sister: sister
+    aunt: aunt
+    grandmother: grandmother
+    grandma: grandmother
+    cousin: cousin
+    father: father
+    dad: father
+    brother: brother
+    daughter: daughter
+    "my mothers side": mother
+    "my fathers side": father
+
+  # First-person markers that pull attribution back to the patient.
+  self_reference:
+    - "i"
+    - "ive"
+    - "im"
+    - "my"
+    - "me"
+    - "myself"
+
+  severity:
+    mild: ["mild", "slight", "a little", "a bit", "minor"]
+    moderate: ["moderate", "noticeable", "quite"]
+    severe: ["severe", "really bad", "terrible", "awful", "very bad", "debilitating", "extreme"]
+
+  medication_action:
+    start: ["started", "started on", "began", "begun", "put me on", "starting", "went on"]
+    stop: ["stopped", "came off", "quit", "discontinued", "went off", "stopped taking"]
+    continue: ["still taking", "still on", "currently taking", "have been taking", "am on", "taking"]
+    change: ["switched", "changed to", "swapped", "increased", "decreased"]
+
+concepts:
+  - code: cycle_irregularity
+    family_code: null
+    value: true
+    category: reproductive
+    phrases:
+      - "irregular period"
+      - "irregular periods"
+      - "irregular cycle"
+      - "irregular cycles"
+      - "periods are irregular"
+      - "periods have been irregular"
+      - "cycles are irregular"
+      - "cycle is irregular"
+      - "periods are all over the place"
+      - "periods all over the place"
+      - "unpredictable periods"
+      - "periods are unpredictable"
+      - "never know when my period"
+      - "cycles vary a lot"
+      # Skipping is how irregularity is most often described in plain speech.
+      - "skip months"
+      - "skip a month"
+      - "skip months at a time"
+      - "skip periods"
+      - "skipping periods"
+      - "miss periods"
+      - "missing periods"
+      - "sometimes i skip"
+
+  - code: cycle_regularity
+    family_code: null
+    value: "regular"
+    category: reproductive
+    phrases:
+      - "regular period"
+      - "regular periods"
+      - "periods are regular"
+      - "cycles are regular"
+      - "period comes like clockwork"
+      - "like clockwork"
+
+  - code: amenorrhea
+    family_code: null
+    value: true
+    category: reproductive
+    phrases:
+      - "havent had a period"
+      - "have not had a period"
+      - "no period at all"
+      - "periods stopped"
+      - "period stopped completely"
+      - "missed my period for"
+      - "amenorrhea"
+      - "go months without a period"
+      - "months without a period"
+      - "gone months without a period"
+
+  - code: infertility_history
+    family_code: null
+    value: true
+    category: reproductive
+    phrases:
+      - "trouble getting pregnant"
+      - "trouble conceiving"
+      - "difficulty conceiving"
+      - "cant get pregnant"
+      - "havent been able to conceive"
+      - "without success"
+      - "no luck getting pregnant"
+      - "fertility treatment"
+      - "infertility"
+
+  - code: hirsutism
+    family_code: null
+    value: true
+    category: androgenic_symptom
+    phrases:
+      - "hirsutism"
+      - "excess hair"
+      - "excessive hair growth"
+      - "unwanted hair growth"
+      - "coarse hair growth"
+      - "dark hair growth"
+
+  - code: hair_growth_face
+    family_code: null
+    value: true
+    category: androgenic_symptom
+    phrases:
+      - "facial hair"
+      - "hair on my chin"
+      - "hair on my face"
+      - "chin hairs"
+      - "hairs on my chin"
+      - "hair on my upper lip"
+      - "growing a beard"
+      # Grooming behaviour is a proxy, but an entailing one: a patient who
+      # shaves or waxes her chin is reporting that there is hair there. The
+      # frequency ("every day") is captured separately as severity/duration.
+      - "shave my chin"
+      - "shave my face"
+      - "shaving my chin"
+      - "pluck my chin"
+      - "plucking my chin"
+      - "tweeze my chin"
+      - "wax my chin"
+      - "wax my upper lip"
+      - "waxing my upper lip"
+      - "threading my upper lip"
+      - "laser on my chin"
+      - "electrolysis on my chin"
+      - "hair removal cream on my face"
+      - "hair removal cream on my chin"
+      - "hair removal on my face"
+
+  - code: acne
+    family_code: null
+    value: true
+    category: androgenic_symptom
+    phrases:
+      - "acne"
+      - "breakouts"
+      - "breaking out"
+      - "pimples"
+      - "spots on my face"
+      - "cystic acne"
+      - "skin breaking out"
+
+  - code: androgenic_alopecia
+    family_code: null
+    value: true
+    category: androgenic_symptom
+    phrases:
+      - "hair loss"
+      - "losing hair"
+      - "hair thinning"
+      - "thinning hair"
+      - "hair falling out"
+      - "hair is falling out"
+      - "bald patch"
+      - "receding hairline"
+
+  - code: skin_darkening
+    family_code: null
+    value: true
+    category: androgenic_symptom
+    phrases:
+      - "skin darkening"
+      - "dark patches"
+      - "dark patches on my neck"
+      - "darkening around my neck"
+      - "acanthosis"
+      - "velvety patches"
+
+  - code: weight_gain
+    family_code: null
+    value: true
+    category: metabolic
+    phrases:
+      - "weight gain"
+      - "gained weight"
+      - "gaining weight"
+      - "put on weight"
+      - "putting on weight"
+      - "weight has gone up"
+
+  - code: fatigue
+    family_code: null
+    value: true
+    category: symptom
+    phrases:
+      - "fatigue"
+      - "exhausted"
+      - "so tired"
+      - "always tired"
+      - "no energy"
+      - "wiped out"
+      - "tired all the time"
+
+  - code: mood_change
+    family_code: null
+    value: true
+    category: symptom
+    phrases:
+      - "mood swings"
+      - "mood changes"
+      - "irritable"
+      - "low mood"
+      - "feeling down"
+      - "anxious"
+      - "anxiety"
+
+  - code: pelvic_pain
+    family_code: null
+    value: true
+    category: symptom
+    phrases:
+      - "pelvic pain"
+      - "pain in my pelvis"
+      - "cramping"
+      - "cramps"
+      - "lower abdominal pain"
+      - "pain in my lower belly"
+
+  # Diagnosis-level concepts. `code: null` means "no patient-level canonical
+  # variable exists" — see the header. Only the family_code path can produce an
+  # event, which is exactly the guarantee that family history never becomes the
+  # patient's diagnosis.
+  - code: null
+    family_code: family_history_pcos
+    value: true
+    category: diagnosis
+    unmapped_reason: >-
+      pcos_binary is a dataset-provided label, not a patient self-report; a
+      self-reported PCOS diagnosis has no canonical patient variable.
+    phrases:
+      - "pcos"
+      - "polycystic ovary syndrome"
+      - "polycystic ovaries syndrome"
+
+  - code: null
+    family_code: family_history_diabetes
+    value: true
+    category: diagnosis
+    unmapped_reason: >-
+      the registry has no patient-level diabetes-diagnosis variable; only the
+      family-history variable exists.
+    phrases:
+      - "diabetes"
+      - "type 2 diabetes"
+      - "type two diabetes"
+      - "diabetic"
+
+medications:
+  - name: metformin
+    phrases: ["metformin", "glucophage"]
+  - name: spironolactone
+    phrases: ["spironolactone", "spiro", "aldactone"]
+  - name: combined_oral_contraceptive
+    phrases: ["birth control", "birth control pill", "the pill", "oral contraceptive", "combined pill"]
+  - name: letrozole
+    phrases: ["letrozole", "femara"]
+  - name: inositol
+    phrases: ["inositol", "myo inositol"]
+  - name: clomiphene
+    phrases: ["clomiphene", "clomid"]
+  - name: levothyroxine
+    phrases: ["levothyroxine", "synthroid"]

@@ -1,0 +1,32 @@
+# Dynamic hormonal-state experiment.
+experiment_id: exp_dynamic_state
+description: >-
+  Estimation of a participant's CURRENT hormonal state (cycle phase, hormone
+  levels, next-day symptoms) from the preceding 14-30 participant-days. The
+  output is a state estimate, never a subtype or diagnosis.
+
+data: configs/data/mcphases.yaml
+model: configs/models/temporal_gru.yaml
+
+seeds: [0, 1, 2]
+output_dir: artifacts/experiments/exp_dynamic_state
+
+split:
+  # Days from one participant are NEVER split across train and test. A random
+  # day-level split would put day 40 in train and day 41 in test — same window,
+  # same cycle, same body — and report interpolation as generalisation.
+  strategy: grouped_kfold
+  group_by: participant_id
+  test_fraction: 0.3
+
+evaluation:
+  hormones: [mae, rmse, spearman, peak_timing_error, interval_coverage]
+  cycle_state: [macro_f1, balanced_accuracy, per_participant_accuracy, calibration_error]
+  symptoms: [auprc, f1, brier]
+  ablations: [full, no_wearable, no_cgm, no_symptoms, sparse_hormones]
+
+limitations:
+  - "Trained and evaluated on synthetic longitudinal data in this repository."
+  - "State estimate only: not a subtype, phenotype, diagnosis, or clinical assessment."
+  - "Not validated for fertility or contraceptive decision-making."
+  - "Missingness is non-ignorable; sparse windows yield weak estimates, reported via input_coverage."

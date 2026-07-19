@@ -1,0 +1,9 @@
+{
+  "/intake/page": "app/intake/page.js",
+  "/overview/page": "app/overview/page.js",
+  "/timeline/page": "app/timeline/page.js",
+  "/recommendations/page": "app/recommendations/page.js",
+  "/care/page": "app/care/page.js",
+  "/api/npi/route": "app/api/npi/route.js",
+  "/api/recommendations/route": "app/api/recommendations/route.js"
+}

@@ -1,0 +1,15 @@
+[PAGE 1]
+SYNTHETIC REPORT - NOT A REAL PATIENT - GENERATED FOR PRISM TESTING
+SYNTHETIC ENDOCRINE LABORATORY REPORT
+Patient ID: SYNTH-DOC-0015
+Collected: 2023-08-14
+Reported: 2023-08-16
+
+[TABLE]
+Test | Result | Units | Reference Range
+Total Testosterone | 55 | ng/dL | 15 - 70
+DHEA-S | 288 | ug/dL | 35 - 430
+AMH | 31 | pmol/L | 7 - 60
+[/TABLE]
+
+End of synthetic report.

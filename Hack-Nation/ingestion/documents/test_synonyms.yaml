@@ -1,0 +1,105 @@
+# Laboratory test-name synonyms.
+#
+# WHY A CURATED TABLE RATHER THAN FUZZY MATCHING: "free T4" and "free T" differ
+# by one character and are different analytes on different scales. A fuzzy
+# matcher that gets that wrong produces a plausible number in the wrong variable,
+# which is the single most dangerous failure mode in document extraction. So
+# mapping is exact-after-normalization, and an unrecognized test name is reported
+# as unmapped rather than guessed.
+#
+# Lookup keys are normalized by ingestion.documents.normalization.normalize_test_name:
+# lowercased, punctuation collapsed to single spaces. Add the normalized form.
+
+version: "1.0.0"
+
+synonyms:
+  # --- Androgens ---------------------------------------------------------
+  total testosterone: total_testosterone
+  testosterone total: total_testosterone
+  testosterone: total_testosterone
+  testosterone serum: total_testosterone
+  t total: total_testosterone
+
+  free testosterone: free_testosterone
+  testosterone free: free_testosterone
+  free t: free_testosterone
+
+  dheas: dheas
+  dhea s: dheas
+  dhea sulfate: dheas
+  dhea sulphate: dheas
+  dehydroepiandrosterone sulfate: dheas
+
+  shbg: shbg
+  sex hormone binding globulin: shbg
+
+  # --- Gonadotropins and ovarian reserve ---------------------------------
+  lh: luteinizing_hormone
+  luteinizing hormone: luteinizing_hormone
+  luteinising hormone: luteinizing_hormone
+
+  fsh: follicle_stimulating_hormone
+  follicle stimulating hormone: follicle_stimulating_hormone
+  follicle stimulating hormone fsh: follicle_stimulating_hormone
+
+  amh: anti_mullerian_hormone
+  anti mullerian hormone: anti_mullerian_hormone
+  anti mullerian hormone amh: anti_mullerian_hormone
+  antimullerian hormone: anti_mullerian_hormone
+
+  estradiol: estradiol
+  oestradiol: estradiol
+  e2: estradiol
+
+  progesterone: progesterone
+  serum progesterone: progesterone
+
+  # --- Metabolic ---------------------------------------------------------
+  fasting glucose: fasting_glucose
+  glucose fasting: fasting_glucose
+  fasting plasma glucose: fasting_glucose
+  glucose: fasting_glucose
+
+  fasting insulin: fasting_insulin
+  insulin fasting: fasting_insulin
+  insulin: fasting_insulin
+
+  homa ir: homa_ir
+  homa index: homa_ir
+
+  hdl: hdl_cholesterol
+  hdl cholesterol: hdl_cholesterol
+  cholesterol hdl: hdl_cholesterol
+
+  ldl: ldl_cholesterol
+  ldl cholesterol: ldl_cholesterol
+  cholesterol ldl: ldl_cholesterol
+
+  triglycerides: triglycerides
+  trigs: triglycerides
+
+  # --- Anthropometric ----------------------------------------------------
+  weight: weight
+  body weight: weight
+  height: height
+  bmi: bmi
+  body mass index: bmi
+  waist circumference: waist_circumference
+  hip circumference: hip_circumference
+
+# Tests that appear in real panels but have no canonical variable. Listed so the
+# extractor reports them as *known-unmapped* rather than as a parse failure, and
+# so an auditor can see the panel was read in full.
+known_unmapped:
+  tsh: "no thyroid variable in the registry"
+  free t4: "no thyroid variable in the registry"
+  prolactin: "no prolactin variable in the registry"
+  cortisol: "no cortisol variable in the registry"
+  17 ohp: "no 17-hydroxyprogesterone variable in the registry"
+  17 hydroxyprogesterone: "no 17-hydroxyprogesterone variable in the registry"
+  hba1c: "no HbA1c variable in the registry"
+  total cholesterol: "no total-cholesterol variable in the registry"
+  vitamin d: "no vitamin D variable in the registry"
+  ferritin: "no ferritin variable in the registry"
+  haemoglobin: "no haemoglobin variable in the registry"
+  hemoglobin: "no haemoglobin variable in the registry"

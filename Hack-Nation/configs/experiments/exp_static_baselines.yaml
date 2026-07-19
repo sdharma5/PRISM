@@ -1,0 +1,72 @@
+# Static-feature baselines on the tabular cohort.
+#
+# Runs the floor baselines alongside the real models on identical folds, because
+# a model is only interesting relative to majority-class and one-rule predictors.
+
+defaults:
+  - ../base.yaml
+
+experiment_id: exp_static_baselines
+description: >-
+  Repeated stratified cross-validation of static-feature models for a
+  research phenotype profile. Not a diagnostic evaluation.
+
+data:
+  dataset_id: pcos_tabular_public
+  dataset_version: kottarathil-2020
+  # Wide canonical cohort built by scripts/build_cohort_table.py from the
+  # ingested events. Relative to the resolved data root ($PRISM_DATA_ROOT).
+  # Remove this key to fall back to the synthetic fixture cohort.
+  path: pcos_tabular/cohort_wide.csv
+  synthetic:
+    n: 300
+    seed: 0
+    missing_rate: 0.2
+
+split:
+  strategy: repeated_stratified_kfold
+  n_splits: 5
+  n_repeats: 1
+  seeds: [0, 1]
+
+models:
+  - name: baseline_majority_class
+    class: models.tabular.baselines.MajorityClassBaseline
+    params: {}
+  - name: baseline_single_feature_rule
+    class: models.tabular.baselines.SingleFeatureRuleBaseline
+    params:
+      objective: balanced_accuracy
+  - name: static_logistic
+    class: models.tabular.logistic.LogisticStaticModel
+    params:
+      C: 1.0
+      class_weight: balanced
+      threshold: 0.5
+  - name: static_random_forest
+    class: models.tabular.logistic.RandomForestStaticModel
+    params:
+      n_estimators: 200
+      min_samples_leaf: 2
+  - name: static_xgboost
+    class: models.tabular.xgboost.XGBoostStaticModel
+    params:
+      n_estimators: 200
+      max_depth: 3
+      learning_rate: 0.05
+      allow_fallback: true
+  - name: static_mlp
+    class: models.tabular.mlp.MLPStaticModel
+    params:
+      hidden_layer_sizes: [64, 32]
+      alpha: 0.001
+      max_iter: 400
+
+evaluation:
+  threshold: 0.5
+  calibration_bins: 10
+  subgroup_columns: []
+
+output:
+  root: artifacts/experiments
+  timestamped: true

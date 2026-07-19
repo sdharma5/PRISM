@@ -1,0 +1,31 @@
+# Speech-extraction evaluation on the scripted synthetic corpus.
+#
+# The scripted transcription adapter holds the transcript fixed, so every error
+# measured here is an extraction error rather than an ASR error. WER is reported
+# but is 0.0 by construction until a real ASR engine is substituted.
+
+experiment_id: exp_speech_extraction
+dataset_id: prism_speech_eval_synthetic
+allowed_use: speech_extraction_evaluation
+
+data_config: configs/data/speech_eval.yaml
+
+pipeline:
+  transcription_adapter: scripted   # 'whisper' requires the optional [speech] extra
+  extraction_adapter: rule_based    # 'llm' is a documented stub and calls no API
+  confirmation: required
+
+# Interpretation guardrails recorded next to the numbers, because a metric
+# without them invites exactly the claim the dataset registry prohibits.
+reporting:
+  prohibited_claims:
+    - clinical_speech_validation
+    - real_world_performance_estimate
+  notes: >-
+    Scripted utterances were written within the lexicon's surface-form coverage.
+    High scores are a regression guard on negation, temporality and attribution
+    logic, not evidence of real-world extraction quality.
+
+output:
+  metrics_path: artifacts/metrics/speech_extraction/metrics.json
+  token_path: artifacts/metrics/speech_extraction/symptom_token.json

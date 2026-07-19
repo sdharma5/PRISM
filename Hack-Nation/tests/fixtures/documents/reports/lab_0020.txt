@@ -1,0 +1,12 @@
+[PAGE 1]
+SYNTHETIC REPORT - NOT A REAL PATIENT - GENERATED FOR PRISM TESTING
+SYNTHETIC ENDOCRINE LABORATORY REPORT
+Patient ID: SYNTH-DOC-0020
+Collected: 2024-10-12
+Reported: 2024-10-14
+
+HDL Cholesterol: 1.6 mmol/L (Ref: >1.2)
+LDL Cholesterol: 2.4 mmol/L (Ref: <3.0)
+Fasting Glucose: 91 mg/dL (Ref: 70 - 99)
+
+End of synthetic report.

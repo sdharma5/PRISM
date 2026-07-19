@@ -1,0 +1,6 @@
+# Data contracts and safety language need a deliberate review.
+/schemas/                 @prism-maintainers
+/registry/                @prism-maintainers
+/docs/decisions/          @prism-maintainers
+/MODEL_CARD.md            @prism-maintainers
+/models/adapters/pcos/    @prism-maintainers

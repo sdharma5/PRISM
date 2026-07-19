@@ -1,0 +1,107 @@
+# Ovarian ultrasound data configuration.
+#
+# No imaging data is committed to this repository. When `data.root` does not exist the
+# pipeline falls back to synthetic phantoms, which is the only mode CI ever runs.
+dataset_id: ovarian_ultrasound_local
+dataset_version: unversioned
+source_dataset: null
+
+# Canonical data location keys. `data.root` is the directory; `data.path` is an
+# optional specific file beneath it. Both are overridden by --data-root and by
+# $PRISM_DATA_ROOT, in that order of precedence.
+data:
+  root: data/raw/ultrasound
+  path: null
+
+# ---------------------------------------------------------------------------
+# Acquisition model.
+#
+# Routine PCOS ovarian assessment is 2D transvaginal imaging. A dedicated 3D
+# volume is an optional enhanced mode that most clinics do not acquire, so it is
+# supported but is NOT the assumed input.
+#
+# The `outputs` block is the contract: an acquisition may only claim the
+# measurements listed under it. It is enforced twice — by the builders in
+# models/ultrasound/output_schema.py and, independently, by the model_validator
+# on schemas/imaging.py:OvarianMorphologyOutput.
+# ---------------------------------------------------------------------------
+ultrasound:
+  primary_mode: "2d"
+  supported_inputs: [single_frame, cine_loop, multi_frame, optional_3d_volume]
+  outputs:
+    single_frame: [follicle_number_per_section, ovary_area, image_quality]
+    cine_loop: [estimated_follicle_number_per_ovary, follicle_size_distribution, ovary_dimensions]
+    volume_3d: [follicle_number_per_ovary, ovarian_volume, follicle_volumes]
+
+  # Input priority, best first. A single still is accepted but yields the least.
+  input_priority:
+    - cine_loop            # 2D transvaginal sweep: the best realistic input
+    - multi_frame          # several stills with measurements
+    - single_frame         # one still: per-section count only
+    - volume_3d            # optional enhanced mode, NOT the default
+
+  # An ambiguous rank-3 array with no through-plane geometry is treated as a
+  # cine loop, never as a volume. Mislabelling a volume as a sweep forfeits
+  # measurements; mislabelling a sweep as a volume fabricates them.
+  ambiguous_stack_default: cine_loop
+  min_frames_for_cine: 5
+
+loading:
+  # Studies retaining identifying DICOM tags or burned-in annotation are refused
+  # outright rather than warned about. See ingestion/ultrasound/dicom.py.
+  require_deidentified: true
+  # Spacing is not required to LOAD a study, but no physical measurement is ever
+  # emitted without it. For 2D inputs the in-plane (row, col) spacing suffices.
+  require_spacing: false
+
+preprocessing:
+  normalization: percentile
+  # Resampling happens only when the acquired spacing is known; measurement
+  # always uses the ORIGINAL spacing regardless.
+  target_spacing_mm: null
+  target_shape: null
+  # Validated against the allow-list in ingestion/ultrasound/preprocessing.py.
+  # Any count-destroying transform (elastic, mixup, random crop, zoom, ...) is
+  # rejected at load time, not silently ignored.
+  transforms:
+    - intensity_normalize
+
+# USOVA3D is used as a LABEL resource, not as a model of the clinical input: it
+# is one of the few public datasets with expert ovary AND individual-follicle
+# annotations. Its volumes are sliced into labelled 2D frames for pretraining.
+usova3d_slice_extraction:
+  enabled: true
+  axis: 0                  # the through-plane axis: the plane a probe produces
+  step: 2                  # skip near-identical adjacent slices
+  min_ovary_fraction: 0.005
+  # Splitting by slice would put slice 40 in train and slice 41 in test. They
+  # share nearly all their anatomy, so that measures memorisation.
+  split_by: subject
+  # Slices derived from volumes are legitimate for learning appearance but are
+  # NOT an independent 2D test set: a resliced plane differs from a live B-mode
+  # frame in speckle texture and resolution anisotropy. A reported 2D result
+  # should be measured on a native 2D clinical source.
+  independent_test_set_required: true
+
+synthetic_fallback:
+  n_studies: 6
+  seed: 0
+  # 2D frame phantom (primary path).
+  frame:
+    shape: [128, 128]
+    pixel_spacing_mm: [0.35, 0.35]
+    semi_axes_mm: [15.0, 12.0]
+    follicle_diameters_mm: [4.0, 5.0, 6.0, 7.0]
+  # Cine loop phantom: follicles span known consecutive frames, giving ground
+  # truth for BOTH the per-section counts and the unique-track count.
+  cine:
+    n_frames: 16
+    shape: [128, 128]
+    pixel_spacing_mm: [0.35, 0.35]
+    ovary_semi_axes_mm: [15.0, 12.0]
+  # 3D volume phantom (optional enhanced path).
+  volume:
+    shape: [48, 64, 64]
+    spacing_mm: [1.0, 0.6, 0.6]
+    semi_axes_mm: [11.0, 15.0, 12.0]
+    follicle_diameters_mm: [4.0, 5.0, 6.0, 7.0, 8.0, 9.0]

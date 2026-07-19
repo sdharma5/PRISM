@@ -1,0 +1,15 @@
+[PAGE 1]
+SYNTHETIC REPORT - NOT A REAL PATIENT - GENERATED FOR PRISM TESTING
+SYNTHETIC ENDOCRINE LABORATORY REPORT
+Patient ID: SYNTH-DOC-0003
+Collected: 2023-11-22
+Reported: 2023-11-24
+
+[TABLE]
+Test | Result | Units | Reference Range
+Fasting Glucose | 5.6 | mmol/L | 3.9 - 5.5
+Fasting Insulin | 96 | pmol/L | 18 - 173
+Triglycerides | 1.9 | mmol/L | <1.7
+[/TABLE]
+
+End of synthetic report.

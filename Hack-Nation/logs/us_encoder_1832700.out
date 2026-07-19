@@ -1,0 +1,118 @@
+host: l03
+NVIDIA L40S, 46068 MiB
+torch 2.13.0+cpu cuda False
+device: cpu
+split: reusing usova3d_volume_split_v1.json
+loading 12 train + 2 val volumes (annotator r1)
+model: 1,924,242 parameters
+
+training 120 epochs x 48 steps, patch (32, 96, 96)
+
+epoch   1  loss 1.5314  ovary 0.5918  follicle 0.5341  *best
+epoch   2  loss 1.2915  ovary 0.6176  follicle 0.5428  *best
+epoch   3  loss 1.3380  ovary 0.6126  follicle 0.5446  *best
+epoch   4  loss 1.0849  ovary 0.6292  follicle 0.5452  *best
+epoch   5  loss 1.2069  ovary 0.6318  follicle 0.5619  *best
+epoch   6  loss 1.0278  ovary 0.6141  follicle 0.5557
+epoch   7  loss 1.2082  ovary 0.6229  follicle 0.5606
+epoch   8  loss 1.2048  ovary 0.6328  follicle 0.5571
+epoch   9  loss 1.2975  ovary 0.6337  follicle 0.5455
+epoch  10  loss 1.0334  ovary 0.6325  follicle 0.5679  *best
+epoch  11  loss 1.0927  ovary 0.6109  follicle 0.5523
+epoch  12  loss 1.2391  ovary 0.6284  follicle 0.5759  *best
+epoch  13  loss 1.0903  ovary 0.6290  follicle 0.5654
+epoch  14  loss 1.0161  ovary 0.6334  follicle 0.5781  *best
+epoch  15  loss 1.1920  ovary 0.6156  follicle 0.5615
+epoch  16  loss 1.0241  ovary 0.6210  follicle 0.5764
+epoch  17  loss 1.1182  ovary 0.6369  follicle 0.5692
+epoch  18  loss 0.9553  ovary 0.6290  follicle 0.5762
+epoch  19  loss 1.1481  ovary 0.6275  follicle 0.5839  *best
+epoch  20  loss 1.1466  ovary 0.6334  follicle 0.5810
+epoch  21  loss 1.0067  ovary 0.6342  follicle 0.5869  *best
+epoch  22  loss 0.9731  ovary 0.6095  follicle 0.5822
+epoch  23  loss 1.0177  ovary 0.6370  follicle 0.5664
+epoch  24  loss 0.9810  ovary 0.6164  follicle 0.5876  *best
+epoch  25  loss 1.0219  ovary 0.6283  follicle 0.5405
+epoch  26  loss 0.9655  ovary 0.6123  follicle 0.5861
+epoch  27  loss 1.0631  ovary 0.6327  follicle 0.5825
+epoch  28  loss 0.8303  ovary 0.6254  follicle 0.5816
+epoch  29  loss 0.9747  ovary 0.6204  follicle 0.5731
+epoch  30  loss 0.9621  ovary 0.6263  follicle 0.5855
+epoch  31  loss 0.8548  ovary 0.6389  follicle 0.5805
+epoch  32  loss 1.1341  ovary 0.6378  follicle 0.5571
+epoch  33  loss 0.8869  ovary 0.6176  follicle 0.5808
+epoch  34  loss 1.0014  ovary 0.6337  follicle 0.5571
+epoch  35  loss 0.8824  ovary 0.6320  follicle 0.5813
+epoch  36  loss 0.9705  ovary 0.6274  follicle 0.5877  *best
+epoch  37  loss 0.9187  ovary 0.6052  follicle 0.5781
+epoch  38  loss 1.0095  ovary 0.6210  follicle 0.5777
+epoch  39  loss 0.9201  ovary 0.6203  follicle 0.5793
+epoch  40  loss 0.8853  ovary 0.6236  follicle 0.5603
+epoch  41  loss 0.8452  ovary 0.6303  follicle 0.5766
+epoch  42  loss 0.9778  ovary 0.6145  follicle 0.5807
+epoch  43  loss 0.9030  ovary 0.6057  follicle 0.5581
+epoch  44  loss 0.7715  ovary 0.6001  follicle 0.5747
+epoch  45  loss 0.7210  ovary 0.6093  follicle 0.5796
+epoch  46  loss 0.9965  ovary 0.5833  follicle 0.5852
+epoch  47  loss 0.8779  ovary 0.6233  follicle 0.5704
+epoch  48  loss 0.6613  ovary 0.6046  follicle 0.5731
+epoch  49  loss 0.8878  ovary 0.6211  follicle 0.5883  *best
+epoch  50  loss 0.8335  ovary 0.6291  follicle 0.5822
+epoch  51  loss 0.6846  ovary 0.6332  follicle 0.5730
+epoch  52  loss 0.8695  ovary 0.6273  follicle 0.5680
+epoch  53  loss 0.7313  ovary 0.6204  follicle 0.5663
+epoch  54  loss 0.6590  ovary 0.6278  follicle 0.5744
+epoch  55  loss 0.6555  ovary 0.6126  follicle 0.5670
+epoch  56  loss 0.8003  ovary 0.5837  follicle 0.5644
+epoch  57  loss 0.8158  ovary 0.6096  follicle 0.5725
+epoch  58  loss 0.7715  ovary 0.6375  follicle 0.5614
+epoch  59  loss 0.7116  ovary 0.6350  follicle 0.5796
+epoch  60  loss 0.7406  ovary 0.6113  follicle 0.5763
+epoch  61  loss 0.7156  ovary 0.6278  follicle 0.5813
+epoch  62  loss 0.7257  ovary 0.6396  follicle 0.5822
+epoch  63  loss 0.6193  ovary 0.6252  follicle 0.5765
+epoch  64  loss 0.7086  ovary 0.6293  follicle 0.5841
+epoch  65  loss 0.8303  ovary 0.6401  follicle 0.5966  *best
+epoch  66  loss 0.5443  ovary 0.5917  follicle 0.5785
+epoch  67  loss 0.8248  ovary 0.6397  follicle 0.5750
+epoch  68  loss 0.7481  ovary 0.6326  follicle 0.5848
+epoch  69  loss 0.6899  ovary 0.6378  follicle 0.5911
+epoch  70  loss 0.6997  ovary 0.6212  follicle 0.5795
+epoch  71  loss 0.6963  ovary 0.6222  follicle 0.5643
+epoch  72  loss 0.6736  ovary 0.6267  follicle 0.5719
+epoch  73  loss 0.5911  ovary 0.6277  follicle 0.5692
+epoch  74  loss 0.6532  ovary 0.6361  follicle 0.5896
+epoch  75  loss 0.6529  ovary 0.6426  follicle 0.5323
+epoch  76  loss 0.7466  ovary 0.6428  follicle 0.5818
+epoch  77  loss 0.6942  ovary 0.6231  follicle 0.5812
+epoch  78  loss 0.7472  ovary 0.6462  follicle 0.5761
+epoch  79  loss 0.6376  ovary 0.6268  follicle 0.5579
+epoch  80  loss 0.6177  ovary 0.6046  follicle 0.5510
+epoch  81  loss 0.6037  ovary 0.6148  follicle 0.5634
+epoch  82  loss 0.7064  ovary 0.6138  follicle 0.5633
+epoch  83  loss 0.7063  ovary 0.6249  follicle 0.5535
+epoch  84  loss 0.5882  ovary 0.6260  follicle 0.5581
+epoch  85  loss 0.6393  ovary 0.6192  follicle 0.5651
+epoch  86  loss 0.7589  ovary 0.6312  follicle 0.5611
+epoch  87  loss 0.5035  ovary 0.6165  follicle 0.5569
+epoch  88  loss 0.5969  ovary 0.6264  follicle 0.5809
+epoch  89  loss 0.6364  ovary 0.6208  follicle 0.5604
+epoch  90  loss 0.5473  ovary 0.6259  follicle 0.5587
+
+early stop: no val_follicle_dice improvement in 25 epochs
+
+best val_follicle_dice: 0.5966
+checkpoint -> /weka/scratch/uchitra1/users/a_s/mit_hackathon/Hack-Nation/artifacts/experiments/exp_usova3d_3d_unet/checkpoint_best.pt
+loaded checkpoint_best.pt (epoch 65) on cpu
+held-out test volumes: ['Vol110', 'Vol6']
+
+Vol110 [r1]  ovary Dice 0.6088  follicle Dice 0.5656  count 22 vs 8  F1 0.267
+Vol110 [r2]  ovary Dice 0.5662  follicle Dice 0.5022  count 22 vs 4  F1 0.154
+Vol6 [r1]  ovary Dice 0.6013  follicle Dice 0.5550  count 17 vs 7  F1 0.083
+Vol6 [r2]  ovary Dice 0.5711  follicle Dice 0.5432  count 17 vs 4  F1 0.000
+
+=== held-out summary ===
+  [r1] ovary Dice 0.6051  follicle Dice 0.5603  instance F1 0.175  count MAE 12.00
+  [r2] ovary Dice 0.5687  follicle Dice 0.5227  instance F1 0.077  count MAE 15.50
+
+wrote /weka/scratch/uchitra1/users/a_s/mit_hackathon/Hack-Nation/artifacts/experiments/exp_usova3d_3d_unet/test_metrics.json

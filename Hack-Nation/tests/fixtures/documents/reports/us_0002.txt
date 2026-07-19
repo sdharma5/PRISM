@@ -1,0 +1,16 @@
+[PAGE 1]
+SYNTHETIC REPORT - NOT A REAL PATIENT - GENERATED FOR PRISM TESTING
+SYNTHETIC PELVIC ULTRASOUND REPORT
+Patient ID: SYNTH-DOC-0002
+Examination date: 2024-03-18
+
+FINDINGS
+-------
+Right ovary volume: 5.4 mL
+Right ovary: 6 antral follicles
+Left ovary volume: 6.1 mL
+Left ovary: 7 antral follicles
+
+IMPRESSION: Ovaries appear normal in size and follicle distribution.
+
+End of synthetic report.

@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+*.egg
+dist/
+build/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+*.so
+
+# Node
+node_modules/
+.next/
+out/
+.npm/
+
+# Data and artifacts
+datasets/mcphases/
+datasets/usova3d/
+artifacts/
+*.parquet
+*.tar.gz
+*.zip
+
+# Toolchain
+.toolchain/
+
+# Env files
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Prompts
+prompt_*.txt

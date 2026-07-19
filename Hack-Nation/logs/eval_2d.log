@@ -1,0 +1,13 @@
+loaded checkpoint_best.pt (epoch 4) on cpu
+held-out test volumes: ['Vol110', 'Vol6']
+
+Vol110 [r1]  ovary Dice 0.7100  follicle Dice 0.5240  count 649 vs 8  F1 0.006
+Vol110 [r2]  ovary Dice 0.5836  follicle Dice 0.4728  count 649 vs 4  F1 0.003
+Vol6 [r1]  ovary Dice 0.5588  follicle Dice 0.4580  count 14 vs 7  F1 0.190
+Vol6 [r2]  ovary Dice 0.5672  follicle Dice 0.4494  count 14 vs 4  F1 0.111
+
+=== held-out summary ===
+  [r1] ovary Dice 0.6344  follicle Dice 0.4910  instance F1 0.098  count MAE 324.00
+  [r2] ovary Dice 0.5754  follicle Dice 0.4611  instance F1 0.057  count MAE 327.50
+
+wrote /weka/scratch/uchitra1/users/a_s/mit_hackathon/Hack-Nation/artifacts/experiments/exp_usova3d_2d_unet/test_metrics.json

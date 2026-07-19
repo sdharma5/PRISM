@@ -1,0 +1,87 @@
+/* PRISM brand: deep pink #ff1493.
+ *
+ * Material's `pink` palette is close but not exact, so the brand hue is pinned
+ * here explicitly. Both light and dark schemes are styled — the docs must stay
+ * readable in either, and contrast ratios are checked against WCAG AA for body
+ * text (the raw brand pink is used for accents and borders, never for small
+ * text on white).
+ */
+
+:root {
+  --prism-pink: #ff1493;
+  --prism-pink-dark: #c70f72;
+  --prism-pink-light: #ff6bb8;
+  --prism-pink-wash: rgba(255, 20, 147, 0.08);
+}
+
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color: var(--prism-pink);
+  --md-primary-fg-color--light: var(--prism-pink-light);
+  --md-primary-fg-color--dark: var(--prism-pink-dark);
+  --md-accent-fg-color: var(--prism-pink-dark);
+  /* Link text uses the darkened tone so body copy clears AA on white. */
+  --md-typeset-a-color: var(--prism-pink-dark);
+}
+
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: var(--prism-pink);
+  --md-primary-fg-color--light: var(--prism-pink-light);
+  --md-primary-fg-color--dark: var(--prism-pink-dark);
+  --md-accent-fg-color: var(--prism-pink-light);
+  --md-typeset-a-color: var(--prism-pink-light);
+}
+
+/* Section headings carry a thin brand rule rather than a heavy fill. */
+.md-typeset h2 {
+  border-bottom: 2px solid var(--prism-pink);
+  padding-bottom: 0.25rem;
+}
+
+.md-typeset h3 {
+  color: var(--md-typeset-a-color);
+}
+
+/* Tables: brand header, quiet body. */
+.md-typeset table:not([class]) th {
+  background-color: var(--prism-pink-wash);
+  border-bottom: 2px solid var(--prism-pink);
+}
+
+/* The safety callout that appears on most pages. */
+.prism-safety {
+  border-left: 4px solid var(--prism-pink);
+  background: var(--prism-pink-wash);
+  padding: 0.9rem 1rem;
+  border-radius: 0 4px 4px 0;
+  margin: 1.25rem 0;
+}
+
+.prism-safety strong {
+  color: var(--md-typeset-a-color);
+}
+
+/* Status pills used in the implementation-status tables. */
+.prism-pill {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid var(--prism-pink);
+  color: var(--md-typeset-a-color);
+}
+
+.prism-pill--done {
+  background: var(--prism-pink-wash);
+}
+
+.prism-pill--absent {
+  border-style: dashed;
+  opacity: 0.75;
+}
+
+.md-typeset .md-button--primary {
+  background-color: var(--prism-pink);
+  border-color: var(--prism-pink);
+  color: #fff;
+}

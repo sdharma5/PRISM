@@ -1,0 +1,71 @@
+# Schema version ledger.
+#
+# Rule (see implementation-agent instruction 18): a schema is never changed
+# silently. Bump the version here, add a CHANGELOG entry, and state whether the
+# change is backward compatible. tests/contract/test_schema_versions.py fails if
+# a schema's declared version drifts from this file.
+
+schemas:
+  event:
+    module: "schemas.event"
+    model: "HormonalHealthEvent"
+    version: "1.0.0"
+    backward_compatible: true
+    notes: "Initial universal event contract."
+
+  modality_token:
+    module: "schemas.modality_token"
+    model: "ModalityToken"
+    version: "1.0.0"
+    backward_compatible: true
+    notes: "Shared five-token envelope."
+
+  evidence:
+    module: "schemas.evidence"
+    model: "PatientSnapshot"
+    version: "1.0.0"
+    backward_compatible: true
+
+  phenotype:
+    module: "schemas.phenotype"
+    model: "PhenotypeProfile"
+    version: "1.0.0"
+    backward_compatible: true
+
+  imaging:
+    module: "schemas.imaging"
+    model: "OvarianMorphologyOutput"
+    version: "2.0.0"
+    backward_compatible: false
+    notes: >-
+      BREAKING. `follicle_count` is replaced by three non-interchangeable
+      fields: follicle_number_per_section, estimated_follicle_number_per_ovary,
+      and follicle_number_per_ovary, plus follicle_count_method. Adds
+      acquisition_mode, ovary_area_mm2, frames_analyzed and tracking_coverage.
+      A validator now refuses counts and volumes an acquisition cannot support.
+      Rationale: routine PCOS ultrasound is 2D, and a single cross-section
+      cannot yield a whole-ovary count. The old single field let it claim one.
+
+  temporal:
+    module: "schemas.temporal"
+    model: "TemporalStateOutput"
+    version: "1.0.0"
+    backward_compatible: true
+
+  dataset:
+    module: "schemas.dataset"
+    model: "DatasetSpec"
+    version: "1.0.0"
+    backward_compatible: true
+
+  model_output:
+    module: "schemas.model_output"
+    model: "ExperimentResult"
+    version: "1.0.0"
+    backward_compatible: true
+
+registries:
+  datasets: "1.0.0"
+  variables: "1.1.0"
+  units: "1.0.0"
+  phenotype_domains: "1.0.0"

@@ -1,0 +1,12 @@
+[PAGE 1]
+SYNTHETIC REPORT - NOT A REAL PATIENT - GENERATED FOR PRISM TESTING
+SYNTHETIC ENDOCRINE LABORATORY REPORT
+Patient ID: SYNTH-DOC-0010
+Collected: 2024-07-01
+Reported: 2024-07-02
+
+AMH: 6.8 ng/mL (Ref: 1 - 4)
+LH: 14 IU/L (Ref: 1.9 - 12.5)
+Progesterone: 1.2 ng/mL (Ref: >10)
+
+End of synthetic report.

@@ -1,0 +1,28 @@
+name: Documentation
+description: Report unclear, missing, or incorrect documentation
+title: "docs: <short description>"
+labels: ["docs"]
+body:
+  - type: input
+    id: page
+    attributes: { label: Page or file }
+    validations: { required: true }
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Kind
+      options: [Incorrect, Missing, Unclear, Out of date, Overstates a claim]
+    validations: { required: true }
+  - type: textarea
+    id: detail
+    attributes: { label: What is wrong }
+    validations: { required: true }
+  - type: textarea
+    id: suggestion
+    attributes: { label: Suggested wording }
+  - type: checkboxes
+    id: claim
+    attributes:
+      label: Does this involve a medical or scientific claim?
+      options:
+        - label: Yes — this documentation may overstate what the model supports.

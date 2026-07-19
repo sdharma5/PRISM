@@ -1,0 +1,89 @@
+# Clustering / stability model defaults for the phenotype-discovery engine.
+#
+# Every value here is an analyst choice that changes the result, which is why
+# none of them are hard-coded in the modules. K in particular is a *range to be
+# searched*, never an assumption: the fact that the PCOS literature commonly
+# reports four subtypes is a hypothesis for this sweep to test, not a prior.
+
+version: "1.0.0"
+
+clustering:
+  # Axis 1 of the sweep: what gets clustered.
+  representations:
+    - raw_standardized      # cohort z-scores of every numeric variable
+    - domain_scores         # interpretable composites from registry/phenotype_domains.yaml
+    - feature_subset        # a named, pre-registered subset (see below)
+    # - autoencoder_embedding  # enable by also setting embedding_path
+
+  feature_subset:
+    name: core_endocrine_metabolic
+    rationale: >-
+      A deliberately small, widely measured panel. Clustering a compact set of
+      commonly available variables tests whether the structure depends on the
+      rarely measured assays that drive the full-matrix solution.
+    features:
+      - bmi
+      - waist_circumference
+      - fasting_insulin
+      - homa_ir
+      - total_testosterone
+      - shbg
+      - luteinizing_hormone
+      - anti_mullerian_hormone
+
+  # Path to a precomputed embedding matrix (.npy, rows aligned to participants).
+  # Left null so nothing here depends on torch or on the autoencoder module.
+  embedding_path: null
+
+  # Axis 2: how it gets clustered.
+  algorithms:
+    - kmeans
+    - gaussian_mixture
+    - agglomerative       # Ward linkage
+    - consensus           # co-association over subsamples, then hierarchical cut
+    # - spectral          # optional: unstable on small cohorts, O(n^3) affinity
+
+  # Axis 3: how many groups. Searched, not assumed.
+  k_values: [2, 3, 4, 5, 6]
+
+  seeds: [0, 1, 2, 3, 4]
+  consensus_resamples: 40
+  consensus_subsample_fraction: 0.8
+
+# How K is chosen from the benchmark. Reproducibility outweighs separation
+# because a well-separated partition no two seeds agree on is a seed artifact.
+selection:
+  weights:
+    silhouette: 1.0
+    calinski_harabasz: 0.5
+    davies_bouldin: 0.5
+    mean_bootstrap_jaccard: 1.5
+    mean_ari_across_seeds: 1.0
+  min_silhouette: 0.25          # below this the data may be a continuum, not groups
+  min_bootstrap_jaccard: 0.60   # Hennig's conventional "do not interpret" floor
+  min_ari: 0.50
+
+stability:
+  n_bootstrap: 50
+  n_noise_replicates: 10
+  scaling_strategies: [robust, minmax]
+  imputation_strategies: [mean, median, knn]
+
+# Thresholds for the six abstention rules. Conservative on purpose: returning
+# "indeterminate" for a placeable participant is a far cheaper error than naming
+# a group for one who should not have been placed.
+abstention:
+  min_dominant_probability: 0.50
+  min_model_agreement: 0.60
+  min_bootstrap_agreement: 0.60
+  min_cluster_jaccard: 0.60
+  abstain_on_any_single_feature_flip: true
+  max_fragile_feature_fraction: 0.10
+  max_distance_percentile: 0.95
+  min_defining_feature_coverage: 0.50
+  warn_assignment_entropy: 0.80
+
+calibration:
+  method: temperature_scaling
+  target: bootstrap_agreement_rate
+  n_bins: 10

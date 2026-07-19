@@ -1,0 +1,12 @@
+[PAGE 1]
+SYNTHETIC REPORT - NOT A REAL PATIENT - GENERATED FOR PRISM TESTING
+SYNTHETIC ENDOCRINE LABORATORY REPORT
+Patient ID: SYNTH-DOC-0006
+Collected: 2023-09-30
+Reported: 2023-10-02
+
+HDL Cholesterol: 1.1 mmol/L (Ref: >1.2)
+LDL Cholesterol: 3.4 mmol/L (Ref: <3.0)
+Triglycerides: 160 mg/dL (Ref: <150)
+
+End of synthetic report.

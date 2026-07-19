@@ -1,0 +1,44 @@
+# mcPHASES longitudinal data configuration.
+#
+# mcPHASES requires credentialed PhysioNet access and is NEVER committed. When
+# `data.root` is absent the pipeline uses the synthetic cohort in
+# tests/fixtures/synthetic_cycles.py.
+dataset_id: mcphases
+dataset_version: unversioned
+
+# Canonical data location keys. `data.root` is the directory; `data.path` is an
+# optional specific file beneath it. Both are overridden by --data-root and by
+# $PRISM_DATA_ROOT, in that order of precedence.
+data:
+  # NOTE: prepare_mcphases.py resolves this via resolve_data_root(), whose
+  # precedence is --data-root > $PRISM_DATA_ROOT > this key. So whenever
+  # PRISM_DATA_ROOT is exported this value is IGNORED, and the root must be
+  # given explicitly:
+  #     --data-root $PRISM_DATA_ROOT/mcphases/raw
+  root: data/raw/mcphases
+  path: null
+
+# Declared in registry/datasets.yaml; the adapter fails closed on prohibited use.
+allowed_uses:
+  - temporal_state_model
+  - cycle_phase_prediction
+  - hormone_reconstruction
+  - symptom_forecasting
+
+channels:
+  hormone: [lh, e3g, pdg]
+  wearable: [resting_heart_rate, wrist_temperature, hrv_rmssd]
+  cgm: [mean_glucose]
+
+symptoms: [cramps, bloating, mood_low, breast_tenderness]
+
+missingness:
+  # Every channel is carried as the triple (value, is_observed,
+  # time_since_last_observed). Missing is NEVER encoded as 0.
+  representation: value_is_observed_time_since_triple
+  forbid_silent_zero_fill: true
+
+synthetic_fallback:
+  n_participants: 14
+  n_days: 90
+  seed: 0

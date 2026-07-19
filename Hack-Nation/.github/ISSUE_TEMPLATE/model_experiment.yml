@@ -1,0 +1,55 @@
+name: Model experiment
+description: Propose an experiment
+title: "model: <short description>"
+labels: ["model", "experiment"]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Scientific question
+      description: What would a positive result mean, and what would falsify it?
+    validations: { required: true }
+  - type: input
+    id: dataset
+    attributes: { label: Dataset registry id and version }
+    validations: { required: true }
+  - type: input
+    id: target
+    attributes: { label: Target }
+    validations: { required: true }
+  - type: dropdown
+    id: split
+    attributes:
+      label: Split strategy
+      options:
+        - Repeated stratified k-fold (patient level)
+        - Grouped k-fold (participant level)
+        - Leave-one-participant-out
+        - Held-out participants
+    validations: { required: true }
+  - type: input
+    id: baseline
+    attributes:
+      label: Baseline it must beat
+      description: Majority class, a simple rule, or the current best.
+    validations: { required: true }
+  - type: input
+    id: model
+    attributes: { label: Proposed model }
+  - type: input
+    id: metric
+    attributes: { label: Primary metric (decided in advance) }
+    validations: { required: true }
+  - type: textarea
+    id: calibration
+    attributes: { label: Calibration plan }
+    validations: { required: true }
+  - type: input
+    id: artifact
+    attributes: { label: Expected artifact path }
+  - type: textarea
+    id: risks
+    attributes:
+      label: Known risks
+      description: Leakage, small-sample instability, unsupported-claim risk.
+    validations: { required: true }

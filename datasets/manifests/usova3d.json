@@ -1,0 +1,101 @@
+{
+  "dataset": "USOVA3D",
+  "description": "3D ovarian ultrasound dataset with follicle and ovary segmentation by 2 experts",
+  "source": "GitHub: https://github.com/SonBH0410/USOVA3D_Dataset",
+  "source_url": "https://github.com/SonBH0410/USOVA3D_Dataset",
+  "license": "NOT DECLARED - no LICENSE file in repository. Repository is public. Verify with authors before redistribution.",
+  "license_status": "license_unclear",
+  "access_type": "public_github_clone",
+  "git_commit": "5df1d682ec3b855034d08b9acb0b701b9556874a",
+  "download_date": "2026-07-18",
+  "local_path": "/weka/scratch/uchitra1/users/a_s/mit_hackathon/datasets/usova3d/raw",
+  "annotations": {
+    "type": [
+      "follicle_binary_mask",
+      "follicle_color_overlay",
+      "follicle_instance_id_mask",
+      "ovary_binary_mask"
+    ],
+    "experts": 2,
+    "annotator_naming": "r1=expert1, r2=expert2"
+  },
+  "splits": {
+    "train": {
+      "volumes": 12,
+      "images": 2593
+    },
+    "val": {
+      "volumes": 2,
+      "images": 398
+    },
+    "test": {
+      "volumes": 2,
+      "images": 428
+    }
+  },
+  "image_format": "PNG slices from 3D volumes",
+  "mask_values": {
+    "binary": "0=background, 255=foreground",
+    "instance": "0=background, 1,2,...=follicle instance IDs"
+  },
+  "pairing_verification": {
+    "train": {
+      "image_vols": [
+        "Vol101",
+        "Vol102",
+        "Vol110",
+        "Vol111",
+        "Vol115",
+        "Vol117",
+        "Vol119",
+        "Vol2",
+        "Vol3",
+        "Vol4",
+        "Vol5",
+        "Vol6"
+      ],
+      "label_vols": [
+        "Vol101",
+        "Vol102",
+        "Vol110",
+        "Vol111",
+        "Vol115",
+        "Vol117",
+        "Vol119",
+        "Vol2",
+        "Vol3",
+        "Vol4",
+        "Vol5",
+        "Vol6"
+      ],
+      "unpaired_images": [],
+      "unpaired_labels": []
+    },
+    "val": {
+      "image_vols": [
+        "Vol104",
+        "Vol109"
+      ],
+      "label_vols": [
+        "Vol104",
+        "Vol109"
+      ],
+      "unpaired_images": [],
+      "unpaired_labels": []
+    },
+    "test": {
+      "image_vols": [
+        "Vol1",
+        "Vol106"
+      ],
+      "label_vols": [
+        "Vol1",
+        "Vol106"
+      ],
+      "unpaired_images": [],
+      "unpaired_labels": []
+    }
+  },
+  "total_png_files": 3419,
+  "notes": "Images are 2D slices of 3D ultrasound volumes. Each 'Volume' (VolN) is a complete scan."
+}

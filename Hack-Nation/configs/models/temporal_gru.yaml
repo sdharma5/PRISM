@@ -1,0 +1,49 @@
+# Dynamic hormonal-state model configuration.
+model_name: longitudinal_hormonal_state_model
+model_version: 0.1.0
+
+encoder:
+  # "gru" or "tcn"; "auto" backend uses torch when installed, numpy otherwise.
+  kind: gru
+  backend: auto
+  hidden_size: 32
+  # Bounded by one cycle length: days further back carry little information
+  # about today's state and mostly add missingness.
+  lookback_days: 21
+  min_lookback_days: 14
+  max_lookback_days: 30
+  # GRU-D style decay: a carried-forward value shrinks toward the channel mean
+  # as it goes stale, rather than being trusted indefinitely.
+  use_decay: true
+  decay_gamma: 0.35
+
+heads:
+  hormone:
+    targets: [lh, e3g, pdg]
+    alpha: 1.0
+    loss: mse          # mse | mae | gaussian_nll
+  cycle:
+    classes: [menstrual, follicular, peri_ovulatory, luteal]
+    alpha: 1.0
+    # Inverse-frequency weighting; peri_ovulatory is a ~5-day window and is
+    # otherwise optimised away.
+    class_weighting: inverse_frequency
+  symptom:
+    # NEXT-day, not same-day: a same-day head trained on inputs containing the
+    # symptoms is solving a copying task.
+    horizon_days: 1
+  masked:
+    mask_fraction: 0.2
+
+# L_state = lambda_h L_hormone + lambda_c L_cycle + lambda_s L_symptom + lambda_m L_masked
+loss_weights:
+  hormone: 1.0
+  cycle: 1.0
+  symptom: 0.5
+  masked: 0.5
+
+output:
+  # The exported token describes CURRENT STATE. It is never a subtype,
+  # phenotype, or diagnosis.
+  modality: longitudinal_hormonal_state
+  low_coverage_threshold: 0.25

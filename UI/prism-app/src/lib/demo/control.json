@@ -1,0 +1,508 @@
+{
+  "display_name": "Priya",
+  "exercises": [
+    "low evidence level",
+    "ovulatory dysfunction not met",
+    "no dominant phenotype profile"
+  ],
+  "key": "control",
+  "notes": [
+    "Included so the low-evidence layout is designed, not an afterthought."
+  ],
+  "response": {
+    "androgenic_evidence_source": "symptoms_only",
+    "available_modalities": [
+      "longitudinal_hormonal_state",
+      "static_clinical"
+    ],
+    "conflicting_evidence": [
+      {
+        "detail": "The static history and the short-term temporal window are not fully aligned. The temporal observation period may be too short to characterise long-term cycle regularity, which is what the history describes. Neither observation supersedes the other.",
+        "modalities": [],
+        "severity": null,
+        "variable_code": null
+      }
+    ],
+    "current_state": {
+      "available": true,
+      "confidence": 0.7758,
+      "cycle_phase_probabilities": {
+        "follicular": 0.0524,
+        "luteal": 0.0622,
+        "menstrual": 0.7758,
+        "peri_ovulatory": 0.1095
+      },
+      "hormone_estimates": {
+        "e3g": {
+          "code": "e3g",
+          "display_name": "Estrone-3-glucuronide",
+          "interval_high": 220.3739,
+          "interval_low": 68.5417,
+          "method": "Estimated from the recent measurement pattern",
+          "method_code": "ridge_window",
+          "unit": "ng/mL",
+          "value": 140.4115536987153
+        },
+        "pdg": {
+          "code": "pdg",
+          "display_name": "Pregnanediol glucuronide",
+          "interval_high": 8.2,
+          "interval_low": -3.3,
+          "method": "Based on the latest observed value",
+          "method_code": "locf",
+          "unit": "ug/mL",
+          "value": 2.5
+        },
+        "urinary_lh": {
+          "code": "urinary_lh",
+          "display_name": "Luteinising hormone",
+          "interval_high": 9.4711,
+          "interval_low": 2.2711,
+          "method": "Based on the latest observed value",
+          "method_code": "locf",
+          "unit": "mIU/mL",
+          "value": 6.071084337349398
+        }
+      },
+      "input_coverage": 0.2857,
+      "methods_used": [
+        "Based on the latest observed value",
+        "Estimated from the recent measurement pattern",
+        "Classified from recent longitudinal measurements"
+      ],
+      "observed_days": 30,
+      "predicted_cycle_phase": "menstrual",
+      "unavailable_reason": null
+    },
+    "disclaimer": "Research prototype. This is not a diagnosis and does not establish whether you have PCOS. Discuss these results with a clinician.",
+    "generated_at": "2026-07-01T12:00:00+00:00",
+    "is_diagnosis": false,
+    "learned_components_used": [
+      "static_clinical.pcos_head"
+    ],
+    "missing_evidence": [
+      "amenorrhea",
+      "dheas",
+      "follicle_number_per_ovary",
+      "free_testosterone",
+      "menstrual_frequency_per_year",
+      "ovary_volume_ml",
+      "total_testosterone"
+    ],
+    "missing_modalities": [
+      "ovarian_ultrasound"
+    ],
+    "modality_coverage": 0.6666666666666666,
+    "patient_id": "demo-control",
+    "pcos_assessment": {
+      "available": true,
+      "calibrated": true,
+      "calibrated_model_score": 0.13181833574404372,
+      "evidence_level": "low",
+      "feature_coverage": 0.6842,
+      "qualifier": "PCOS-related model score from the static-clinical branch. It reflects the clinical variables provided, not a diagnosis, and not a probability that you have PCOS.",
+      "raw_model_score": 0.1796220600229526,
+      "source": "static_clinical",
+      "unavailable_reason": null
+    },
+    "phenotype": {
+      "domain_scores": {
+        "biochemical_androgenic_evidence": {
+          "available": false,
+          "coverage": 0.0,
+          "display_order": 2,
+          "evidence_source": "biochemical",
+          "label": "Biochemical androgenic evidence",
+          "missing_variables": [
+            "total_testosterone",
+            "free_testosterone",
+            "dheas",
+            "shbg"
+          ],
+          "observed_variables": [],
+          "qualifier": null,
+          "scale": "cohort_z_score",
+          "score": null
+        },
+        "clinical_androgenic_evidence": {
+          "available": true,
+          "coverage": 0.2857142857142857,
+          "display_order": 1,
+          "evidence_source": "symptoms",
+          "label": "Clinical androgenic evidence",
+          "missing_variables": [
+            "hair_growth_face"
+          ],
+          "observed_variables": [
+            "ferriman_gallwey_score",
+            "hirsutism",
+            "acne",
+            "androgenic_alopecia"
+          ],
+          "qualifier": null,
+          "scale": "cohort_z_score",
+          "score": -0.9577930406691504
+        },
+        "lh_amh_pattern": {
+          "available": true,
+          "coverage": 1.0,
+          "display_order": 5,
+          "evidence_source": "mixed",
+          "label": "LH-AMH reproductive pattern",
+          "missing_variables": [],
+          "observed_variables": [
+            "luteinizing_hormone",
+            "lh_fsh_ratio",
+            "anti_mullerian_hormone",
+            "follicle_stimulating_hormone",
+            "bmi"
+          ],
+          "qualifier": null,
+          "scale": "cohort_z_score",
+          "score": 0.059734437740354786
+        },
+        "metabolic": {
+          "available": true,
+          "coverage": 0.3783783783783784,
+          "display_order": 3,
+          "evidence_source": "mixed",
+          "label": "Metabolic",
+          "missing_variables": [
+            "fasting_insulin",
+            "homa_ir",
+            "systolic_blood_pressure",
+            "diastolic_blood_pressure",
+            "hdl_cholesterol",
+            "triglycerides",
+            "weight_gain",
+            "skin_darkening"
+          ],
+          "observed_variables": [
+            "bmi",
+            "waist_circumference",
+            "waist_hip_ratio",
+            "fasting_glucose"
+          ],
+          "qualifier": null,
+          "scale": "cohort_z_score",
+          "score": -1.2135837545760422
+        },
+        "ovarian": {
+          "available": true,
+          "coverage": 0.42857142857142855,
+          "display_order": 4,
+          "evidence_source": "imaging",
+          "label": "Ovarian / LH-AMH",
+          "missing_variables": [
+            "follicle_number_per_ovary",
+            "follicle_count_left",
+            "follicle_count_right",
+            "ovary_volume_ml"
+          ],
+          "observed_variables": [
+            "anti_mullerian_hormone",
+            "luteinizing_hormone",
+            "follicle_stimulating_hormone"
+          ],
+          "qualifier": null,
+          "scale": "cohort_z_score",
+          "score": 0.06418916689155922
+        },
+        "reproductive": {
+          "available": true,
+          "coverage": 0.40625,
+          "display_order": 0,
+          "evidence_source": "mixed",
+          "label": "Reproductive / ovulatory",
+          "missing_variables": [
+            "menstrual_frequency_per_year",
+            "amenorrhea",
+            "infertility_history",
+            "progesterone"
+          ],
+          "observed_variables": [
+            "cycle_length",
+            "cycle_irregularity",
+            "luteinizing_hormone",
+            "follicle_stimulating_hormone",
+            "lh_fsh_ratio"
+          ],
+          "qualifier": null,
+          "scale": "cohort_z_score",
+          "score": 5.252537035521841
+        },
+        "symptom_burden": {
+          "available": false,
+          "coverage": 0.2857142857142857,
+          "display_order": 6,
+          "evidence_source": "symptoms",
+          "label": "Symptom burden",
+          "missing_variables": [
+            "hair_growth_face",
+            "skin_darkening",
+            "weight_gain",
+            "fatigue",
+            "pelvic_pain",
+            "mood_change"
+          ],
+          "observed_variables": [
+            "acne",
+            "androgenic_alopecia"
+          ],
+          "qualifier": "patient-reported symptom burden",
+          "scale": "cohort_z_score",
+          "score": null
+        }
+      },
+      "dominant_profile": null,
+      "indeterminate": true,
+      "indeterminate_reasons": [
+        "assignment to 'lh_amh_leaning' did not survive the stability checks (resampling, single-domain ablation, or temperature); it is reported as indeterminate rather than as a profile"
+      ],
+      "interpretation_note": "Phenotype profiles are exploratory similarities to patterns described in the literature, not validated clinical subtypes.",
+      "profile_similarities": {
+        "androgenic_leaning": 0.0654,
+        "lh_amh_leaning": 0.4711,
+        "metabolic_leaning": -0.2309,
+        "mixed": 0.2707
+      },
+      "stability": {
+        "bootstrap_agreement": 0.99,
+        "label": "unstable",
+        "plain_language": "No single profile is reported for this patient. The leading pattern changed across resampling or evidence-removal checks, so no single profile is reported.",
+        "profile_flip_rate": 0.01,
+        "stability_score": 0.396,
+        "unstable_domains": [
+          "clinical_androgenic_evidence",
+          "lh_amh_pattern",
+          "metabolic"
+        ],
+        "withheld_reason": "assignment to 'lh_amh_leaning' did not survive the stability checks (resampling, single-domain ablation, or temperature); it is reported as indeterminate rather than as a profile"
+      },
+      "stable_dominant_profile": false,
+      "status": "no_stable_dominant_profile"
+    },
+    "provenance": {
+      "clinician_review_status": "model_generated",
+      "combination_mode": "rule_based",
+      "model_versions": {
+        "longitudinal_hormonal_state": "temporal-state-v1",
+        "static_clinical": "static-clinical-0.1.0"
+      },
+      "provenance_ids": [],
+      "records": [
+        {
+          "confidence": 0.6408,
+          "confirmation_status": null,
+          "label": "static_clinical",
+          "method": "static_clinical",
+          "model_version": "static-clinical-0.1.0",
+          "observed_at": null,
+          "origin": "model_estimate",
+          "source_id": "kottarathil-2020"
+        },
+        {
+          "confidence": 0.7758,
+          "confirmation_status": null,
+          "label": "longitudinal_hormonal_state",
+          "method": "longitudinal_hormonal_state",
+          "model_version": "temporal-state-v1",
+          "observed_at": null,
+          "origin": "model_estimate",
+          "source_id": "mcPHASES"
+        },
+        {
+          "confidence": null,
+          "confirmation_status": null,
+          "label": "evidence_coordinator.design_rule_weights",
+          "method": "evidence_coordinator.design_rule_weights",
+          "model_version": null,
+          "observed_at": null,
+          "origin": "rule_based_interpretation",
+          "source_id": null
+        },
+        {
+          "confidence": null,
+          "confirmation_status": null,
+          "label": "pcos_adapter.guideline_axes",
+          "method": "pcos_adapter.guideline_axes",
+          "model_version": null,
+          "observed_at": null,
+          "origin": "rule_based_interpretation",
+          "source_id": null
+        }
+      ]
+    },
+    "report_id": "rpt_demo_control",
+    "rotterdam_axes": {
+      "hyperandrogenism_biochemical": {
+        "biochemical_evidence_available": false,
+        "caveats": [
+          "Hormonal contraception suppresses androgens and raises SHBG; values measured on treatment cannot assess this axis.",
+          "Direct free-testosterone immunoassays are unreliable at female concentrations and should not be used for this assessment."
+        ],
+        "evidence_source": "biochemical",
+        "level": "low",
+        "missing_evidence": [
+          "total_testosterone",
+          "free_testosterone",
+          "dheas"
+        ],
+        "reason": "Not assessable: no result for total_testosterone, free_testosterone, dheas.",
+        "status": "not_assessable",
+        "supporting_evidence": [
+          "static reproductive composite z=+5.25",
+          "static metabolic composite z=-1.21",
+          "static ovarian composite z=+0.06",
+          "static clinical (cutaneous signs) androgenic composite z=-0.96",
+          "androgenic evidence source: symptoms_only"
+        ],
+        "threshold_sources": {
+          "dheas > 9.2": "Placeholder upper reference limit in umol/L. DHEAS is strongly age-dependent and is a secondary marker only.",
+          "free_testosterone > 0.031": "Placeholder upper reference limit in nmol/L for calculated free testosterone. Assay- and calculation-formula-specific.",
+          "total_testosterone > 2.5": "Placeholder upper reference limit in nmol/L for adult females. Assay- and laboratory-specific; must be replaced with the reference range of the measuring laboratory."
+        }
+      },
+      "hyperandrogenism_clinical": {
+        "biochemical_evidence_available": false,
+        "caveats": [
+          "Acne alone is a poor discriminator in adolescents and is not sufficient for this axis.",
+          "Cosmetic hair removal masks hirsutism and biases this axis toward 'not met'."
+        ],
+        "evidence_source": "clinical",
+        "level": "low",
+        "missing_evidence": [],
+        "reason": null,
+        "status": "not_met",
+        "supporting_evidence": [
+          "static reproductive composite z=+5.25",
+          "static metabolic composite z=-1.21",
+          "static ovarian composite z=+0.06",
+          "static clinical (cutaneous signs) androgenic composite z=-0.96",
+          "androgenic evidence source: symptoms_only"
+        ],
+        "threshold_sources": {
+          "androgenic_alopecia truthy true": "Female pattern hair loss; low specificity in isolation per the 2023 International Guideline.",
+          "ferriman_gallwey_score >= 4.0": "2023 International Guideline: modified Ferriman-Gallwey cut-offs of 4-6 depending on ethnicity; the lower bound is used here so the axis is not silently insensitive in populations with lower baseline terminal hair density.",
+          "hirsutism truthy true": "Clinician- or participant-reported hirsutism flag."
+        }
+      },
+      "ovulatory_dysfunction": {
+        "biochemical_evidence_available": null,
+        "caveats": [
+          "Regular cycles do not exclude anovulation; confirmation requires a mid-luteal progesterone measurement, which most datasets here lack.",
+          "Hormonal contraception masks the natural cycle and invalidates this axis."
+        ],
+        "evidence_source": null,
+        "level": "low",
+        "missing_evidence": [
+          "menstrual_frequency_per_year",
+          "amenorrhea"
+        ],
+        "reason": null,
+        "status": "not_met",
+        "supporting_evidence": [
+          "temporal cycle irregularity = 0.00",
+          "predicted phase 'menstrual' with state confidence 0.45",
+          "static reproductive composite z=+5.25",
+          "static metabolic composite z=-1.21",
+          "static ovarian composite z=+0.06",
+          "static clinical (cutaneous signs) androgenic composite z=-0.96",
+          "androgenic evidence source: symptoms_only"
+        ],
+        "threshold_sources": {
+          "amenorrhea truthy true": "2023 International Guideline: primary or secondary amenorrhoea is ovulatory dysfunction by definition.",
+          "cycle_irregularity truthy true": "Participant- or clinician-reported cycle irregularity flag.",
+          "cycle_length < 21.0": "2023 International Evidence-based Guideline: cycles <21 days in adults are irregular.",
+          "cycle_length > 35.0": "2023 International Evidence-based Guideline for the Assessment and Management of PCOS: cycles >35 days in adults are irregular.",
+          "menstrual_frequency_per_year < 9.0": "Rotterdam 2003 / 2023 International Guideline: fewer than 8-9 cycles per year indicates oligo-anovulation."
+        }
+      },
+      "polycystic_ovarian_morphology": {
+        "biochemical_evidence_available": null,
+        "caveats": [
+          "Should not be assessed within 8 years of menarche, when multifollicular ovaries are common and non-pathological.",
+          "Not assessable on hormonal contraception, which alters ovarian morphology."
+        ],
+        "evidence_source": "imaging",
+        "level": "insufficient_evidence",
+        "missing_evidence": [
+          "follicle_number_per_ovary",
+          "ovary_volume_ml"
+        ],
+        "reason": "Not assessable: no result for follicle_number_per_ovary, ovary_volume_ml.",
+        "status": "not_assessable",
+        "supporting_evidence": [
+          "static reproductive composite z=+5.25",
+          "static metabolic composite z=-1.21",
+          "static ovarian composite z=+0.06",
+          "static clinical (cutaneous signs) androgenic composite z=-0.96",
+          "androgenic evidence source: symptoms_only"
+        ],
+        "threshold_sources": {
+          "anti_mullerian_hormone > true": "The 2023 International Guideline accepts serum AMH as an alternative to ultrasound for defining PCOM in adults, but explicitly gives no universal cut-off: thresholds are assay- and population-specific. No default threshold is encoded, so this rule stays not-assessable until a dataset supplies one.",
+          "follicle_number_per_ovary >= 20.0": "2023 International Evidence-based Guideline: FNPO >=20 on either ovary using an endovaginal transducer with frequency >=8 MHz. The older Rotterdam 2003 threshold of >=12 follicles applies only to lower-frequency equipment.",
+          "ovary_volume_ml >= 10.0": "Rotterdam 2003 and retained in the 2023 International Guideline: ovarian volume >=10 mL on either ovary, with no dominant follicle, corpus luteum or cyst present."
+        }
+      }
+    },
+    "rule_based_components_used": [
+      "evidence_coordinator.design_rule_weights",
+      "pcos_adapter.guideline_axes"
+    ],
+    "schema_version": "1.0.0",
+    "supporting_evidence": [
+      {
+        "axis": "ovulatory_dysfunction",
+        "guideline_source": null,
+        "statement": "temporal cycle irregularity = 0.00",
+        "variable_code": null
+      },
+      {
+        "axis": "ovulatory_dysfunction",
+        "guideline_source": null,
+        "statement": "predicted phase 'menstrual' with state confidence 0.45",
+        "variable_code": null
+      },
+      {
+        "axis": "ovulatory_dysfunction",
+        "guideline_source": null,
+        "statement": "static reproductive composite z=+5.25",
+        "variable_code": null
+      },
+      {
+        "axis": "ovulatory_dysfunction",
+        "guideline_source": null,
+        "statement": "static metabolic composite z=-1.21",
+        "variable_code": null
+      },
+      {
+        "axis": "ovulatory_dysfunction",
+        "guideline_source": null,
+        "statement": "static ovarian composite z=+0.06",
+        "variable_code": null
+      },
+      {
+        "axis": "ovulatory_dysfunction",
+        "guideline_source": null,
+        "statement": "static clinical (cutaneous signs) androgenic composite z=-0.96",
+        "variable_code": null
+      },
+      {
+        "axis": "ovulatory_dysfunction",
+        "guideline_source": null,
+        "statement": "androgenic evidence source: symptoms_only",
+        "variable_code": null
+      }
+    ],
+    "warnings": [
+      "Cross-modal evidence was combined using transparent rules rather than a jointly trained fusion model.",
+      "Current-state estimate; not a PCOS diagnosis",
+      "cycle_irregularity is computed over a short observation window and cannot characterise long-term cycle regularity.",
+      "Profile assignment is unstable (bootstrap agreement 0.99, 3 domain(s) flip it). Report it as provisional or not at all.",
+      "Removing any of these domains changes the assignment: clinical_androgenic_evidence, lh_amh_pattern, metabolic",
+      "Cross-modal interpretation is rule-based. No jointly trained multimodal model was used, and no accuracy figure applies to the combined result."
+    ]
+  },
+  "summary": "Regular cycles, no androgenic signs, unremarkable labs. The low-evidence path: little is met, and little is missing."
+}

@@ -1,0 +1,15 @@
+[PAGE 1]
+SYNTHETIC REPORT - NOT A REAL PATIENT - GENERATED FOR PRISM TESTING
+SYNTHETIC ENDOCRINE LABORATORY REPORT
+Patient ID: SYNTH-DOC-0007
+Collected: 2024-04-11
+Reported: 2024-04-12
+
+[TABLE]
+Test | Result | Units | Reference Range
+LH | 18.2 | mIU/mL | 1.9 - 12.5
+FSH | 6 | mIU/mL | 2.5 - 10.2
+Estradiol | 62 | pg/mL | 30 - 400
+[/TABLE]
+
+End of synthetic report.

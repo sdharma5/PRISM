@@ -1,0 +1,15 @@
+[PAGE 1]
+SYNTHETIC REPORT - NOT A REAL PATIENT - GENERATED FOR PRISM TESTING
+SYNTHETIC ENDOCRINE LABORATORY REPORT
+Patient ID: SYNTH-DOC-0013
+Collected: 2024-08-08
+Reported: 2024-08-09
+
+[TABLE]
+Test | Result | Units | Reference Range
+Estradiol | 512 | pmol/L | 110 - 1500
+Progesterone | 42 | nmol/L | >30
+LH | 4.4 | IU/L | 1.9 - 12.5
+[/TABLE]
+
+End of synthetic report.

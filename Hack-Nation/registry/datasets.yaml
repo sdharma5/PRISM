@@ -1,0 +1,179 @@
+# PRISM dataset registry.
+#
+# Each entry declares what a dataset contains, what it may validly support, and
+# what it must never be used to claim. Ingestion adapters call
+# DatasetRegistry.require(dataset_id, use) and fail closed on a prohibited use.
+#
+# No clinical data is committed to this repository. Only descriptions live here.
+
+datasets:
+  pcos_tabular_public:
+    name: "Public PCOS clinical tabular dataset"
+    modality:
+      - tabular
+      - clinical
+      - symptoms
+      - derived_ultrasound_measurements
+    access: "public_or_external_download"
+    patient_level: true
+    longitudinal: false
+    labels:
+      - pcos_binary
+    allowed_uses:
+      - binary_baseline
+      - phenotype_domain_modeling
+      - exploratory_clustering
+      - missingness_analysis
+    prohibited_claims:
+      - validated_four_subtype_classification
+      - prospective_clinical_deployment
+      - longitudinal_state_modeling
+    notes: >-
+      Cross-sectional, single-site, modest sample size. Ultrasound-derived
+      columns are report-transcribed numbers, not image measurements.
+
+  mcphases:
+    name: "mcPHASES"
+    modality:
+      - hormones
+      - wearable
+      - cgm
+      - symptoms
+      - menstrual
+    access: "restricted_physionet"
+    patient_level: true
+    longitudinal: true
+    labels:
+      - cycle_phase
+    allowed_uses:
+      - temporal_state_model
+      - cycle_phase_prediction
+      - hormone_reconstruction
+      - symptom_forecasting
+      - missingness_analysis
+    prohibited_claims:
+      - pcos_subtype_validation
+      - pcos_diagnosis
+      - binary_baseline
+    notes: >-
+      Requires credentialed access. Never committed. Participants are not the
+      same people as any other dataset in this registry.
+
+  nhanes_2021_2023:
+    name: "NHANES 2021-2023"
+    modality:
+      - laboratory
+      - reproductive_history
+      - metabolic
+      - demographic
+    access: "public_cdc_download"
+    patient_level: true
+    longitudinal: false
+    allowed_uses:
+      - population_reference
+      - unit_harmonization
+      - external_stress_testing
+      - missingness_analysis
+    prohibited_claims:
+      - longitudinal_state_modeling
+      - validated_pcos_subtypes
+      - pcos_diagnosis
+    notes: >-
+      Complex survey design. Any population estimate must use survey weights;
+      unweighted use is limited to reference ranges and unit harmonization.
+
+  usova3d:
+    name: "USOVA3D"
+    modality:
+      - ultrasound_3d
+      - ovary_masks
+      - follicle_masks
+    access: "public_or_external_download"
+    patient_level: true
+    longitudinal: false
+    allowed_uses:
+      - ovary_segmentation
+      - follicle_segmentation
+      - follicle_counting
+      - morphology_measurement
+      - slice_extraction_for_2d_pretraining
+      - optional_3d_benchmark
+    prohibited_claims:
+      - pcos_diagnosis
+      - validated_pcos_subtypes
+      - prospective_clinical_deployment
+      - independent_2d_evaluation
+    notes: >-
+      One of the few public datasets with expert labels for BOTH ovary and
+      individual follicles, which is why it is used here. Its role is a
+      pretraining and label resource plus an optional 3D benchmark — it is not
+      a model of routine clinical input, which is 2D transvaginal imaging.
+      2D slices extracted from these volumes are legitimate for learning ovary
+      and follicle appearance, but a test set drawn from those same volumes is
+      NOT independent 2D evaluation — hence the prohibited claim. Segmentation
+      ground truth is annotator-derived; morphology metrics require physical
+      spacing in the source metadata.
+
+  ovarian_ultrasound_2d:
+    name: "2D ovarian ultrasound dataset (to be selected)"
+    modality:
+      - ultrasound_2d
+      - ovary_classification
+    access: "external_download_pending_selection"
+    patient_level: true
+    longitudinal: false
+    labels:
+      - ovary_class
+    allowed_uses:
+      - ovary_classification
+      - image_quality_modeling
+      - ultrasound_embedding
+      - pcom_morphology_classification
+      - external_stress_testing
+    prohibited_claims:
+      - pcos_diagnosis
+      - validated_pcos_subtypes
+      - follicle_instance_segmentation
+      - prospective_clinical_deployment
+    notes: >-
+      Placeholder for the primary 2D pathway. Class-level labels (normal ovary /
+      polycystic ovarian morphology / dominant follicle) support classification,
+      quality control and embedding, but NOT follicle instance segmentation —
+      that needs per-follicle masks, which is why USOVA3D-derived slices are
+      used for segmentation pretraining. No adapter may claim segmentation
+      supervision from this dataset. Fill in the concrete source before use.
+
+  prism_speech_eval_synthetic:
+    name: "PRISM scripted speech evaluation set (synthetic)"
+    modality:
+      - patient_voice
+      - clinician_voice
+    access: "in_repository_synthetic"
+    patient_level: false
+    longitudinal: false
+    allowed_uses:
+      - speech_extraction_evaluation
+      - negation_evaluation
+      - temporality_evaluation
+    prohibited_claims:
+      - clinical_speech_validation
+      - real_world_performance_estimate
+    notes: >-
+      Fully synthetic scripts written for this repository. Contains no real
+      patient speech and supports no claim about real-world performance.
+
+  prism_document_eval_synthetic:
+    name: "PRISM synthetic laboratory-report evaluation set"
+    modality:
+      - clinical_document
+      - laboratory
+    access: "in_repository_synthetic"
+    patient_level: false
+    longitudinal: false
+    allowed_uses:
+      - document_extraction_evaluation
+      - unit_conversion_evaluation
+      - page_grounding_evaluation
+    prohibited_claims:
+      - clinical_document_validation
+      - real_world_performance_estimate

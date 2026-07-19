@@ -1,0 +1,100 @@
+# 3D ovary/follicle segmentation on USOVA3D — the scientific baseline.
+#
+# Cohort reality (docs/ULTRASOUND_DATA_AUDIT.md): 16 volumes, no patient key, two
+# annotators who agree on the follicle count in only 5 of 16 volumes, and
+# placeholder spacing on 10 of 16. Every setting below is chosen for that, not
+# for a large dataset.
+
+experiment_id: exp_usova3d_3d_unet
+description: >-
+  Dual-head 3D U-Net predicting ovary and follicle masks from USOVA3D volumes.
+  An ovarian morphology model, not a PCOS diagnostic model.
+
+data:
+  dataset_id: usova3d
+  root: ../datasets/usova3d/raw
+  # r1 is the training target; r2 is held for dual-annotator evaluation. This is
+  # NOT a claim that r1 is correct — see evaluation.report_both_annotators.
+  annotator: r1
+  split_manifest: artifacts/splits/usova3d_volume_split_v1.json
+  cache_volumes: true
+
+split:
+  seed: 42
+  grouping_key: volume_id
+  n_validation: 2
+  n_test: 2
+
+model:
+  dims: 3
+  in_channels: 1
+  # ~1.9M parameters. Deliberately small: 12 training volumes cannot support
+  # more, and a 2-volume test set cannot detect the resulting memorisation.
+  base_channels: 16
+  depth: 3
+
+# Volumes are ~200x150x200; a full volume does not fit a sensible batch. Train on
+# random patches, evaluate whole volumes by sliding window so the reported metric
+# is a real per-volume number rather than a patch average.
+patch:
+  size: [32, 96, 96]
+  # Fraction of patches forced to contain follicle voxels. Without this, uniform
+  # sampling yields mostly-empty patches (26% of label slices have no follicle)
+  # and the follicle head sees almost no positives.
+  foreground_fraction: 0.5
+  sliding_window_overlap: 0.25
+
+loss:
+  lambda_ovary: 1.0
+  lambda_follicle: 1.0
+  # Small: the anatomical constraint should nudge, not dominate. At 1.0 the model
+  # learns to suppress follicles everywhere, which trivially satisfies it.
+  lambda_outside: 0.1
+  dice_weight: 1.0
+  bce_weight: 1.0
+  focal_gamma: 2.0
+  focal_alpha: 0.75
+  use_ground_truth_ovary_anchor: true
+
+augmentation:
+  enabled: true
+  # Conservative and anatomy-preserving. No augmentation may create or remove a
+  # follicle, and none changes spacing without updating metadata.
+  flip_axes: [2]          # left-right only; ovary laterality is not encoded
+  max_rotation_degrees: 10
+  max_translation_voxels: 4
+  scale_range: [0.9, 1.1]
+  intensity_scale_range: [0.9, 1.1]
+  gamma_range: [0.8, 1.25]
+  speckle_noise_std: 0.05
+  elastic_deformation: false   # off until the segmentation baseline is working
+
+training:
+  epochs: 120
+  batch_size: 2
+  learning_rate: 0.001
+  weight_decay: 0.00001
+  seed: 42
+  early_stopping_patience: 25
+  # Selection metric is follicle Dice on validation: the ovary is comparatively
+  # easy and would otherwise dominate checkpoint choice.
+  monitor: val_follicle_dice
+  monitor_mode: max
+  mixed_precision: auto      # used only when CUDA is present
+  num_workers: 0
+
+inference:
+  ovary_threshold: 0.5
+  follicle_threshold: 0.5
+
+evaluation:
+  report_both_annotators: true
+  per_volume_metrics: true
+  # Millimetre-denominated metrics are computed ONLY for volumes with genuine
+  # spacing. Ten of sixteen carry placeholder 1.0mm isotropic spacing.
+  physical_metrics_require_calibrated_spacing: true
+
+output:
+  dir: artifacts/experiments/exp_usova3d_3d_unet
+  save_overlays: true
+  save_predictions: true

@@ -1,0 +1,36 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-added-large-files
+        args: ["--maxkb=2048"]
+      - id: check-merge-conflict
+      - id: detect-private-key
+      - id: no-commit-to-branch
+        args: ["--branch", "main"]
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.5.7
+    hooks:
+      - id: ruff
+        args: ["--fix"]
+      - id: ruff-format
+
+  - repo: local
+    hooks:
+      - id: validate-registry
+        name: Validate dataset and variable registries
+        entry: python scripts/validate_registry.py
+        language: system
+        files: ^(registry|schemas)/
+        pass_filenames: false
+
+      - id: no-clinical-data
+        name: Block raw clinical data
+        entry: bash -c 'git diff --cached --name-only | grep -iE "\.(dcm|dicom|nii|wav|mp3|m4a)$" && { echo "Raw clinical data cannot be committed."; exit 1; } || exit 0'
+        language: system
+        pass_filenames: false

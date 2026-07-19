@@ -1,0 +1,12 @@
+[PAGE 1]
+SYNTHETIC REPORT - NOT A REAL PATIENT - GENERATED FOR PRISM TESTING
+SYNTHETIC ENDOCRINE LABORATORY REPORT
+Patient ID: SYNTH-DOC-0016
+Collected: 2024-09-05
+Reported: 2024-09-06
+
+Fasting Glucose: 4.9 mmol/L (Ref: 3.9 - 5.5)
+FSH: 7.7 IU/L (Ref: 2.5 - 10.2)
+Estradiol: 88 pg/mL (Ref: 30 - 400)
+
+End of synthetic report.

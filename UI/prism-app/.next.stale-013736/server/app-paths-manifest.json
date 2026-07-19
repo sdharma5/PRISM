@@ -1,0 +1,17 @@
+{
+  "/inputs/page": "app/inputs/page.js",
+  "/timeline/page": "app/timeline/page.js",
+  "/research/page": "app/research/page.js",
+  "/overview/page": "app/overview/page.js",
+  "/intake/page": "app/intake/page.js",
+  "/cycle/page": "app/cycle/page.js",
+  "/review/page": "app/review/page.js",
+  "/inputs/symptoms/page": "app/inputs/symptoms/page.js",
+  "/inputs/voice/page": "app/inputs/voice/page.js",
+  "/inputs/wearables/page": "app/inputs/wearables/page.js",
+  "/api/npi/route": "app/api/npi/route.js",
+  "/care/page": "app/care/page.js",
+  "/inputs/documents/page": "app/inputs/documents/page.js",
+  "/inputs/ultrasound/page": "app/inputs/ultrasound/page.js",
+  "/chat/page": "app/chat/page.js"
+}

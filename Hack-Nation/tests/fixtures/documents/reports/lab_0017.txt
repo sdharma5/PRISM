@@ -1,0 +1,27 @@
+[PAGE 1]
+SYNTHETIC REPORT - NOT A REAL PATIENT - GENERATED FOR PRISM TESTING
+SYNTHETIC ENDOCRINE LABORATORY REPORT
+Patient ID: SYNTH-DOC-0017
+Collected: 2024-02-02
+Reported: 2024-02-05
+
+[TABLE]
+Test | Result | Units | Reference Range
+Total Testosterone | 2.2 | nmol/L | 0.5 - 2.4
+SHBG | 33 | nmol/L | 18 - 114
+[/TABLE]
+
+[PAGE 2]
+SYNTHETIC REPORT - NOT A REAL PATIENT - GENERATED FOR PRISM TESTING
+SYNTHETIC ENDOCRINE LABORATORY REPORT
+Patient ID: SYNTH-DOC-0017
+Collected: 2024-02-02
+Reported: 2024-02-05
+
+[TABLE]
+Test | Result | Units | Reference Range
+Fasting Glucose | 5.1 | mmol/L | 3.9 - 5.5
+Fasting Insulin | 88 | pmol/L | 18 - 173
+[/TABLE]
+
+End of synthetic report.

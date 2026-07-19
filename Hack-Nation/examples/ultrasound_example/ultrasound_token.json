@@ -1,0 +1,70 @@
+{
+  "patient_id": "DEMO001",
+  "modality": "ovarian_ultrasound",
+  "embedding": [
+    4.0,
+    0.0,
+    0.0,
+    565.4599999999999,
+    0.0,
+    0.0,
+    5.506237630334047,
+    5.488466978797295,
+    1.278881101495844,
+    7.0204773895154835,
+    4.0,
+    0.0,
+    0.0,
+    0.8034067552203696,
+    0.9242739469749744,
+    0.9332961510507508
+  ],
+  "structured_features": {
+    "laterality": "left",
+    "acquisition_route": "transvaginal",
+    "acquisition_mode": "single_frame",
+    "measurement_feasible": true,
+    "full_ovary_visible": true,
+    "large_structure_flag": false,
+    "clinician_review_status": "model_generated",
+    "ovary_volume_ml": null,
+    "ovary_area_mm2": 565.4599999999999,
+    "follicle_number_per_section": 4,
+    "estimated_follicle_number_per_ovary": null,
+    "follicle_number_per_ovary": null,
+    "reportable_follicle_count": 4,
+    "follicle_count_method": "per_section",
+    "follicle_density_per_ml": null,
+    "frames_analyzed": 1,
+    "tracking_coverage": null,
+    "false_follicle_voxels_outside_ovary": 0,
+    "ovary_mask_largest_component_fraction": 1.0,
+    "follicle_mean_diameter_mm": 5.506237630334047,
+    "follicle_median_diameter_mm": 5.488466978797295,
+    "follicle_max_diameter_mm": 7.0204773895154835,
+    "follicle_n_2_to_9_mm": 4.0
+  },
+  "quality_score": 0.9332961510507508,
+  "confidence_score": 0.8034067552203696,
+  "observed_at": null,
+  "model_version": "0.2.0",
+  "source_dataset": "synthetic_phantom",
+  "provenance_ids": [
+    "DEMO001_FRAME"
+  ],
+  "missing_fields": [
+    "estimated_follicle_number_per_ovary",
+    "follicle_density_per_ml",
+    "follicle_number_per_ovary",
+    "ovary_volume_ml"
+  ],
+  "warnings": [
+    "2D acquisition: no ovarian volume and no true per-ovary follicle count can be derived from it, however many frames it contains.",
+    "Acquisition mode: single_frame.",
+    "Clinician confirmation pending",
+    "Model-generated imaging measurement; not a diagnosis and not clinically validated.",
+    "Original spacing unknown: only unitless features are valid.",
+    "Ovarian volume not reported: a 2D acquisition has no calibrated out-of-plane geometry, so volume cannot be computed. Cross-sectional area is reported instead.",
+    "Single frame: per-ovary count unavailable. Only follicle_number_per_section (follicles visible in this one cross-section) is reported, and it is not comparable to a per-ovary antral follicle count."
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "dataset": "pcos_tabular",
+  "source": "kaggle:prasoonkottarathil/polycystic-ovary-syndrome-pcos",
+  "license": "CC0 1.0",
+  "version_date": "2020",
+  "status": "downloaded_and_verified",
+  "n_patients_main": 541,
+  "n_features_main": 45,
+  "pcos_positive": 177,
+  "pcos_negative": 364,
+  "key_hormones": [
+    "FSH",
+    "LH",
+    "AMH",
+    "TSH",
+    "PRL",
+    "beta-HCG",
+    "PRG"
+  ],
+  "key_features": [
+    "Age",
+    "BMI",
+    "Follicle No. L/R",
+    "Avg F size",
+    "Endometrium",
+    "Waist:Hip Ratio",
+    "FSH(mIU/mL)",
+    "LH(mIU/mL)",
+    "AMH(ng/mL)",
+    "TSH(mIU/L)",
+    "PRL(ng/mL)"
+  ],
+  "n_patients_infertility_csv": 541,
+  "files": {
+    "PCOS_data_without_infertility.xlsx": "b663ec9f491be419718e0935eb1c5b6c4923b527282230a73cfc9aca8533f742",
+    "PCOS_infertility.csv": "2e4f06b6dc68450c0e05d7a433dabd4ff50ad2edb7e9302d6103449a95b63ad3"
+  },
+  "root": "/weka/scratch/uchitra1/users/a_s/mit_hackathon/datasets/pcos_tabular/raw"
+}

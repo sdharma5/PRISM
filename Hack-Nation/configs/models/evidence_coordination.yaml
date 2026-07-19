@@ -1,0 +1,92 @@
+# Evidence coordination: how independently-trained encoders are combined.
+#
+# READ THIS BEFORE CHANGING A NUMBER.
+#
+# Every weight below is a DESIGN RULE, not a learned clinical coefficient. None
+# of them was fit to data, because fitting them would require patients who have
+# all modalities measured at once -- and no such cohort exists here (ADR-002).
+# They encode one editorial judgement: which modality is *entitled to speak* to
+# which clinical domain, and how loudly.
+#
+# Consequently:
+#   * a domain score produced from these weights is EVIDENCE, not a prediction;
+#   * it carries no validated accuracy, and no AUROC may be reported for it;
+#   * changing a weight changes the report and requires no retraining, which is
+#     precisely the property that makes this layer auditable rather than opaque.
+#
+# The one genuinely learned component is the static clinical PCOS head, trained
+# on the matched tabular cohort. The coordinator marks it as such in
+# `learned_components_used` so a reader can tell the two apart.
+
+version: "0.1.0"
+default_mode: rule_based
+
+# ---------------------------------------------------------------------------
+# Relevance weights w[domain][modality].
+#
+# 0.0 means "this modality has nothing to say about this domain" and the
+# modality is excluded from that domain entirely -- not down-weighted to near
+# zero, excluded. An ultrasound image carries no metabolic information, and a
+# small non-zero weight would let it drift a metabolic score.
+# ---------------------------------------------------------------------------
+domain_weights:
+  reproductive:
+    # Cycle history is the primary operationalisation of ovulatory function.
+    static_clinical: 1.0
+    # Repeated hormone/cycle observation speaks directly to ovulation, but a
+    # short observation window cannot characterise long-term regularity.
+    longitudinal_hormonal_state: 0.8
+    # Follicle morphology is weak, indirect evidence of ovulatory status.
+    ovarian_ultrasound: 0.3
+
+  androgenic:
+    # Both clinical signs and biochemical androgens arrive through this branch.
+    static_clinical: 1.0
+    longitudinal_hormonal_state: 0.2
+    ovarian_ultrasound: 0.0
+
+  metabolic:
+    static_clinical: 1.0
+    # CGM / wearable-derived metabolic signal, when present.
+    longitudinal_hormonal_state: 0.4
+    ovarian_ultrasound: 0.0
+
+  ovarian_morphology:
+    # Imaging is the definitional modality for ovarian morphology.
+    ovarian_ultrasound: 1.0
+    # Report-transcribed follicle counts in the tabular cohort are real evidence
+    # but second-hand, and are not an image-derived count.
+    static_clinical: 0.4
+    longitudinal_hormonal_state: 0.0
+
+  current_state:
+    # Only the temporal encoder estimates a *current* physiological state.
+    longitudinal_hormonal_state: 1.0
+    static_clinical: 0.0
+    ovarian_ultrasound: 0.0
+
+# ---------------------------------------------------------------------------
+# Agreement classification between modalities scoring the same domain.
+# Spread = max(score) - min(score) across contributing modalities.
+# ---------------------------------------------------------------------------
+agreement:
+  strong_max_spread: 0.15
+  moderate_max_spread: 0.30
+  # Above moderate_max_spread the domain is reported as "conflicting". The
+  # score is still computed, but the conflict is surfaced and NEVER averaged
+  # away silently -- see inference/disagreement.py.
+  conflict_requires_note: true
+
+# ---------------------------------------------------------------------------
+# Abstention. Insufficient evidence must produce no number at all.
+# ---------------------------------------------------------------------------
+abstention:
+  # A domain needs this much combined quality*confidence mass to be reported.
+  min_domain_evidence_mass: 0.20
+  # A whole-patient PCOS evidence statement requires the learned static head;
+  # ultrasound or temporal evidence alone cannot support one.
+  pcos_statement_requires_static: true
+  # Fraction of the three branches present, below which the report is marked
+  # low-coverage. Not an abstention on its own -- a single-modality report is
+  # legitimate, it just may not claim a whole-patient PCOS statement.
+  low_coverage_threshold: 0.34

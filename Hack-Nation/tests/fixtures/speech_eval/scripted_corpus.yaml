@@ -1,0 +1,774 @@
+# PRISM scripted speech evaluation corpus.
+#
+# ============================ SYNTHETIC DATA =============================
+# Every utterance below was written by hand for this repository. NONE of it is
+# real patient speech, real clinician speech, or a transcription of either. It
+# supports no claim about real-world performance — see
+# registry/datasets.yaml -> prism_speech_eval_synthetic, which prohibits exactly
+# that claim.
+# =========================================================================
+#
+# WHY A SCRIPTED CORPUS: it separates two failure modes that a real recording
+# conflates. With the transcript held fixed and known, every extraction error is
+# an *extraction* error. ASR error is measured separately by WER against a real
+# engine on the same scripts. A corpus that mixed them would let a good ASR
+# model hide a bad negation rule.
+#
+# Ground-truth annotation convention:
+#   code         canonical variable code the utterance asserts, or omitted when
+#                the utterance asserts nothing extractable (an important case:
+#                clinician questions and fertility goals must yield NO events).
+#   attribution  patient | family_member  — whose finding it is.
+#   negated      the speaker asserts the finding is absent.
+#   historical   the finding is placed in the past and not asserted as current.
+#   uncertain    the speaker hedges.
+#   speaker_role who is talking, which is not the same as whose finding it is.
+
+corpus_id: prism_speech_eval_synthetic
+version: "1.0.0"
+synthetic: true
+language: en
+source_dataset: prism_speech_eval_synthetic
+notice: >-
+  Fully synthetic. Contains no real patient speech. Not a clinical validation set.
+
+utterances:
+  # ---------------------------------------------------------------- worked
+  - id: U001
+    category: present
+    worked_example: 1
+    speaker_role: patient
+    text: "I've had irregular periods since high school, maybe twice a year."
+    events:
+      - code: cycle_irregularity
+        attribution: patient
+        speaker_role: patient
+      - code: menstrual_frequency_per_year
+        attribution: patient
+        speaker_role: patient
+        uncertain: true
+
+  - id: U002
+    category: family_history
+    worked_example: 2
+    speaker_role: patient
+    text: "My mom has PCOS but I don't have diabetes."
+    events:
+      - code: family_history_pcos
+        attribution: family_member
+        relation: mother
+        speaker_role: patient
+    notes: >-
+      The diabetes mention is patient-attributed and negated, but the registry
+      has no patient-level diabetes variable, so it is recorded as an unmapped
+      mention rather than invented as a diagnosis.
+
+  - id: U003
+    category: medication_stop
+    worked_example: 3
+    speaker_role: patient
+    text: "I stopped metformin about three months ago because of the nausea."
+    events:
+      - code: medication_current
+        value: metformin
+        medication_action: stop
+        attribution: patient
+        historical: true
+        speaker_role: patient
+
+  # --------------------------------------------------------------- present
+  - id: U004
+    category: present
+    speaker_role: patient
+    text: "I get acne along my jawline almost every month."
+    events:
+      - { code: acne, attribution: patient, speaker_role: patient }
+
+  - id: U005
+    category: present
+    speaker_role: patient
+    text: "I have facial hair on my chin that I have to pluck every few days."
+    events:
+      - { code: hair_growth_face, attribution: patient, speaker_role: patient }
+
+  - id: U006
+    category: present
+    speaker_role: patient
+    text: "My hair is falling out at the front and it's really noticeable now."
+    events:
+      - { code: androgenic_alopecia, attribution: patient, speaker_role: patient }
+
+  - id: U007
+    category: present
+    speaker_role: patient
+    text: "I've gained weight steadily over the last two years."
+    events:
+      - { code: weight_gain, attribution: patient, speaker_role: patient }
+
+  - id: U008
+    category: present
+    speaker_role: patient
+    text: "I am tired all the time, even after eight hours of sleep."
+    events:
+      - { code: fatigue, attribution: patient, speaker_role: patient }
+
+  - id: U009
+    category: present
+    speaker_role: patient
+    text: "I get severe pelvic pain in the week before my period."
+    events:
+      - { code: pelvic_pain, attribution: patient, speaker_role: patient }
+
+  - id: U010
+    category: present
+    speaker_role: patient
+    text: "There are dark patches on my neck that my sister noticed first."
+    events:
+      - { code: skin_darkening, attribution: patient, speaker_role: patient }
+
+  - id: U011
+    category: present
+    speaker_role: patient
+    text: "My periods are irregular and unpredictable."
+    events:
+      - { code: cycle_irregularity, attribution: patient, speaker_role: patient }
+
+  - id: U012
+    category: present
+    speaker_role: patient
+    text: "I've had mood swings that get much worse before my period."
+    events:
+      - { code: mood_change, attribution: patient, speaker_role: patient }
+
+  - id: U013
+    category: present
+    speaker_role: clinician
+    text: "Patient reports excessive hair growth on the abdomen."
+    events:
+      - { code: hirsutism, attribution: patient, speaker_role: clinician }
+
+  # --------------------------------------------------------------- negated
+  - id: U014
+    category: negated
+    speaker_role: patient
+    text: "I don't have acne at all."
+    events:
+      - { code: acne, attribution: patient, negated: true, speaker_role: patient }
+
+  - id: U015
+    category: negated
+    speaker_role: patient
+    text: "I have never had facial hair."
+    events:
+      - { code: hair_growth_face, attribution: patient, negated: true, speaker_role: patient }
+
+  - id: U016
+    category: negated
+    speaker_role: clinician
+    text: "She denies pelvic pain."
+    events:
+      - { code: pelvic_pain, attribution: patient, negated: true, speaker_role: clinician }
+
+  - id: U017
+    category: negated
+    speaker_role: patient
+    text: "My periods are not regular."
+    events:
+      - { code: cycle_regularity, attribution: patient, negated: true, speaker_role: patient }
+
+  - id: U018
+    category: negated
+    speaker_role: clinician
+    text: "No hair loss and no skin darkening on examination."
+    events:
+      - { code: androgenic_alopecia, attribution: patient, negated: true, speaker_role: clinician }
+      - { code: skin_darkening, attribution: patient, negated: true, speaker_role: clinician }
+
+  - id: U019
+    category: negated
+    speaker_role: patient
+    text: "I have not gained weight this year."
+    events:
+      - { code: weight_gain, attribution: patient, negated: true, speaker_role: patient }
+
+  - id: U020
+    category: negated
+    speaker_role: patient
+    text: "I don't get mood swings, but I do get cramps."
+    events:
+      - { code: mood_change, attribution: patient, negated: true, speaker_role: patient }
+      - { code: pelvic_pain, attribution: patient, speaker_role: patient }
+    notes: "The 'but' terminates the negation scope; cramps are asserted, not denied."
+
+  - id: U021
+    category: negated
+    speaker_role: patient
+    text: "I have no trouble conceiving as far as I know."
+    events:
+      - { code: infertility_history, attribution: patient, negated: true, speaker_role: patient }
+
+  # ------------------------------------------------------------ historical
+  - id: U022
+    category: historical
+    speaker_role: patient
+    text: "I used to get acne when I was a teenager."
+    events:
+      - { code: acne, attribution: patient, historical: true, speaker_role: patient }
+
+  - id: U023
+    category: historical
+    speaker_role: patient
+    text: "I had irregular periods in high school."
+    events:
+      - { code: cycle_irregularity, attribution: patient, historical: true, speaker_role: patient }
+
+  - id: U024
+    category: historical
+    speaker_role: patient
+    text: "I used to have hair loss, it stopped a while back."
+    events:
+      - { code: androgenic_alopecia, attribution: patient, historical: true, speaker_role: patient }
+
+  - id: U025
+    category: historical
+    speaker_role: clinician
+    text: "History of pelvic pain, resolved."
+    events:
+      - { code: pelvic_pain, attribution: patient, historical: true, speaker_role: clinician }
+
+  - id: U026
+    category: historical
+    speaker_role: patient
+    text: "I had weight gain in college but it came off afterwards."
+    events:
+      - { code: weight_gain, attribution: patient, historical: true, speaker_role: patient }
+
+  - id: U027
+    category: historical
+    speaker_role: patient
+    text: "Years ago I had fatigue that turned out to be anaemia."
+    events:
+      - { code: fatigue, attribution: patient, historical: true, speaker_role: patient }
+
+  - id: U028
+    category: historical_vs_present
+    speaker_role: patient
+    text: "I've had acne since high school and it's still there."
+    events:
+      - { code: acne, attribution: patient, speaker_role: patient }
+    notes: "Longstanding but current. 'since' keeps this present tense."
+
+  # ------------------------------------------------------------- uncertain
+  - id: U029
+    category: uncertain
+    speaker_role: patient
+    text: "I think I have hair loss, but I'm not certain."
+    events:
+      - { code: androgenic_alopecia, attribution: patient, uncertain: true, speaker_role: patient }
+
+  - id: U030
+    category: uncertain
+    speaker_role: patient
+    text: "Maybe acne, it's hard to say."
+    events:
+      - { code: acne, attribution: patient, uncertain: true, speaker_role: patient }
+
+  - id: U031
+    category: uncertain
+    speaker_role: patient
+    text: "I guess my periods are irregular."
+    events:
+      - { code: cycle_irregularity, attribution: patient, uncertain: true, speaker_role: patient }
+
+  - id: U032
+    category: uncertain
+    speaker_role: patient
+    text: "I'm not sure I have facial hair, it might be normal."
+    events:
+      - { code: hair_growth_face, attribution: patient, uncertain: true, speaker_role: patient }
+    notes: "'not sure' is pseudo-negation: doubt, not denial. Must NOT be negated."
+
+  - id: U033
+    category: uncertain
+    speaker_role: patient
+    text: "Possibly weight gain, I haven't weighed myself."
+    events:
+      - { code: weight_gain, attribution: patient, uncertain: true, speaker_role: patient }
+
+  - id: U034
+    category: uncertain
+    speaker_role: clinician
+    text: "She might have hirsutism; scoring deferred."
+    events:
+      - { code: hirsutism, attribution: patient, uncertain: true, speaker_role: clinician }
+
+  # -------------------------------------------------------- family history
+  - id: U035
+    category: family_history
+    speaker_role: patient
+    text: "My sister has PCOS."
+    events:
+      - { code: family_history_pcos, attribution: family_member, relation: sister, speaker_role: patient }
+
+  - id: U036
+    category: family_history
+    speaker_role: patient
+    text: "My father has type 2 diabetes."
+    events:
+      - { code: family_history_diabetes, attribution: family_member, relation: father, speaker_role: patient }
+
+  - id: U037
+    category: family_history
+    speaker_role: patient
+    text: "My grandmother had diabetes."
+    events:
+      - { code: family_history_diabetes, attribution: family_member, relation: grandmother, speaker_role: patient }
+
+  - id: U038
+    category: family_history
+    speaker_role: patient
+    text: "My aunt has polycystic ovary syndrome."
+    events:
+      - { code: family_history_pcos, attribution: family_member, relation: aunt, speaker_role: patient }
+
+  - id: U039
+    category: family_history
+    speaker_role: clinician
+    text: "Family history of diabetes on the maternal side."
+    events:
+      - { code: family_history_diabetes, attribution: family_member, speaker_role: clinician }
+
+  - id: U040
+    category: family_history_contrast
+    speaker_role: patient
+    text: "My mother has PCOS but I have acne myself."
+    events:
+      - { code: family_history_pcos, attribution: family_member, relation: mother, speaker_role: patient }
+      - { code: acne, attribution: patient, speaker_role: patient }
+    notes: "The critical case: the relative's diagnosis must never attach to the patient."
+
+  - id: U041
+    category: family_history
+    speaker_role: patient
+    text: "My cousin has PCOS and my mom has diabetes."
+    events:
+      - { code: family_history_pcos, attribution: family_member, relation: cousin, speaker_role: patient }
+      - { code: family_history_diabetes, attribution: family_member, relation: mother, speaker_role: patient }
+
+  # ------------------------------------------------------------ medication
+  - id: U042
+    category: medication_start
+    speaker_role: patient
+    text: "I started metformin two months ago."
+    events:
+      - { code: medication_current, value: metformin, medication_action: start, attribution: patient, speaker_role: patient }
+
+  - id: U043
+    category: medication_start
+    speaker_role: clinician
+    text: "We started her on spironolactone at the last visit."
+    events:
+      - { code: medication_current, value: spironolactone, medication_action: start, attribution: patient, speaker_role: clinician }
+
+  - id: U044
+    category: medication_current
+    speaker_role: patient
+    text: "I am still taking inositol every morning."
+    events:
+      - { code: medication_current, value: inositol, medication_action: continue, attribution: patient, speaker_role: patient }
+
+  - id: U045
+    category: medication_stop
+    speaker_role: patient
+    text: "I came off birth control last year."
+    events:
+      - { code: medication_current, value: combined_oral_contraceptive, medication_action: stop, attribution: patient, historical: true, speaker_role: patient }
+
+  - id: U046
+    category: medication_stop
+    speaker_role: patient
+    text: "I quit letrozole after two cycles."
+    events:
+      - { code: medication_current, value: letrozole, medication_action: stop, attribution: patient, historical: true, speaker_role: patient }
+
+  - id: U047
+    category: medication_change
+    speaker_role: clinician
+    text: "She switched to levothyroxine in March."
+    events:
+      - { code: medication_current, value: levothyroxine, medication_action: change, attribution: patient, speaker_role: clinician }
+
+  - id: U048
+    category: medication_current
+    speaker_role: patient
+    text: "I have been taking clomiphene for three months."
+    events:
+      - { code: medication_current, value: clomiphene, medication_action: continue, attribution: patient, speaker_role: patient }
+
+  - id: U049
+    category: medication_current
+    speaker_role: patient
+    text: "I am on spironolactone for my acne."
+    events:
+      - { code: medication_current, value: spironolactone, medication_action: continue, attribution: patient, speaker_role: patient }
+      - { code: acne, attribution: patient, speaker_role: patient }
+
+  # ---------------------------------------------------------- cycle timing
+  - id: U050
+    category: cycle_timing
+    speaker_role: patient
+    text: "My cycles come every 45 days."
+    events:
+      - { code: cycle_length, attribution: patient, speaker_role: patient }
+
+  - id: U051
+    category: cycle_timing
+    speaker_role: patient
+    text: "I only get about three periods a year."
+    events:
+      - { code: menstrual_frequency_per_year, attribution: patient, speaker_role: patient }
+
+  - id: U052
+    category: cycle_timing
+    speaker_role: patient
+    text: "My periods come every 28 days like clockwork."
+    events:
+      - { code: cycle_regularity, attribution: patient, speaker_role: patient }
+      - { code: cycle_length, attribution: patient, speaker_role: patient }
+
+  - id: U053
+    category: cycle_timing
+    speaker_role: patient
+    text: "I haven't had a period in four months."
+    events:
+      - { code: amenorrhea, attribution: patient, speaker_role: patient }
+
+  - id: U054
+    category: cycle_timing
+    speaker_role: patient
+    text: "My periods stopped completely about eight months ago."
+    events:
+      - { code: amenorrhea, attribution: patient, speaker_role: patient }
+
+  - id: U055
+    category: cycle_timing
+    speaker_role: clinician
+    text: "Cycles every 60 days by patient report."
+    events:
+      - { code: cycle_length, attribution: patient, speaker_role: clinician }
+
+  # -------------------------------------------------------- fertility goal
+  - id: U056
+    category: fertility_goal
+    speaker_role: patient
+    text: "We are hoping to start a family in the next year or two."
+    events: []
+    notes: "A goal, not a finding. Must produce no clinical event."
+
+  - id: U057
+    category: fertility_goal
+    speaker_role: patient
+    text: "I want to know what my options are before we try for a baby."
+    events: []
+
+  - id: U058
+    category: fertility_goal
+    speaker_role: patient
+    text: "We have been trying for two years without success."
+    events:
+      - { code: infertility_history, attribution: patient, speaker_role: patient }
+    notes: "A goal plus a failed attempt over time is a clinical finding."
+
+  - id: U059
+    category: fertility_goal
+    speaker_role: patient
+    text: "I've had trouble conceiving and we're considering fertility treatment."
+    events:
+      - { code: infertility_history, attribution: patient, speaker_role: patient }
+
+  # ----------------------------------------------------- clinician question
+  - id: U060
+    category: clinician_question
+    speaker_role: clinician
+    text: "Have you noticed any excess hair growth?"
+    events: []
+    notes: "A question asserts nothing. Extracting hirsutism here would invent a finding."
+
+  - id: U061
+    category: clinician_question
+    speaker_role: clinician
+    text: "Do you get acne?"
+    events: []
+
+  - id: U062
+    category: clinician_question
+    speaker_role: clinician
+    text: "Are your periods regular?"
+    events: []
+
+  - id: U063
+    category: clinician_question
+    speaker_role: clinician
+    text: "Any family history of PCOS or diabetes?"
+    events: []
+
+  - id: U064
+    category: clinician_question
+    speaker_role: clinician
+    text: "Have you ever taken metformin?"
+    events: []
+
+  # ------------------------------------------------------ speaker confusion
+  - id: U065
+    category: speaker_confusion
+    speaker_role: clinician
+    text: "She reports her periods are irregular and she denies acne."
+    events:
+      - { code: cycle_irregularity, attribution: patient, speaker_role: clinician }
+      - { code: acne, attribution: patient, negated: true, speaker_role: clinician }
+
+  - id: U066
+    category: speaker_confusion
+    speaker_role: clinician
+    text: "The patient describes hair loss over the past year."
+    events:
+      - { code: androgenic_alopecia, attribution: patient, speaker_role: clinician }
+
+  - id: U067
+    category: speaker_confusion
+    speaker_role: clinician
+    text: "Her mother has PCOS; she has acne."
+    events:
+      - { code: family_history_pcos, attribution: family_member, relation: mother, speaker_role: clinician }
+      - { code: acne, attribution: patient, speaker_role: clinician }
+
+  - id: U068
+    category: speaker_confusion
+    speaker_role: clinician
+    text: "She has been taking metformin since January."
+    events:
+      - { code: medication_current, value: metformin, medication_action: continue, attribution: patient, speaker_role: clinician }
+
+  # ------------------------------------------------------- approximate date
+  - id: U069
+    category: approximate_date
+    speaker_role: patient
+    text: "I started metformin around six months ago, give or take."
+    events:
+      - { code: medication_current, value: metformin, medication_action: start, attribution: patient, speaker_role: patient }
+
+  - id: U070
+    category: approximate_date
+    speaker_role: patient
+    text: "The acne started when I was 16."
+    events:
+      - { code: acne, attribution: patient, speaker_role: patient }
+
+  - id: U071
+    category: approximate_date
+    speaker_role: patient
+    text: "I've had fatigue for about a year."
+    events:
+      - { code: fatigue, attribution: patient, speaker_role: patient }
+
+  - id: U072
+    category: approximate_date
+    speaker_role: patient
+    text: "My weight gain started in college, or thereabouts."
+    events:
+      - { code: weight_gain, attribution: patient, historical: true, speaker_role: patient }
+    notes: "Onset is approximate; PRISM records the phrase, never a fabricated date."
+
+  # ------------------------------------------------- blueprint worked examples
+  # These three utterances are quoted verbatim from the PRISM implementation
+  # blueprint. They are the reference cases the extraction contract was
+  # specified against, so they are pinned here and asserted individually in
+  # tests/unit/test_blueprint_examples.py rather than only in aggregate metrics.
+  - id: U073
+    category: present
+    speaker_role: patient
+    text: "My periods have been between 45 and 70 days apart for about a year."
+    events:
+      - { code: cycle_irregularity, attribution: patient, current: true, negated: false, uncertain: false, speaker_role: patient }
+      - { code: cycle_length, attribution: patient, uncertain: true, speaker_role: patient }
+    notes: >-
+      Blueprint worked example 1. Text is verbatim from the blueprint. Expected
+      duration: approximately_12_months.
+      ANNOTATION NOTE (added by the speech-pipeline implementer, NOT from the
+      blueprint): the second event, cycle_length, records the midpoint of the
+      stated 45-70 day range with uncertain=true and the endpoints preserved in
+      value_range. It is annotated here only so this case matches U076-U079,
+      which cover the same construction. The blueprint listed only
+      cycle_irregularity; if the intent was that a range must NOT yield a point
+      value at all, drop this line and the extractor's range-to-midpoint rule
+      together.
+
+  - id: U074
+    category: historical
+    speaker_role: patient
+    text: "I had acne in high school, but I do not have it now."
+    events:
+      - { code: acne, attribution: patient, historical: true, current: false, negated: false, speaker_role: patient }
+    notes: >-
+      Blueprint worked example 2. Status is historical_resolved, NOT negated:
+      the patient affirms the symptom occurred, then reports it resolved. A
+      negation label here would erase a real past finding.
+
+  - id: U075
+    category: family_history
+    speaker_role: patient
+    text: "My sister has PCOS."
+    events:
+      - { code: family_history_pcos, attribution: family_member, relation: sister, current: false, speaker_role: patient }
+    notes: >-
+      Blueprint worked example 3. Must never be converted into a patient
+      diagnosis.
+
+  # ------------------------------------------------- numeric cycle expression
+  # WHY THIS BLOCK EXISTS: blueprint example 1 exposed a blind spot — patients
+  # state irregularity as a NUMBER far more often than as the word "irregular",
+  # and a lexicon-shaped corpus never tested it. These cases exercise the
+  # cycle_thresholds path in lexicon.yaml, including the cases that must NOT
+  # produce an irregularity claim.
+
+  - id: U076
+    category: numeric_cycle
+    speaker_role: patient
+    text: "My cycles are anywhere from 30 to 60 days."
+    events:
+      - { code: cycle_irregularity, attribution: patient, speaker_role: patient }
+      - { code: cycle_length, attribution: patient, uncertain: true, speaker_role: patient }
+    notes: "30-day spread far exceeds the 9-day variability threshold."
+
+  - id: U077
+    category: numeric_cycle
+    speaker_role: patient
+    text: "My periods come 45 to 70 days apart."
+    events:
+      - { code: cycle_irregularity, attribution: patient, speaker_role: patient }
+      - { code: cycle_length, attribution: patient, uncertain: true, speaker_role: patient }
+
+  - id: U078
+    category: numeric_cycle
+    speaker_role: patient
+    text: "My cycles range from 28 to 32 days."
+    events:
+      - { code: cycle_length, attribution: patient, uncertain: true, speaker_role: patient }
+    notes: >-
+      A normal, tight range. It must NOT produce cycle_irregularity, and it must
+      NOT produce a cycle_regularity='regular' claim either: flagging an abnormal
+      number is a safe machine action, issuing a clean bill of health is not.
+
+  - id: U079
+    category: numeric_cycle
+    speaker_role: clinician
+    text: "She reports cycles between 21 and 55 days over the past year."
+    events:
+      - { code: cycle_irregularity, attribution: patient, speaker_role: clinician }
+      - { code: cycle_length, attribution: patient, uncertain: true, speaker_role: clinician }
+    notes: "Both endpoints fall outside the normal 24-38 day band."
+
+  - id: U080
+    category: numeric_cycle
+    speaker_role: patient
+    text: "I skip months at a time."
+    events:
+      - { code: cycle_irregularity, attribution: patient, speaker_role: patient }
+    notes: "Irregularity described behaviourally, with no cycle-length number."
+
+  # ------------------------------------------------------ numeric weight/score
+  - id: U081
+    category: numeric_weight
+    speaker_role: patient
+    text: "I've put on 20 pounds since January."
+    events:
+      - { code: weight_gain, attribution: patient, speaker_role: patient }
+    notes: >-
+      A change, not an absolute. weight_gain is asserted; no `weight` event is
+      emitted, and "since January" is kept verbatim rather than resolved to a date.
+
+  - id: U082
+    category: numeric_weight
+    speaker_role: patient
+    text: "I've gained about 15 kg in the last year."
+    events:
+      - { code: weight_gain, attribution: patient, speaker_role: patient }
+
+  - id: U083
+    category: hirsutism_behaviour
+    speaker_role: patient
+    text: "I have to shave my chin every day."
+    events:
+      - { code: hair_growth_face, attribution: patient, speaker_role: patient }
+    notes: "Grooming behaviour entails the finding it treats."
+
+  - id: U084
+    category: numeric_score
+    speaker_role: clinician
+    text: "Her Ferriman-Gallwey score was 12."
+    events:
+      - { code: ferriman_gallwey_score, attribution: patient, speaker_role: clinician }
+    notes: >-
+      An explicitly stated score only. An FG score is never inferred from a hair
+      description — that would fabricate an examination nobody performed.
+
+  # ============================ KNOWN COVERAGE LIMITS ======================
+  #
+  # THESE CASES ARE EXPECTED TO FAIL. They are annotated with what a clinician
+  # would record, and the current extractor recovers little or none of it.
+  #
+  # WHY THEY ARE IN THE CORPUS RATHER THAN ONLY IN A DOCSTRING: the first version
+  # of this corpus scored 0.9933 F1 because every utterance had been written
+  # within the lexicon's reach. That number measured the corpus, not the
+  # extractor. These utterances deliberately sit outside it, so the headline
+  # recall figure carries the cost of the gaps instead of hiding them. Recall is
+  # SUPPOSED to drop here. Do not "fix" this block by deleting the gold events.
+  #
+  # If a limit is later closed in ingestion/speech/, the corresponding case will
+  # start passing and recall will rise on its own — which is the only honest way
+  # for that number to improve.
+
+  - id: U085
+    category: coverage_limit
+    speaker_role: patient
+    text: "I only need tampons a few times a year."
+    events:
+      - { code: menstrual_frequency_per_year, attribution: patient, speaker_role: patient }
+    notes: >-
+      LIMIT — inferential frequency. Oligomenorrhoea stated via a proxy
+      behaviour, with no cycle fact ever spoken. Currently extracts nothing.
+
+  - id: U086
+    category: coverage_limit
+    speaker_role: patient
+    text: "My mum was diagnosed with diabetes. My sister has it as well."
+    events:
+      - { code: family_history_diabetes, attribution: family_member, relation: mother, speaker_role: patient }
+      - { code: family_history_diabetes, attribution: family_member, relation: sister, speaker_role: patient }
+    notes: >-
+      LIMIT — cross-sentence coreference. "it" in sentence two refers to the
+      diagnosis named in sentence one. Only the first is currently recovered, so
+      the sister's history is silently lost.
+
+  - id: U087
+    category: coverage_limit
+    speaker_role: patient
+    text: "I weigh 200 pounds and I am five foot four."
+    events:
+      - { code: weight, attribution: patient, speaker_role: patient }
+      - { code: height, attribution: patient, speaker_role: patient }
+    notes: >-
+      LIMIT — absolute self-reported anthropometrics. Deliberately not handled:
+      these need registry unit conversion (lb->kg, ft/in->cm) and a
+      measurement-context check, and a self-report is not a measured observation.
+      Annotated anyway so the cost of not handling it is visible in recall.
+
+  - id: U088
+    category: coverage_limit
+    speaker_role: patient
+    text: "I never know when it is going to show up."
+    events:
+      - { code: cycle_irregularity, attribution: patient, speaker_role: patient }
+    notes: >-
+      LIMIT — coreference plus idiom. "it" is the period; the utterance is a
+      clear irregularity report to any human reader and is currently missed.

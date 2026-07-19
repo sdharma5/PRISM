@@ -1,0 +1,12 @@
+[PAGE 1]
+SYNTHETIC REPORT - NOT A REAL PATIENT - GENERATED FOR PRISM TESTING
+SYNTHETIC ENDOCRINE LABORATORY REPORT
+Patient ID: SYNTH-DOC-0004
+Collected: 2024-06-03
+Reported: 2024-06-05
+
+Estradiol: 240 pmol/L (Ref: 110 - 1500)
+Progesterone: 18 nmol/L (Ref: >30)
+AMH: 44 pmol/L (Ref: 7 - 60)
+
+End of synthetic report.

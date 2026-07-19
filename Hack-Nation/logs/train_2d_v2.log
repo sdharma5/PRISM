@@ -1,0 +1,70 @@
+device: cpu
+split: reusing usova3d_volume_split_v1.json
+loading 12 train + 2 val volumes (annotator r1)
+model: 672,114 parameters
+
+training 60 epochs x 48 steps, patch (128, 128)
+
+epoch   1  loss 1.7292  ovary 0.4573  follicle 0.3820  *best
+epoch   2  loss 1.5558  ovary 0.4951  follicle 0.3841  *best
+epoch   3  loss 1.4779  ovary 0.5075  follicle 0.4160  *best
+epoch   4  loss 1.3300  ovary 0.5135  follicle 0.4292  *best
+epoch   5  loss 1.3430  ovary 0.4986  follicle 0.4322  *best
+epoch   6  loss 1.2572  ovary 0.5113  follicle 0.4266
+epoch   7  loss 1.1963  ovary 0.5112  follicle 0.4090
+epoch   8  loss 1.1165  ovary 0.5032  follicle 0.4215
+epoch   9  loss 1.0510  ovary 0.4961  follicle 0.4489  *best
+epoch  10  loss 1.0653  ovary 0.5042  follicle 0.4382
+epoch  11  loss 1.0626  ovary 0.5187  follicle 0.4480
+epoch  12  loss 0.9930  ovary 0.5081  follicle 0.4378
+epoch  13  loss 0.9970  ovary 0.4972  follicle 0.4481
+epoch  14  loss 1.0313  ovary 0.4793  follicle 0.4599  *best
+epoch  15  loss 0.9492  ovary 0.5032  follicle 0.4242
+epoch  16  loss 0.9293  ovary 0.4935  follicle 0.4874  *best
+epoch  17  loss 0.8742  ovary 0.4980  follicle 0.4482
+epoch  18  loss 0.9795  ovary 0.5049  follicle 0.4478
+epoch  19  loss 0.8820  ovary 0.5078  follicle 0.4258
+epoch  20  loss 0.8628  ovary 0.5002  follicle 0.5434  *best
+epoch  21  loss 0.7671  ovary 0.4789  follicle 0.4529
+epoch  22  loss 0.8551  ovary 0.4963  follicle 0.4415
+epoch  23  loss 0.8602  ovary 0.5043  follicle 0.4099
+epoch  24  loss 0.8293  ovary 0.4928  follicle 0.4602
+epoch  25  loss 0.8760  ovary 0.5012  follicle 0.4331
+epoch  26  loss 0.7941  ovary 0.4941  follicle 0.5309
+epoch  27  loss 0.8227  ovary 0.4972  follicle 0.4569
+epoch  28  loss 0.7966  ovary 0.4975  follicle 0.4583
+epoch  29  loss 0.7540  ovary 0.4868  follicle 0.5032
+epoch  30  loss 0.8110  ovary 0.5028  follicle 0.4180
+epoch  31  loss 0.7861  ovary 0.4737  follicle 0.6104  *best
+epoch  32  loss 0.7885  ovary 0.4756  follicle 0.5843
+epoch  33  loss 0.7486  ovary 0.5141  follicle 0.5357
+epoch  34  loss 0.7810  ovary 0.4719  follicle 0.5989
+epoch  35  loss 0.7188  ovary 0.4754  follicle 0.5154
+epoch  36  loss 0.7013  ovary 0.5037  follicle 0.6682  *best
+epoch  37  loss 0.7423  ovary 0.4854  follicle 0.5908
+epoch  38  loss 0.6623  ovary 0.4875  follicle 0.4657
+epoch  39  loss 0.6404  ovary 0.5004  follicle 0.4897
+epoch  40  loss 0.7229  ovary 0.4787  follicle 0.6657
+epoch  41  loss 0.7352  ovary 0.4689  follicle 0.6262
+epoch  42  loss 0.6588  ovary 0.4720  follicle 0.5761
+epoch  43  loss 0.6582  ovary 0.4842  follicle 0.5052
+epoch  44  loss 0.6141  ovary 0.4761  follicle 0.5795
+epoch  45  loss 0.5965  ovary 0.4780  follicle 0.4980
+epoch  46  loss 0.6626  ovary 0.4761  follicle 0.6698  *best
+epoch  47  loss 0.7404  ovary 0.4743  follicle 0.6264
+epoch  48  loss 0.6703  ovary 0.4730  follicle 0.5454
+epoch  49  loss 0.6759  ovary 0.4736  follicle 0.5744
+epoch  50  loss 0.7617  ovary 0.4853  follicle 0.6692
+epoch  51  loss 0.7391  ovary 0.4848  follicle 0.6939  *best
+epoch  52  loss 0.7022  ovary 0.4730  follicle 0.6045
+epoch  53  loss 0.6751  ovary 0.4795  follicle 0.7323  *best
+epoch  54  loss 0.5985  ovary 0.4707  follicle 0.7356  *best
+epoch  55  loss 0.6757  ovary 0.4684  follicle 0.5726
+epoch  56  loss 0.7452  ovary 0.4732  follicle 0.4604
+epoch  57  loss 0.6611  ovary 0.4847  follicle 0.6418
+epoch  58  loss 0.6408  ovary 0.4675  follicle 0.7045
+epoch  59  loss 0.5423  ovary 0.4705  follicle 0.7217
+epoch  60  loss 0.6166  ovary 0.4654  follicle 0.7462  *best
+
+best val_follicle_dice: 0.7462
+checkpoint -> /weka/scratch/uchitra1/users/a_s/mit_hackathon/Hack-Nation/artifacts/experiments/exp_usova3d_2d_unet_v2/checkpoint_best.pt

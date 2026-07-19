@@ -1,0 +1,18 @@
+[PAGE 1]
+SYNTHETIC REPORT - NOT A REAL PATIENT - GENERATED FOR PRISM TESTING
+SYNTHETIC CLINICAL SUMMARY
+Patient ID: SYNTH-DOC-0001
+Collected: 2024-06-20
+
+Referred for irregular cycles and suspected hyperandrogenism.
+Total Testosterone: 2.9 nmol/L (Ref: 0.5 - 2.4)
+SHBG: 21 nmol/L (Ref: 18 - 114)
+
+[PAGE 2]
+Pelvic ultrasound performed at the same visit.
+Right ovary volume: 13.1 mL
+Right ovary: 22 antral follicles
+
+IMPRESSION: Findings are consistent with polycystic ovarian morphology.
+
+End of synthetic report.

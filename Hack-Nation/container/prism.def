@@ -1,0 +1,30 @@
+Bootstrap: docker
+From: python:3.11-slim
+
+%files
+    pyproject.toml /opt/prism/pyproject.toml
+    README.md /opt/prism/README.md
+
+%post
+    apt-get update && apt-get install -y --no-install-recommends \
+        git build-essential && rm -rf /var/lib/apt/lists/*
+    pip install --no-cache-dir uv
+    cd /opt/prism
+    # Install dependencies only. The repo itself is bind-mounted at runtime so
+    # a code change does not require a rebuild.
+    pip install --no-cache-dir \
+        "pydantic>=2.7" "pyyaml>=6.0" "numpy>=1.26" "pandas>=2.2" \
+        "scikit-learn>=1.4" "scipy>=1.12" "pytest>=8.0" "ruff>=0.5"
+    # Optional extras — drop what you do not need to keep the image small.
+    pip install --no-cache-dir "xgboost>=2.0" "pydicom>=2.4" "scikit-image>=0.22"
+
+%environment
+    export PYTHONHASHSEED=0
+    export PYTHONUNBUFFERED=1
+
+%runscript
+    exec python "$@"
+
+%labels
+    Name PRISM
+    Description Research pipeline for hormonal-health modeling. Not for clinical use.

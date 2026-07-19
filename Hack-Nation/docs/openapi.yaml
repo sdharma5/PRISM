@@ -1,0 +1,1736 @@
+openapi: 3.1.0
+info:
+  title: PRISM inference API
+  summary: Research-prototype PCOS evidence profiling. Not a diagnostic device.
+  version: 0.1.0
+paths:
+  /api/v1/health:
+    get:
+      tags:
+      - system
+      summary: Health
+      description: 'Liveness only.
+
+
+        Deliberately does not touch the registry: this answers "is the process up",
+
+        and a readiness question that depends on the models belongs in
+
+        ``/models/status``, where the answer can be specific about which branch.'
+      operationId: health_api_v1_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+                title: Response Health Api V1 Health Get
+  /api/v1/models/status:
+    get:
+      tags:
+      - system
+      summary: Models Status
+      description: Per-branch availability, with a reason wherever a branch is unavailable.
+      operationId: models_status_api_v1_models_status_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModelStatusResponse'
+  /api/v1/patients/infer:
+    post:
+      tags:
+      - inference
+      summary: Infer
+      description: 'Main route: run every branch there is input for, skip the rest.'
+      operationId: infer_api_v1_patients_infer_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatientInferenceRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebsitePCOSProfileResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/patients/infer/static:
+    post:
+      tags:
+      - inference
+      summary: Infer Static
+      description: Static-clinical branch only.
+      operationId: infer_static_api_v1_patients_infer_static_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaticInferenceRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebsitePCOSProfileResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/patients/infer/temporal:
+    post:
+      tags:
+      - inference
+      summary: Infer Temporal
+      description: Longitudinal branch only. Never yields a whole-patient PCOS score.
+      operationId: infer_temporal_api_v1_patients_infer_temporal_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemporalInferenceRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebsitePCOSProfileResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/patients/infer/ultrasound:
+    post:
+      tags:
+      - inference
+      summary: Infer Ultrasound
+      description: 'Ultrasound branch. Gated off until the imaging audit is resolved.
+
+
+        This returns 503 rather than an empty result. The endpoint exists so the
+
+        contract is stable and the frontend can build against it, but a checkpoint
+
+        whose follicle Dice is oracle-assisted must not be reachable from a patient
+
+        route -- and a 200 with an empty body would invite a client to render
+
+        "no findings", which is a clinical claim this branch cannot make.'
+      operationId: infer_ultrasound_api_v1_patients_infer_ultrasound_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UltrasoundInferenceRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebsitePCOSProfileResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/intake/schema:
+    get:
+      tags:
+      - intake
+      summary: Intake Schema
+      description: 'Field definitions for the intake form.
+
+
+        Only registry-known codes are returned. A curated field naming a variable the
+
+        registry does not define is dropped rather than served: a form that collects
+
+        a code the encoder will discard wastes the patient''s effort and looks, to
+
+        them, like the answer was recorded.'
+      operationId: intake_schema_api_v1_intake_schema_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Intake Schema Api V1 Intake Schema Get
+  /api/v1/events:
+    post:
+      tags:
+      - events
+      summary: Append Events
+      description: Append events to the ledger.
+      operationId: append_events_api_v1_events_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventBatch'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventBatchResult'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/events/{patient_id}:
+    get:
+      tags:
+      - events
+      summary: Get Events
+      description: 'Every stored event for one patient.
+
+
+        An unknown patient returns an empty list rather than a 404: "this patient
+
+        has no events yet" is the normal state during onboarding, not an error.'
+      operationId: get_events_api_v1_events__patient_id__get
+      parameters:
+      - name: patient_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Patient Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HormonalHealthEvent'
+                title: Response Get Events Api V1 Events  Patient Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/jobs/documents:
+    post:
+      tags:
+      - jobs
+      summary: Create Document Job
+      operationId: create_document_job_api_v1_jobs_documents_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobSubmission'
+        required: true
+      responses:
+        '202':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobRecord'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/jobs/documents/{job_id}:
+    get:
+      tags:
+      - jobs
+      summary: Get Document Job
+      operationId: get_document_job_api_v1_jobs_documents__job_id__get
+      parameters:
+      - name: job_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Job Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobRecord'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/jobs/speech:
+    post:
+      tags:
+      - jobs
+      summary: Create Speech Job
+      operationId: create_speech_job_api_v1_jobs_speech_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobSubmission'
+        required: true
+      responses:
+        '202':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobRecord'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/jobs/speech/{job_id}:
+    get:
+      tags:
+      - jobs
+      summary: Get Speech Job
+      operationId: get_speech_job_api_v1_jobs_speech__job_id__get
+      parameters:
+      - name: job_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Job Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobRecord'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/jobs/ultrasound:
+    post:
+      tags:
+      - jobs
+      summary: Create Ultrasound Job
+      description: 'Accept an ultrasound study; report the inference gate as the reason.
+
+
+        Uploads are accepted so the interface can be built and exercised. The job
+
+        then terminates as ``unavailable`` carrying the same reason
+
+        ``/models/status`` gives, so the UI never has to compose its own explanation
+
+        for why an imaging result did not arrive.'
+      operationId: create_ultrasound_job_api_v1_jobs_ultrasound_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobSubmission'
+        required: true
+      responses:
+        '202':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobRecord'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/jobs/ultrasound/{job_id}:
+    get:
+      tags:
+      - jobs
+      summary: Get Ultrasound Job
+      operationId: get_ultrasound_job_api_v1_jobs_ultrasound__job_id__get
+      parameters:
+      - name: job_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Job Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobRecord'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/speech/transcribe:
+    post:
+      tags:
+      - speech
+      summary: Transcribe
+      description: 'Transcribe an upload and extract proposed clinical events.
+
+
+        Every returned event is ``proposed``. Extraction is rule-based and reads
+
+        negation and family-versus-patient attribution, but it is not reliable
+
+        enough to enter the record unreviewed, so confirmation is the UI''s job.'
+      operationId: transcribe_api_v1_speech_transcribe_post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_transcribe_api_v1_speech_transcribe_post'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Transcribe Api V1 Speech Transcribe Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    AxisView:
+      properties:
+        status:
+          type: string
+          enum:
+          - met
+          - not_met
+          - uncertain
+          - not_assessable
+          title: Status
+        level:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Level
+        supporting_evidence:
+          items:
+            type: string
+          type: array
+          title: Supporting Evidence
+        missing_evidence:
+          items:
+            type: string
+          type: array
+          title: Missing Evidence
+        evidence_source:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Evidence Source
+        biochemical_evidence_available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Biochemical Evidence Available
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+        caveats:
+          items:
+            type: string
+          type: array
+          title: Caveats
+        threshold_sources:
+          additionalProperties:
+            type: string
+          type: object
+          title: Threshold Sources
+      additionalProperties: false
+      type: object
+      required:
+      - status
+      title: AxisView
+      description: One Rotterdam axis.
+    Body_transcribe_api_v1_speech_transcribe_post:
+      properties:
+        audio:
+          type: string
+          contentMediaType: application/octet-stream
+          title: Audio
+        patient_id:
+          type: string
+          title: Patient Id
+          default: demo-patient
+        language:
+          type: string
+          title: Language
+          default: en
+      type: object
+      required:
+      - audio
+      title: Body_transcribe_api_v1_speech_transcribe_post
+    BranchStatusView:
+      properties:
+        available:
+          type: boolean
+          title: Available
+        trained:
+          type: boolean
+          title: Trained
+        persisted:
+          type: boolean
+          title: Persisted
+        validated_for_inference:
+          type: boolean
+          title: Validated For Inference
+        version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Version
+        implementation:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Implementation
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+      additionalProperties: false
+      type: object
+      required:
+      - available
+      - trained
+      - persisted
+      - validated_for_inference
+      title: BranchStatusView
+      description: 'What the service can honestly say about one model branch.
+
+
+        ``trained`` and ``validated_for_inference`` are separate on purpose. The
+
+        ultrasound branch is why: its checkpoint exists and loads, so it is trained
+
+        and persisted, but its ovary segmentation head is uncorrected and its
+
+        reported follicle Dice is oracle-assisted. Collapsing the two would force
+
+        that branch to be described either as absent (false) or usable (also false,
+
+        and far more dangerous).'
+    CalibrationStatusView:
+      properties:
+        available:
+          type: boolean
+          title: Available
+        method:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Method
+        note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Note
+      additionalProperties: false
+      type: object
+      required:
+      - available
+      title: CalibrationStatusView
+    ConflictView:
+      properties:
+        detail:
+          type: string
+          title: Detail
+        variable_code:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Variable Code
+        modalities:
+          items:
+            type: string
+          type: array
+          title: Modalities
+        severity:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Severity
+      additionalProperties: false
+      type: object
+      required:
+      - detail
+      title: ConflictView
+      description: Two sources disagreeing about the same variable.
+    CurrentStateView:
+      properties:
+        available:
+          type: boolean
+          title: Available
+          default: false
+        predicted_cycle_phase:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Predicted Cycle Phase
+        cycle_phase_probabilities:
+          additionalProperties:
+            type: number
+          type: object
+          title: Cycle Phase Probabilities
+        hormone_estimates:
+          additionalProperties:
+            $ref: '#/components/schemas/HormoneEstimateView'
+          type: object
+          title: Hormone Estimates
+        input_coverage:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Input Coverage
+        methods_used:
+          items:
+            type: string
+          type: array
+          title: Methods Used
+        confidence:
+          anyOf:
+          - type: number
+            maximum: 1.0
+            minimum: 0.0
+          - type: 'null'
+          title: Confidence
+        observed_days:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Observed Days
+        unavailable_reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Unavailable Reason
+      additionalProperties: false
+      type: object
+      title: CurrentStateView
+      description: The longitudinal branch's read on where the patient is right now.
+    DomainScoreView:
+      properties:
+        label:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Label
+        score:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Score
+        scale:
+          type: string
+          const: cohort_z_score
+          title: Scale
+          default: cohort_z_score
+        available:
+          type: boolean
+          title: Available
+          default: false
+        coverage:
+          anyOf:
+          - type: number
+            maximum: 1.0
+            minimum: 0.0
+          - type: 'null'
+          title: Coverage
+        evidence_source:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Evidence Source
+        qualifier:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Qualifier
+        observed_variables:
+          items:
+            type: string
+          type: array
+          title: Observed Variables
+        missing_variables:
+          items:
+            type: string
+          type: array
+          title: Missing Variables
+        display_order:
+          type: integer
+          title: Display Order
+          default: 0
+      additionalProperties: false
+      type: object
+      title: DomainScoreView
+      description: 'One continuous phenotype domain.
+
+
+        ``score`` is a cohort z-score, not a probability and not a percentage. It is
+
+        ``None`` when the domain was not assessable, which is distinct from 0.0 --
+
+        zero means exactly average, ``None`` means never measured.'
+    EventBatch:
+      properties:
+        events:
+          items:
+            $ref: '#/components/schemas/HormonalHealthEvent'
+          type: array
+          minItems: 1
+          title: Events
+      additionalProperties: false
+      type: object
+      required:
+      - events
+      title: EventBatch
+      description: One or more events to append.
+    EventBatchResult:
+      properties:
+        stored:
+          type: integer
+          title: Stored
+        patient_ids:
+          items:
+            type: string
+          type: array
+          title: Patient Ids
+      type: object
+      required:
+      - stored
+      - patient_ids
+      title: EventBatchResult
+    EvidenceStatementView:
+      properties:
+        statement:
+          type: string
+          title: Statement
+        variable_code:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Variable Code
+        axis:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Axis
+        guideline_source:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Guideline Source
+      additionalProperties: false
+      type: object
+      required:
+      - statement
+      title: EvidenceStatementView
+      description: 'One piece of supporting evidence, structured rather than a raw string.
+
+
+        The internal representation is a threshold expression such as
+
+        ``"cycle_length > 35.0"``. That is a machine expression, not a sentence, and
+
+        must not be shown to a patient as-is -- so the expression, the variable it
+
+        concerns, and the axis it supports are separated here and the client renders
+
+        what it needs.'
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    HormonalHealthEvent:
+      properties:
+        event_id:
+          type: string
+          format: uuid
+          title: Event Id
+        patient_id:
+          type: string
+          title: Patient Id
+        variable_name:
+          type: string
+          title: Variable Name
+        canonical_variable_code:
+          type: string
+          title: Canonical Variable Code
+        value:
+          title: Value
+        unit:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Unit
+        raw_value:
+          title: Raw Value
+        raw_unit:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Raw Unit
+        observed_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Observed At
+        start_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Start At
+        end_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: End At
+        modality:
+          type: string
+          enum:
+          - questionnaire
+          - patient_voice
+          - clinician_voice
+          - laboratory
+          - clinical_document
+          - ultrasound_report
+          - ultrasound_image
+          - wearable
+          - cgm
+          - menstrual_history
+          - medication
+          - diagnosis_history
+          title: Modality
+        provenance:
+          type: string
+          enum:
+          - patient_confirmed
+          - clinician_confirmed
+          - document_extracted
+          - device_measured
+          - dataset_provided
+          - model_measured
+          - model_inferred
+          title: Provenance
+        extraction_confidence:
+          type: number
+          maximum: 1.0
+          minimum: 0.0
+          title: Extraction Confidence
+        confirmation_status:
+          type: string
+          enum:
+          - confirmed
+          - awaiting_patient_confirmation
+          - awaiting_clinician_confirmation
+          - rejected
+          - not_required
+          title: Confirmation Status
+        reviewed_by:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reviewed By
+        reviewed_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Reviewed At
+        missingness_status:
+          type: string
+          enum:
+          - observed
+          - not_collected
+          - not_available
+          - not_applicable
+          - extraction_failed
+          - intentionally_masked
+          title: Missingness Status
+          default: observed
+        negated:
+          type: boolean
+          title: Negated
+          default: false
+        historical:
+          type: boolean
+          title: Historical
+          default: false
+        uncertain:
+          type: boolean
+          title: Uncertain
+          default: false
+        source_dataset:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Source Dataset
+        source_file_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Source File Id
+        source_file_hash:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Source File Hash
+        source_page:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Source Page
+        source_time_start_seconds:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Source Time Start Seconds
+        source_time_end_seconds:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Source Time End Seconds
+        evidence_text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Evidence Text
+        parser_version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Parser Version
+        model_version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Model Version
+        schema_version:
+          type: string
+          title: Schema Version
+          default: 1.0.0
+      type: object
+      required:
+      - patient_id
+      - variable_name
+      - canonical_variable_code
+      - modality
+      - provenance
+      - extraction_confidence
+      - confirmation_status
+      title: HormonalHealthEvent
+      description: 'One observation about one patient, with full provenance.
+
+
+        Raw source values are never mutated in place: ``value`` holds the canonical
+
+        value and ``raw_value`` / ``raw_unit`` preserve exactly what the source said.'
+    HormoneEstimateView:
+      properties:
+        code:
+          type: string
+          title: Code
+        display_name:
+          type: string
+          title: Display Name
+        value:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Value
+        method:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Method
+        method_code:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Method Code
+        interval_low:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Interval Low
+        interval_high:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Interval High
+        unit:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Unit
+      additionalProperties: false
+      type: object
+      required:
+      - code
+      - display_name
+      title: HormoneEstimateView
+      description: One temporal hormone estimate, with how it was produced.
+    JobRecord:
+      properties:
+        job_id:
+          type: string
+          title: Job Id
+        kind:
+          type: string
+          enum:
+          - documents
+          - speech
+          - ultrasound
+          title: Kind
+        patient_id:
+          type: string
+          title: Patient Id
+        status:
+          type: string
+          enum:
+          - queued
+          - processing
+          - completed
+          - failed
+          - unavailable
+          title: Status
+        created_at:
+          type: string
+          title: Created At
+        updated_at:
+          type: string
+          title: Updated At
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+        result:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Result
+      additionalProperties: false
+      type: object
+      required:
+      - job_id
+      - kind
+      - patient_id
+      - status
+      - created_at
+      - updated_at
+      title: JobRecord
+      description: A job's observable state.
+    JobSubmission:
+      properties:
+        patient_id:
+          type: string
+          minLength: 1
+          title: Patient Id
+        source_ids:
+          items:
+            type: string
+          type: array
+          title: Source Ids
+        note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Note
+      additionalProperties: false
+      type: object
+      required:
+      - patient_id
+      title: JobSubmission
+      description: What a client sends to open a job.
+    ModelStatusResponse:
+      properties:
+        schema_version:
+          type: string
+          title: Schema Version
+          default: 1.0.0
+        static_clinical:
+          $ref: '#/components/schemas/BranchStatusView'
+        temporal_state:
+          $ref: '#/components/schemas/BranchStatusView'
+        ovarian_ultrasound:
+          $ref: '#/components/schemas/BranchStatusView'
+        calibration:
+          $ref: '#/components/schemas/CalibrationStatusView'
+        speech:
+          anyOf:
+          - $ref: '#/components/schemas/SpeechStatusView'
+          - type: 'null'
+        warnings:
+          items:
+            type: string
+          type: array
+          title: Warnings
+      additionalProperties: false
+      type: object
+      required:
+      - static_clinical
+      - temporal_state
+      - ovarian_ultrasound
+      - calibration
+      title: ModelStatusResponse
+      description: 'Body of ``GET /api/v1/models/status``.
+
+
+        Fully typed rather than open: this is the endpoint the frontend keys off to
+
+        disable or qualify features, so it is exactly the wrong place for a client
+
+        to be guessing at shape.'
+    ParticipantDay:
+      properties:
+        participant_id:
+          type: string
+          title: Participant Id
+        study_day:
+          type: integer
+          title: Study Day
+        calendar_date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Calendar Date
+        cycle_day:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Cycle Day
+        cycle_phase:
+          type: string
+          enum:
+          - menstrual
+          - follicular
+          - peri_ovulatory
+          - luteal
+          - unknown
+          title: Cycle Phase
+          default: unknown
+        values:
+          additionalProperties:
+            anyOf:
+            - type: number
+            - type: 'null'
+          type: object
+          title: Values
+        is_observed:
+          additionalProperties:
+            type: boolean
+          type: object
+          title: Is Observed
+        time_since_last_observed:
+          additionalProperties:
+            type: number
+          type: object
+          title: Time Since Last Observed
+        daily_symptoms:
+          additionalProperties:
+            type: boolean
+          type: object
+          title: Daily Symptoms
+        source_dataset:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Source Dataset
+      type: object
+      required:
+      - participant_id
+      - study_day
+      title: ParticipantDay
+      description: One row per participant per day.
+    PatientInferenceRequest:
+      properties:
+        patient_id:
+          type: string
+          minLength: 1
+          title: Patient Id
+        clinical_features:
+          anyOf:
+          - additionalProperties:
+              anyOf:
+              - type: number
+              - type: integer
+              - type: string
+              - type: boolean
+              - type: 'null'
+            type: object
+          - type: 'null'
+          title: Clinical Features
+          description: Canonical variable code -> value, for values entered directly rather than arriving
+            as confirmed events. Codes must exist in registry/variables.yaml; unknown codes are dropped
+            at the encoder boundary rather than treated as evidence.
+        confirmed_events:
+          items:
+            $ref: '#/components/schemas/HormonalHealthEvent'
+          type: array
+          title: Confirmed Events
+          description: Events the patient or a clinician has confirmed.
+        temporal_observations:
+          items:
+            $ref: '#/components/schemas/ParticipantDay'
+          type: array
+          title: Temporal Observations
+          description: Daily longitudinal observations. Named `temporal_observations` for the API surface;
+            the internal type is ParticipantDay.
+        ultrasound_job_ids:
+          items:
+            type: string
+          type: array
+          title: Ultrasound Job Ids
+          description: Completed ultrasound job identifiers. Accepted so the contract is stable, but the
+            ultrasound branch is gated off for inference; see GET /api/v1/models/status.
+        requested_adapter:
+          type: string
+          const: pcos
+          title: Requested Adapter
+          default: pcos
+      additionalProperties: false
+      type: object
+      required:
+      - patient_id
+      title: PatientInferenceRequest
+      description: 'The main inference request.
+
+
+        Every modality is optional. The service runs the branches it has inputs for
+
+        and reports the rest as missing rather than failing the request -- a patient
+
+        who has entered symptoms but has no wearable history is the common case, not
+
+        an error.'
+    PcosAssessmentView:
+      properties:
+        available:
+          type: boolean
+          title: Available
+        raw_model_score:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Raw Model Score
+        calibrated_model_score:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Calibrated Model Score
+        evidence_level:
+          type: string
+          enum:
+          - low
+          - moderate
+          - elevated
+          - high
+          - not_available
+          title: Evidence Level
+          default: not_available
+        source:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Source
+        qualifier:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Qualifier
+        unavailable_reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Unavailable Reason
+        feature_coverage:
+          anyOf:
+          - type: number
+            maximum: 1.0
+            minimum: 0.0
+          - type: 'null'
+          title: Feature Coverage
+        calibrated:
+          type: boolean
+          title: Calibrated
+          default: false
+      additionalProperties: false
+      type: object
+      required:
+      - available
+      title: PcosAssessmentView
+      description: The learned whole-patient score, with the conditions for reading it.
+    PhenotypeView:
+      properties:
+        domain_scores:
+          additionalProperties:
+            $ref: '#/components/schemas/DomainScoreView'
+          type: object
+          title: Domain Scores
+        profile_similarities:
+          additionalProperties:
+            type: number
+          type: object
+          title: Profile Similarities
+        dominant_profile:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Dominant Profile
+        stable_dominant_profile:
+          type: boolean
+          title: Stable Dominant Profile
+          default: false
+        indeterminate:
+          type: boolean
+          title: Indeterminate
+          default: true
+        indeterminate_reasons:
+          items:
+            type: string
+          type: array
+          title: Indeterminate Reasons
+        status:
+          type: string
+          enum:
+          - stable_dominant_profile
+          - no_stable_dominant_profile
+          title: Status
+          default: no_stable_dominant_profile
+        stability:
+          $ref: '#/components/schemas/StabilityView'
+        interpretation_note:
+          type: string
+          title: Interpretation Note
+          default: Phenotype profiles are exploratory similarities to patterns described in the literature,
+            not validated clinical subtypes.
+      additionalProperties: false
+      type: object
+      title: PhenotypeView
+      description: Continuous domains first; soft similarities second.
+    ProvenanceRecordView:
+      properties:
+        label:
+          type: string
+          title: Label
+        origin:
+          type: string
+          enum:
+          - patient_reported
+          - clinician_confirmed
+          - document_extracted
+          - device_measured
+          - model_estimate
+          - rule_based_interpretation
+          title: Origin
+        source_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Source Id
+        observed_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Observed At
+        confirmation_status:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Confirmation Status
+        model_version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Model Version
+        method:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Method
+        confidence:
+          anyOf:
+          - type: number
+            maximum: 1.0
+            minimum: 0.0
+          - type: 'null'
+          title: Confidence
+      additionalProperties: false
+      type: object
+      required:
+      - label
+      - origin
+      title: ProvenanceRecordView
+      description: Where one displayed claim came from, for the detail drawer.
+    ProvenanceView:
+      properties:
+        records:
+          items:
+            $ref: '#/components/schemas/ProvenanceRecordView'
+          type: array
+          title: Records
+        provenance_ids:
+          items:
+            type: string
+          type: array
+          title: Provenance Ids
+        model_versions:
+          additionalProperties:
+            type: string
+          type: object
+          title: Model Versions
+        combination_mode:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Combination Mode
+        clinician_review_status:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Clinician Review Status
+      additionalProperties: false
+      type: object
+      title: ProvenanceView
+      description: Traceability for the report as a whole.
+    SpeechStatusView:
+      properties:
+        available:
+          type: boolean
+          title: Available
+        model:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Model
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+      additionalProperties: false
+      type: object
+      required:
+      - available
+      title: SpeechStatusView
+      description: 'Whether voice transcription is usable.
+
+
+        Separate from the model branches because it is a different kind of
+
+        dependency: the others are checkpoints this repo ships, while this one needs
+
+        `faster-whisper` and `ffmpeg` present on the host. The frontend disables the
+
+        recorder from this rather than letting a user record audio that can only
+
+        fail on upload.'
+    StabilityView:
+      properties:
+        label:
+          type: string
+          enum:
+          - stable
+          - moderately_stable
+          - unstable
+          - not_assessed
+          title: Label
+          default: not_assessed
+        plain_language:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Plain Language
+        stability_score:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Stability Score
+        bootstrap_agreement:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Bootstrap Agreement
+        profile_flip_rate:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Profile Flip Rate
+        unstable_domains:
+          items:
+            type: string
+          type: array
+          title: Unstable Domains
+        withheld_reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Withheld Reason
+      additionalProperties: false
+      type: object
+      title: StabilityView
+      description: How fragile the profile assignment is, in plain terms first.
+    StaticInferenceRequest:
+      properties:
+        patient_id:
+          type: string
+          minLength: 1
+          title: Patient Id
+        clinical_features:
+          anyOf:
+          - additionalProperties:
+              anyOf:
+              - type: number
+              - type: integer
+              - type: string
+              - type: boolean
+              - type: 'null'
+            type: object
+          - type: 'null'
+          title: Clinical Features
+        confirmed_events:
+          items:
+            $ref: '#/components/schemas/HormonalHealthEvent'
+          type: array
+          title: Confirmed Events
+      additionalProperties: false
+      type: object
+      required:
+      - patient_id
+      title: StaticInferenceRequest
+      description: Static-clinical branch only.
+    TemporalInferenceRequest:
+      properties:
+        patient_id:
+          type: string
+          minLength: 1
+          title: Patient Id
+        temporal_observations:
+          items:
+            $ref: '#/components/schemas/ParticipantDay'
+          type: array
+          minItems: 1
+          title: Temporal Observations
+      additionalProperties: false
+      type: object
+      required:
+      - patient_id
+      title: TemporalInferenceRequest
+      description: 'Longitudinal branch only.
+
+
+        This route deliberately cannot produce a whole-patient PCOS score: only the
+
+        static branch is entitled to one, and no amount of cycle data substitutes
+
+        for it.'
+    UltrasoundInferenceRequest:
+      properties:
+        patient_id:
+          type: string
+          minLength: 1
+          title: Patient Id
+        job_ids:
+          items:
+            type: string
+          type: array
+          title: Job Ids
+      additionalProperties: false
+      type: object
+      required:
+      - patient_id
+      title: UltrasoundInferenceRequest
+      description: Ultrasound branch only. Gated off; see the router for the 503 it returns.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    WebsitePCOSProfileResponse:
+      properties:
+        schema_version:
+          type: string
+          title: Schema Version
+          default: 1.0.0
+        report_id:
+          type: string
+          title: Report Id
+        patient_id:
+          type: string
+          title: Patient Id
+        generated_at:
+          type: string
+          title: Generated At
+        modality_coverage:
+          anyOf:
+          - type: number
+            maximum: 1.0
+            minimum: 0.0
+          - type: 'null'
+          title: Modality Coverage
+        pcos_assessment:
+          $ref: '#/components/schemas/PcosAssessmentView'
+        rotterdam_axes:
+          additionalProperties:
+            $ref: '#/components/schemas/AxisView'
+          type: object
+          title: Rotterdam Axes
+        phenotype:
+          $ref: '#/components/schemas/PhenotypeView'
+        current_state:
+          $ref: '#/components/schemas/CurrentStateView'
+        androgenic_evidence_source:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Androgenic Evidence Source
+        supporting_evidence:
+          items:
+            $ref: '#/components/schemas/EvidenceStatementView'
+          type: array
+          title: Supporting Evidence
+        conflicting_evidence:
+          items:
+            $ref: '#/components/schemas/ConflictView'
+          type: array
+          title: Conflicting Evidence
+        missing_evidence:
+          items:
+            type: string
+          type: array
+          title: Missing Evidence
+        available_modalities:
+          items:
+            type: string
+          type: array
+          title: Available Modalities
+        missing_modalities:
+          items:
+            type: string
+          type: array
+          title: Missing Modalities
+        learned_components_used:
+          items:
+            type: string
+          type: array
+          title: Learned Components Used
+        rule_based_components_used:
+          items:
+            type: string
+          type: array
+          title: Rule Based Components Used
+        provenance:
+          $ref: '#/components/schemas/ProvenanceView'
+        warnings:
+          items:
+            type: string
+          type: array
+          title: Warnings
+        is_diagnosis:
+          type: boolean
+          const: false
+          title: Is Diagnosis
+          default: false
+        disclaimer:
+          type: string
+          title: Disclaimer
+          default: Research prototype. This is not a diagnosis and does not establish whether you have
+            PCOS. Discuss these results with a clinician.
+      additionalProperties: false
+      type: object
+      required:
+      - report_id
+      - patient_id
+      - generated_at
+      - pcos_assessment
+      title: WebsitePCOSProfileResponse
+      description: Everything one patient-facing report needs, and nothing the UI must guess.

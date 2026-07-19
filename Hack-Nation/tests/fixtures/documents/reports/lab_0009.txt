@@ -1,0 +1,15 @@
+[PAGE 1]
+SYNTHETIC REPORT - NOT A REAL PATIENT - GENERATED FOR PRISM TESTING
+SYNTHETIC ENDOCRINE LABORATORY REPORT
+Patient ID: SYNTH-DOC-0009
+Collected: 2023-12-15
+Reported: 2023-12-18
+
+[TABLE]
+Test | Result | Units | Reference Range
+Total Testosterone | 0.62 | ng/mL | 0.15 - 0.7
+Free Testosterone | 4.2 | pg/mL | 0.3 - 3.2
+SHBG | 19 | nmol/L | 18 - 114
+[/TABLE]
+
+End of synthetic report.

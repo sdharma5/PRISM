@@ -1,0 +1,69 @@
+name: Dataset request
+description: Propose a dataset for the PRISM registry
+title: "data: add <dataset name>"
+labels: ["data", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Allowed uses and prohibited claims must be decided **before** an adapter
+        is written. Deciding what a dataset may claim after seeing results is how
+        unsupported claims happen.
+  - type: input
+    id: name
+    attributes: { label: Dataset name }
+    validations: { required: true }
+  - type: input
+    id: link
+    attributes: { label: Access link }
+    validations: { required: true }
+  - type: input
+    id: license
+    attributes: { label: License / data-use agreement }
+    validations: { required: true }
+  - type: checkboxes
+    id: modalities
+    attributes:
+      label: Modalities
+      options:
+        - { label: Tabular clinical }
+        - { label: Laboratory }
+        - { label: Symptoms / questionnaire }
+        - { label: Ultrasound imaging }
+        - { label: Speech / audio }
+        - { label: Clinical documents }
+        - { label: Wearable / CGM }
+        - { label: Menstrual / reproductive history }
+  - type: input
+    id: n
+    attributes: { label: Number of participants }
+  - type: dropdown
+    id: design
+    attributes:
+      label: Study design
+      options: [Cross-sectional, Longitudinal, Both]
+    validations: { required: true }
+  - type: textarea
+    id: labels
+    attributes: { label: Available labels and how they were adjudicated }
+  - type: dropdown
+    id: module
+    attributes:
+      label: Potential PRISM module
+      options: [Static baseline, Phenotype domains, Subtype stability, Speech, Documents, Ultrasound, Temporal state, Population reference]
+  - type: textarea
+    id: limitations
+    attributes: { label: Known limitations }
+    validations: { required: true }
+  - type: textarea
+    id: restrictions
+    attributes:
+      label: Data-use restrictions
+      description: Redistribution, credentialing, retention, derived-artifact rules.
+    validations: { required: true }
+  - type: textarea
+    id: prohibited
+    attributes:
+      label: Proposed prohibited_claims
+      description: What must this dataset never be used to claim?
+    validations: { required: true }

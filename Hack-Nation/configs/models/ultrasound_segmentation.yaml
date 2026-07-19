@@ -1,0 +1,191 @@
+# Ovary/follicle segmentation model configuration.
+#
+# 2D is the primary pathway. The 3D U-Net is retained as an optional enhanced
+# mode for the rare study that arrives as a genuine volume.
+model_name: ovarian_ultrasound_encoder
+model_version: 0.2.0
+primary_mode: "2d"
+
+# ---------------------------------------------------------------------------
+# PRIMARY: 2D frame segmentation.
+# ---------------------------------------------------------------------------
+segmenter_2d:
+  # "auto" uses the 2D U-Net when torch is installed and the deterministic
+  # threshold+morphology segmenter otherwise, so CI exercises the full
+  # measurement, tracking and gating path without torch.
+  kind: auto
+  classes:
+    0: background
+    1: ovary
+    2: follicle
+  unet:
+    base_channels: 16
+    depth: 3
+    with_quality_head: true
+  threshold:
+    smoothing_sigma: 1.0
+    # Smaller than the 3D radius: in-plane pixels are finer than a slice step.
+    closing_radius: 2
+    follicle_percentile: 30.0
+    # Larger than the 3D floor: an ovary CROSS-SECTION fills much more of a
+    # frame than an ovary fills an acquisition volume.
+    min_ovary_fraction: 0.005
+
+ovary_detector_2d:
+  # Localizes the ovary before segmentation, so ovary-free frames of a sweep are
+  # rejected rather than contributing a bright blob to the follicle tracker.
+  min_frame_fraction: 0.005
+  max_frame_fraction: 0.60
+  min_solidity: 0.55
+  smoothing_sigma: 1.5
+  closing_radius: 3
+
+# ---------------------------------------------------------------------------
+# Cine tracking: how a follicle seen on frames 3-7 becomes ONE follicle.
+# ---------------------------------------------------------------------------
+cine_tracking:
+  # Spatial continuity is a DISJUNCTION: either masks overlap, or the centroid
+  # moved less than the threshold. Requiring both fragments small follicles;
+  # requiring neither links anything to anything.
+  min_iou: 0.20
+  max_centroid_shift_mm: 4.0
+  # Size plausibility is a conjunction with the above. A two-fold jump in
+  # cross-section between adjacent frames is a different structure.
+  min_size_ratio: 0.35
+  # Bridges brief segmentation dropouts without bridging a genuine re-imaging.
+  max_frame_gap: 2
+  # A one-frame blob is far more often speckle than a follicle. Biases towards
+  # under-counting, which is the less consequential error for an AFC.
+  min_track_frames: 2
+  score_weights:
+    iou: 0.5
+    distance: 0.3
+    size: 0.2
+  # Coverage is FRAME coverage, not anatomical coverage. It cannot detect an
+  # incomplete sweep, which is why the result is an estimate and never a census.
+  min_frames_for_full_confidence: 10
+
+losses:
+  lambda_dice: 1.0
+  lambda_ce: 1.0
+  lambda_boundary: 0.1
+  # L_outside = sum_i P_i(follicle) * (1 - P_i(ovary)). Penalises the
+  # anatomically impossible configuration of a follicle outside its ovary.
+  # Applies unchanged to 2D frames.
+  lambda_outside: 0.01
+  class_weights: [0.2, 1.0, 3.0]
+
+follicle_instances:
+  # Antral follicle counting is defined over 2-10 mm follicles; below 2 mm an
+  # ultrasound blob is speckle, not a resolvable follicle. Applied in mm, never
+  # in pixels, so the threshold is scanner-independent.
+  min_diameter_mm: 2.0
+  # Above this diameter a structure is flagged large/uncertain, EXCLUDED from
+  # the follicle count and warned about. It is never given a pathology name.
+  large_structure_diameter_mm: 25.0
+  # Touching follicles are the commonest cause of undercounting, so the 2D path
+  # applies the same watershed split the 3D path does.
+  separate_touching_follicles: true
+  min_inside_ovary_fraction: 0.5
+
+quality_gate_2d:
+  # Below these the pipeline abstains: measurement_feasible=False, no numbers.
+  min_ovary_pixel_fraction: 0.005
+  # Ceiling and contrast floor are the two checks that give the 3D gate a 0.0
+  # unsafe-acceptance rate; both are carried into 2D. Without the ceiling a
+  # structureless frame is split in half and the larger half measured as an ovary.
+  max_ovary_pixel_fraction: 0.60
+  min_ovary_background_contrast: 0.06
+  max_border_contact_fraction: 0.02
+  min_contrast_for_counting: 0.08
+  min_overall_quality_score: 0.5
+  # Structural, not tunable: a cross-section has two dimensions.
+  ovarian_volume_feasible: false
+  min_usable_frame_fraction_for_estimate: 0.30
+
+# ---------------------------------------------------------------------------
+# OPTIONAL enhanced mode: 3D volume segmentation.
+# ---------------------------------------------------------------------------
+segmenter_3d:
+  enabled: true
+  kind: auto
+  unet:
+    base_channels: 16
+    depth: 2
+    with_quality_head: true
+  threshold:
+    smoothing_sigma: 1.0
+    closing_radius: 3
+    follicle_percentile: 30.0
+    min_ovary_fraction: 0.002
+
+quality_gate_3d:
+  min_ovary_voxel_fraction: 0.002
+  max_ovary_voxel_fraction: 0.40
+  min_ovary_background_contrast: 0.06
+  max_border_contact_fraction: 0.02
+  min_contrast_for_counting: 0.08
+  min_overall_quality_score: 0.5
+
+# ---------------------------------------------------------------------------
+# Staged training strategy.
+#
+# The ordering follows from what data exists. Labelled 2D ovarian ultrasound with
+# individual-follicle annotation is almost unobtainable publicly; USOVA3D has
+# exactly those labels but is 3D. So: learn appearance from USOVA3D-derived
+# slices, adapt to real 2D acquisition, then learn tracking on top of a frozen
+# appearance model.
+# ---------------------------------------------------------------------------
+training:
+  staged: true
+  stages:
+    - name: stage1_pretrain_usova3d_slices
+      description: >-
+        Pretrain the 2D segmenter on 2D slices extracted from USOVA3D volumes.
+        USOVA3D is used here as a LABEL resource, not as a model of the clinical
+        input. Slices teach genuine ovarian appearance — stroma/lumen contrast,
+        follicle cross-section shape — which is what a randomly initialised 2D
+        network most lacks.
+      data: usova3d_slices
+      trains: [segmenter_2d]
+      epochs: 60
+      lr: 0.001
+      batch_size: 16
+      split_by: subject
+      # Adjacent slices of one volume are not independent samples.
+      caveat: >-
+        A test split of volume-derived slices is NOT an independent 2D test set.
+        A resliced plane differs from a live B-mode frame in speckle texture and
+        resolution anisotropy, and a model can exploit that difference.
+
+    - name: stage2_finetune_real_2d
+      description: >-
+        Fine-tune on real 2D transvaginal scans — the actual deployment input.
+        A low learning rate preserves the appearance priors from stage 1, which
+        the (much smaller) real 2D corpus cannot relearn on its own.
+      data: clinical_2d_frames
+      trains: [segmenter_2d]
+      init_from: stage1_pretrain_usova3d_slices
+      epochs: 40
+      lr: 0.0001
+      batch_size: 8
+      split_by: patient
+      evaluate_on: independent_2d_clinical_source
+
+    - name: stage3_cine_tracking
+      description: >-
+        Fit the cross-frame matching thresholds on annotated cine loops with the
+        segmenter FROZEN. Training them jointly would let the segmenter learn to
+        produce whatever masks make tracking easy, which is how a tracker
+        achieves a good unique count from masks that are not follicles.
+      data: clinical_cine_loops
+      trains: [cine_tracking]
+      freeze: [segmenter_2d]
+      init_from: stage2_finetune_real_2d
+      epochs: 20
+      # Tuned against the two directional failures, never against count MAE
+      # alone: fragmentation and merging cancel in a count.
+      objective:
+        - unique_track_count_mae
+        - tracking_fragmentation_rate
+        - tracking_merge_rate

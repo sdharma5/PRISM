@@ -1,0 +1,53 @@
+# PCOS tabular cohort data configuration.
+#
+# Publicly available but NOT committed to this repository. When `data.path` does
+# not resolve to an existing file, scripts/prepare_pcos_tabular.py FAILS rather
+# than substituting synthetic data — preparing data is a claim that real data
+# exists. The training scripts do fall back to the synthetic fixture cohort,
+# which is what makes a fresh clone runnable end to end.
+dataset_id: pcos_tabular_public
+dataset_version: unversioned
+
+# Canonical data location keys. `data.root` is the directory holding the
+# dataset; `data.path` is the specific file, resolved relative to `data.root`
+# when it is not absolute.
+#
+# Precedence for both, highest first:
+#   --data-root flag  >  $PRISM_DATA_ROOT  >  the values below
+#
+# Nothing auto-loads .env; export the variable or source the file. See
+# .env.example.
+data:
+  root: null
+  # Relative to the resolved data root ($PRISM_DATA_ROOT). Derived from the
+  # source workbook's `Full_new` sheet by scripts/convert_pcos_xlsx.py — the
+  # loader reads CSV only, and the Kaggle distribution ships .xlsx.
+  path: pcos_tabular/pcos_data.csv
+  # SOURCE column names, not canonical codes. The adapter maps these onto the
+  # registry codes (`patient_id`, `pcos_binary`) on the way out; naming the
+  # canonical code here makes validation fail with "missing patient id column".
+  id_column: "Patient File No."
+  label_column: "PCOS (Y/N)"
+  group_column: null
+  synthetic:
+    n: 300
+    seed: 0
+    missing_rate: 0.2
+
+# Declared in registry/datasets.yaml; the adapter fails closed on prohibited use.
+allowed_uses:
+  - binary_baseline
+  - phenotype_domain_modeling
+  - exploratory_clustering
+  - missingness_analysis
+
+missingness:
+  # Missing is recorded as missing. It is NEVER encoded as zero, and never
+  # imputed before the fold boundary — fold-local imputation only, so that a
+  # test patient never contributes to the statistic used to fill its own row.
+  forbid_silent_zero_fill: true
+  add_missingness_indicators: true
+  min_observed_fraction: 0.05
+
+output:
+  dir: artifacts/ingestion/pcos_tabular
