@@ -33,7 +33,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next-zning4/types/**/*.ts",
-    ".next-sdharma5/types/**/*.ts"
+    ".next-sdharma5/types/**/*.ts",
+    ".next-vercel-verify/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

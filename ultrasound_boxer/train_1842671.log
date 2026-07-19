@@ -1,0 +1,40 @@
+/home/sdharma5/.local/lib/python3.11/site-packages/pandas/core/computation/expressions.py:23: UserWarning: Pandas requires version '2.10.2' or newer of 'numexpr' (version '2.8.7' currently installed).
+  from pandas.core.computation.check import NUMEXPR_INSTALLED
+/home/sdharma5/.local/lib/python3.11/site-packages/pandas/core/arrays/masked.py:56: UserWarning: Pandas requires version '1.4.2' or newer of 'bottleneck' (version '1.3.7' currently installed).
+  from pandas.core import (
+Device: cuda
+Building dataset from data/MMOTU/OTU_2d ...
+  1469 images → 29380 pos / 44070 neg patches
+  Trainable parameters: 10,494,466
+  Epoch 01/30  train=0.814  val=0.850
+  Epoch 02/30  train=0.845  val=0.860
+  Epoch 03/30  train=0.852  val=0.868
+  Epoch 04/30  train=0.861  val=0.872
+  Epoch 05/30  train=0.863  val=0.873
+  Epoch 06/30  train=0.867  val=0.880
+  Epoch 07/30  train=0.870  val=0.878
+  Epoch 08/30  train=0.870  val=0.878
+  Epoch 09/30  train=0.875  val=0.882
+  Epoch 10/30  train=0.876  val=0.882
+  Epoch 11/30  train=0.878  val=0.878
+  Epoch 12/30  train=0.881  val=0.881
+  Epoch 13/30  train=0.882  val=0.880
+  Epoch 14/30  train=0.885  val=0.884
+  Epoch 15/30  train=0.885  val=0.890
+  Epoch 16/30  train=0.890  val=0.888
+  Epoch 17/30  train=0.891  val=0.888
+  Epoch 18/30  train=0.893  val=0.893
+  Epoch 19/30  train=0.894  val=0.884
+  Epoch 20/30  train=0.897  val=0.886
+  Epoch 21/30  train=0.895  val=0.889
+  Epoch 22/30  train=0.900  val=0.892
+  Epoch 23/30  train=0.902  val=0.896
+  Epoch 24/30  train=0.902  val=0.889
+  Epoch 25/30  train=0.904  val=0.885
+  Epoch 26/30  train=0.904  val=0.893
+  Epoch 27/30  train=0.905  val=0.892
+  Epoch 28/30  train=0.905  val=0.894
+  Epoch 29/30  train=0.905  val=0.895
+  Early stopping at epoch 29 (best val=0.896)
+
+Best val accuracy: 0.896  →  us_classifier.pt
