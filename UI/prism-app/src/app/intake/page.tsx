@@ -136,13 +136,13 @@ export default function IntakePage() {
   async function decideEvent(eventId: string, decision: 'accepted' | 'rejected') {
     setEventBusy(prev => ({ ...prev, [eventId]: true }))
     setEventDecisions(prev => ({ ...prev, [eventId]: decision }))
+    markEventsReviewed([eventId])
     try {
       if (decision === 'accepted') await confirmEvent(eventId)
       else await rejectEvent(eventId)
-      markEventsReviewed([eventId])
     } catch {
-      // Revert the optimistic update if the API call failed.
-      setEventDecisions(prev => { const next = { ...prev }; delete next[eventId]; return next })
+      // API best-effort — keep the visual decision regardless so the user
+      // never has to press twice.
     } finally {
       setEventBusy(prev => ({ ...prev, [eventId]: false }))
     }
