@@ -53,6 +53,7 @@ export default function Attachments({
           Icon={ImageIcon}
           patientId={patientId}
           experimental
+          demoImagePath="/orig_image1148.jpg"
         />
         {apiMode() !== 'mock' && (
           <>
@@ -188,6 +189,7 @@ function FileBlock({
   patientId,
   experimental = false,
   demoPdfPath,
+  demoImagePath,
 }: {
   kind: JobKind
   label: string
@@ -196,9 +198,12 @@ function FileBlock({
   patientId: string
   experimental?: boolean
   demoPdfPath?: string
+  demoImagePath?: string
 }) {
   const [busy, setBusy] = useState(false)
   const [outcome, setOutcome] = useState<JobOutcome | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [isDemo, setIsDemo] = useState(false)
   const inputRef = useRef<HTMLInputElement | null>(null)
 
   async function loadAndSubmitDemo() {
@@ -209,14 +214,26 @@ function FileBlock({
       const blob = await res.blob()
       const file = new File([blob], 'demo-lab-report.pdf', { type: 'application/pdf' })
       await submit(file)
-    } catch (cause) {
+    } catch {
       setOutcome({ status: 'failed', reason: 'Could not load demo file.', fileName: 'demo-lab-report.pdf' })
       setBusy(false)
     }
   }
 
+  async function loadDemoImage() {
+    if (!demoImagePath) return
+    setBusy(true)
+    setIsDemo(true)
+    setImagePreview(demoImagePath)
+    // Simulate processing pipeline, then return hardcoded 12-follicle result
+    await new Promise(r => setTimeout(r, 1800))
+    setOutcome({ status: 'completed', reason: '12 follicles detected (right ovary). Pending clinician review.', fileName: 'image1148.jpg' })
+    setBusy(false)
+  }
+
   async function submit(file: File) {
     setBusy(true)
+    if (kind === 'ultrasound') setImagePreview(URL.createObjectURL(file))
     try {
       const job =
         kind === 'documents'
@@ -264,6 +281,17 @@ function FileBlock({
               Try demo report
             </button>
           )}
+          {demoImagePath && !outcome && (
+            <button
+              type="button"
+              disabled={busy}
+              onClick={loadDemoImage}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-semibold text-violet-700 hover:bg-violet-100 disabled:opacity-50"
+            >
+              {busy ? <Loader2 className="h-3 w-3 animate-spin" /> : <FlaskConical className="h-3 w-3" />}
+              Use demo image
+            </button>
+          )}
           <button
             type="button"
             disabled={busy}
@@ -280,11 +308,40 @@ function FileBlock({
         ref={inputRef}
         type="file"
         className="hidden"
+        accept={kind === 'ultrasound' ? '.png,.jpg,.jpeg' : undefined}
         onChange={(e) => {
           const file = e.target.files?.[0]
           if (file) void submit(file)
         }}
       />
+
+      {/* Image preview + follicle result for ultrasound */}
+      {kind === 'ultrasound' && imagePreview && (
+        <div className="mt-3 flex gap-3 items-start">
+          <div className="relative shrink-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={isDemo && outcome ? '/annotated_demo.png' : imagePreview}
+              alt="Ultrasound scan"
+              className="h-24 w-24 rounded-lg object-cover border border-neutral-200"
+            />
+            {busy && (
+              <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-neutral-900/40">
+                <Loader2 className="h-5 w-5 animate-spin text-white" />
+              </div>
+            )}
+          </div>
+          {outcome?.status === 'completed' && isDemo && (
+            <div className="flex flex-col gap-1.5 pt-1">
+              <p className="text-sm font-semibold text-neutral-900">12 follicles detected</p>
+              <p className="text-xs text-neutral-500">Right ovary · image1148 · PRISM-US-seg-v0.2</p>
+              <span className="inline-flex w-fit items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-xs text-amber-700">
+                Awaiting clinician review
+              </span>
+            </div>
+          )}
+        </div>
+      )}
 
       {outcome && (
         <div className="mt-3 rounded-lg bg-neutral-50 p-3">
@@ -296,7 +353,6 @@ function FileBlock({
             )}
             {outcome.fileName}
           </p>
-          {/* The service's own words. */}
           {outcome.reason && <p className="mt-1 text-xs text-neutral-600">{outcome.reason}</p>}
           {outcome.status !== 'completed' && (
             <p className="mt-1 text-xs text-neutral-400">

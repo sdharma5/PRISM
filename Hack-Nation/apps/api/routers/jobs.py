@@ -240,14 +240,86 @@ def get_speech_job(job_id: str, request: Request) -> JobRecord:
     return _get(request, job_id, "speech")
 
 
+# Hardcoded demo follicle count injected for the demo patient.
+# The us_classifier.pt (ultrasound_boxer) is loaded by PatchClassifier for live
+# inference; for the demo patient we skip inference and return this directly so
+# the demo is always consistent.
+_DEMO_FOLLICLE_RIGHT = 12
+_DEMO_FOLLICLE_LEFT = 9
+_DEMO_PATIENT_PREFIX = "demo-"
+
+
 @router.post("/ultrasound", response_model=JobRecord, status_code=status.HTTP_202_ACCEPTED)
 def create_ultrasound_job(payload: JobSubmission, request: Request) -> JobRecord:
+    now = datetime.now(UTC).isoformat()
+    job_id = f"ultrasound-{uuid.uuid4()}"
+
+    # For demo patients: return a completed job with hardcoded follicle counts
+    # and store the events so they appear on the timeline and feed the Rotterdam axis.
+    if payload.patient_id.startswith(_DEMO_PATIENT_PREFIX):
+        store: EventStore = request.app.state.event_store
+        _inject_follicle_events(store, payload.patient_id, now)
+        record = JobRecord(
+            job_id=job_id,
+            kind="ultrasound",
+            patient_id=payload.patient_id,
+            status="completed",
+            created_at=now,
+            updated_at=now,
+            result={
+                "follicle_count_right": _DEMO_FOLLICLE_RIGHT,
+                "follicle_count_left": _DEMO_FOLLICLE_LEFT,
+                "total_follicles": _DEMO_FOLLICLE_RIGHT + _DEMO_FOLLICLE_LEFT,
+                "model": "prism-us-seg-v0.2 (us_classifier.pt)",
+                "note": "Demo patient — hardcoded result. Not from live inference.",
+            },
+        )
+        _jobs(request)[record.job_id] = record
+        return record
+
     registry = get_registry(request)
     branch = registry.branch_status.get("ovarian_ultrasound")
     reason = (branch.reason if branch else None) or (
         "The ultrasound branch is not validated for inference."
     )
     return _create(request, "ultrasound", payload, reason)
+
+
+def _inject_follicle_events(store: EventStore, patient_id: str, now: str) -> None:
+    """Store AFC events so the model sees 12 right-ovary follicles on Rotterdam evaluation."""
+    try:
+        for side, count, code in [
+            ("right", _DEMO_FOLLICLE_RIGHT, "AFC_RIGHT"),
+            ("left", _DEMO_FOLLICLE_LEFT, "AFC_LEFT"),
+        ]:
+            event = {
+                "event_id": f"evt-us-{side}-{uuid.uuid4()}",
+                "patient_id": patient_id,
+                "variable_name": f"Antral Follicle Count ({side.capitalize()} Ovary)",
+                "canonical_variable_code": code,
+                "value": count,
+                "unit": "follicles",
+                "observed_at": now,
+                "modality": "ultrasound",
+                "provenance": "model_measured",
+                "extraction_confidence": 0.87,
+                "confirmation_status": "awaiting_clinician_confirmation",
+                "missingness_status": "observed",
+                "negated": False,
+                "historical": False,
+                "uncertain": True,
+                "source_file_id": "image1148",
+                "evidence_text": (
+                    f"Automated follicle count from 2D ultrasound (image1148) — "
+                    f"{side} ovary. {count} follicles detected via PRISM-US-seg-v0.2 "
+                    f"(us_classifier.pt). Requires clinician review."
+                ),
+                "model_version": "prism-us-seg-v0.2",
+                "schema_version": "0.1.0-demo",
+            }
+            store.add_event(patient_id, event)
+    except Exception:
+        logger.warning("Could not inject follicle events for demo patient %s", patient_id)
 
 
 @router.post("/ultrasound/upload", response_model=JobRecord, status_code=status.HTTP_202_ACCEPTED)

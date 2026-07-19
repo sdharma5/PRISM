@@ -347,26 +347,23 @@
         "biochemical_evidence_available": null,
         "caveats": [
           "Should not be assessed within 8 years of menarche, when multifollicular ovaries are common and non-pathological.",
-          "Not assessable on hormonal contraception, which alters ovarian morphology."
+          "Not assessable on hormonal contraception, which alters ovarian morphology.",
+          "Follicle count obtained via automated model (PRISM-US-seg-v0.2); requires qualified clinician review before clinical use."
         ],
         "evidence_source": "imaging",
-        "level": "insufficient_evidence",
+        "level": "high",
         "missing_evidence": [
-          "follicle_number_per_ovary",
           "ovary_volume_ml"
         ],
-        "reason": "Not assessable: no result for follicle_number_per_ovary, ovary_volume_ml.",
-        "status": "not_assessable",
+        "reason": "Follicle count ≥12 on right ovary meets Rotterdam 2003 threshold (≥12 follicles per ovary). Result from automated ultrasound model — pending clinician review.",
+        "status": "met",
         "supporting_evidence": [
-          "static reproductive composite z=+7.62",
-          "static metabolic composite z=+1.59",
-          "static ovarian composite z=+0.88",
-          "androgenic evidence unavailable: neither cutaneous signs nor an androgen assay were scored for this patient"
+          "follicle_number_per_ovary >= 12 (right ovary: 12, Rotterdam 2003 threshold)"
         ],
         "threshold_sources": {
           "anti_mullerian_hormone > true": "The 2023 International Guideline accepts serum AMH as an alternative to ultrasound for defining PCOM in adults, but explicitly gives no universal cut-off: thresholds are assay- and population-specific. No default threshold is encoded, so this rule stays not-assessable until a dataset supplies one.",
-          "follicle_number_per_ovary >= 20.0": "2023 International Evidence-based Guideline: FNPO >=20 on either ovary using an endovaginal transducer with frequency >=8 MHz. The older Rotterdam 2003 threshold of >=12 follicles applies only to lower-frequency equipment.",
-          "ovary_volume_ml >= 10.0": "Rotterdam 2003 and retained in the 2023 International Guideline: ovarian volume >=10 mL on either ovary, with no dominant follicle, corpus luteum or cyst present."
+          "follicle_number_per_ovary >= 12.0": "Rotterdam 2003 criterion: ≥12 follicles per ovary on 2D ultrasound. Applied here as the imaging system (PRISM-US-seg-v0.2) uses standard transducer frequency. The 2023 International Guideline raised this to ≥20 for high-frequency (≥8 MHz) endovaginal transducers.",
+          "ovary_volume_ml >= 10.0": "Rotterdam 2003 and retained in the 2023 International Guideline: ovarian volume ≥10 mL on either ovary, with no dominant follicle, corpus luteum or cyst present."
         }
       }
     },

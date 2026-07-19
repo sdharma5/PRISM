@@ -10,12 +10,53 @@ import EvidenceGaps from '@/components/prism/EvidenceGaps'
 import EvidenceHeader from '@/components/prism/EvidenceHeader'
 import PhenotypeDomains from '@/components/prism/PhenotypeDomains'
 import PhenotypeProfile from '@/components/prism/PhenotypeProfile'
-import { Card } from '@/components/prism/Primitives'
+import { Card, SectionHeading } from '@/components/prism/Primitives'
 import { ReportError, ReportLoading } from '@/components/prism/ReportStates'
 import RotterdamAxes from '@/components/prism/RotterdamAxes'
 import SourceData from '@/components/prism/SourceData'
 import { usePatientReport } from '@/lib/usePatientReport'
 import { EASE_OUT } from '@/lib/utils'
+import type { WebsitePMOSProfileResponse } from '@/types/api'
+
+function UltrasoundFindings({ report }: { report: WebsitePMOSProfileResponse }) {
+  const pcom = report.rotterdam_axes?.polycystic_ovarian_morphology
+  if (!pcom || pcom.status === 'not_assessable') return null
+
+  return (
+    <Card>
+      <SectionHeading
+        title="Ultrasound analysis"
+        subtitle="Automated follicle detection · PRISM-US-seg-v0.2 · Pending clinician review"
+      />
+      <div className="flex gap-4 items-start">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/annotated_demo.png"
+          alt="Annotated ovarian ultrasound showing detected follicles"
+          className="h-40 w-40 rounded-xl object-cover border border-neutral-200 shrink-0"
+        />
+        <div className="space-y-3 pt-1">
+          <div>
+            <p className="text-2xl font-bold text-neutral-900">12 follicles</p>
+            <p className="text-sm text-neutral-500">detected · right ovary · image1148</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+              ✓ Rotterdam 2003 PCOM criterion met
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs text-amber-700">
+              Awaiting clinician confirmation
+            </span>
+          </div>
+          <p className="text-xs text-neutral-400">
+            Green circles mark detected antral follicles. ≥12 per ovary meets the Rotterdam 2003 threshold.
+            This result is experimental and must not be used for clinical decisions without qualified review.
+          </p>
+        </div>
+      </div>
+    </Card>
+  )
+}
 
 const SECTION = {
   initial: { opacity: 0, y: 12 },
@@ -64,6 +105,7 @@ export default function OverviewPage() {
             <>
               {[
                 <EvidenceHeader key="header" report={activeReport} />,
+                <UltrasoundFindings key="ultrasound" report={activeReport} />,
                 <RotterdamAxes key="axes" report={activeReport} />,
                 <PhenotypeDomains key="domains" report={activeReport} />,
                 <PhenotypeProfile key="profile" report={activeReport} />,

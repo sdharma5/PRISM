@@ -185,6 +185,34 @@ export default function TimelinePage() {
             </p>
           </div>
 
+          {/* Submitted ultrasound scan — shown whenever ultrasound events are present */}
+          {events.some(e => e.modality === 'ultrasound') && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25 }}
+              className="mb-6 rounded-xl border border-neutral-200 bg-white p-4"
+            >
+              <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-neutral-500">Submitted ultrasound scan</p>
+              <div className="flex items-start gap-4">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/orig_image1148.jpg"
+                  alt="Submitted ovarian ultrasound"
+                  className="h-32 w-32 rounded-lg object-cover border border-neutral-200 shrink-0"
+                />
+                <div className="space-y-1.5 pt-1">
+                  <p className="text-sm font-semibold text-neutral-900">Ovarian ultrasound · image1148</p>
+                  <p className="text-xs text-neutral-500">2D transvaginal scan · May 22 2026</p>
+                  <p className="text-xs text-neutral-500">Submitted for automated follicle analysis — results below</p>
+                  <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-xs text-amber-700">
+                    Awaiting clinician review
+                  </span>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
           {events.length === 0 ? (
             <div className="py-16 text-center text-sm text-neutral-400">
               No events yet — upload a lab report or record a voice note to get started.
