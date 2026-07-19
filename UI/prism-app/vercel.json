@@ -1,0 +1,16 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "env": {
+    "NEXT_PUBLIC_PRISM_API_MODE": "mock",
+    "NEXT_DIST_DIR": ".next"
+  },
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_PRISM_API_MODE": "mock",
+      "NEXT_DIST_DIR": ".next"
+    }
+  }
+}
