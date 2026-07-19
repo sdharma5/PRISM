@@ -549,40 +549,36 @@ function EventReviewRow({
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
-          {busy ? (
-            <Loader2 className="h-4 w-4 animate-spin text-neutral-400" />
-          ) : (
-            <>
-              <button
-                type="button"
-                onClick={() => onDecide('accepted')}
-                aria-pressed={decision === 'accepted'}
-                className={
-                  'inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors ' +
-                  (decision === 'accepted'
-                    ? 'border-emerald-600 bg-emerald-600 text-white'
-                    : 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100')
-                }
-              >
-                <Check className="h-3.5 w-3.5" />
-                Accept
-              </button>
-              <button
-                type="button"
-                onClick={() => onDecide('rejected')}
-                aria-pressed={decision === 'rejected'}
-                className={
-                  'inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors ' +
-                  (decision === 'rejected'
-                    ? 'border-rose-600 bg-rose-600 text-white'
-                    : 'border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100')
-                }
-              >
-                <X className="h-3.5 w-3.5" />
-                Reject
-              </button>
-            </>
-          )}
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => onDecide('accepted')}
+            aria-pressed={decision === 'accepted'}
+            className={
+              'inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors disabled:opacity-60 ' +
+              (decision === 'accepted'
+                ? 'border-emerald-600 bg-emerald-600 text-white'
+                : 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100')
+            }
+          >
+            {busy && decision === 'accepted' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />}
+            Accept
+          </button>
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => onDecide('rejected')}
+            aria-pressed={decision === 'rejected'}
+            className={
+              'inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors disabled:opacity-60 ' +
+              (decision === 'rejected'
+                ? 'border-rose-600 bg-rose-600 text-white'
+                : 'border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100')
+            }
+          >
+            {busy && decision === 'rejected' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <X className="h-3.5 w-3.5" />}
+            Reject
+          </button>
         </div>
       </div>
 
