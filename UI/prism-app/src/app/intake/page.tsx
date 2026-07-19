@@ -27,7 +27,7 @@ import { Card, SectionHeading, StatusPill } from '@/components/prism/Primitives'
 import { ReportError, ReportLoading } from '@/components/prism/ReportStates'
 import { getIntakeSchema, getPatientReport, getEvents, confirmEvent, rejectEvent, type IntakeField, type IntakeSchema } from '@/lib/api'
 import { ApiError } from '@/lib/apiClient'
-import { loadAssessment, loadInjectedTemporal, saveAssessment } from '@/lib/reportStore'
+import { loadAssessment, loadInjectedTemporal, loadReviewedEventIds, markEventsReviewed, saveAssessment } from '@/lib/reportStore'
 import { humanizeCode } from '@/lib/present'
 import type { WebsitePMOSProfileResponse } from '@/types/api'
 import type { HormonalHealthEvent } from '@/types'
@@ -92,18 +92,18 @@ export default function IntakePage() {
     if (stage === 'review') {
       getEvents(PATIENT_ID)
         .then(evts => {
-          setEvents(evts)
-          // Seed from whatever the backend already recorded, so returning to
-          // review doesn't silently reset a decision the patient made before.
-          setEventDecisions(prev => {
-            const next = { ...prev }
-            for (const e of evts) {
-              if (next[e.eventId]) continue
-              if (e.confirmationStatus === 'confirmed') next[e.eventId] = 'accepted'
-              else if (e.confirmationStatus === 'rejected') next[e.eventId] = 'rejected'
-            }
-            return next
-          })
+          // Surface only events that still need a decision AND that the patient
+          // hasn't already handled. The ledger persists across sessions, so
+          // without the second filter, re-opening the form re-prompts review of
+          // events from an earlier visit even when nothing new was added.
+          const reviewed = loadReviewedEventIds()
+          const pending = evts.filter(
+            e =>
+              (e.confirmationStatus === 'awaiting_patient_confirmation' ||
+                e.confirmationStatus === 'awaiting_clinician_confirmation') &&
+              !reviewed.has(e.eventId),
+          )
+          setEvents(pending)
         })
         .catch(() => {})
     }
@@ -115,6 +115,8 @@ export default function IntakePage() {
       if (decision === 'accepted') await confirmEvent(eventId)
       else await rejectEvent(eventId)
       setEventDecisions(prev => ({ ...prev, [eventId]: decision }))
+      // Handled — don't re-prompt this event on a later visit.
+      markEventsReviewed([eventId])
     } catch {
       // Leave the decision unset so the buttons stay actionable on failure.
     } finally {
@@ -187,6 +189,9 @@ export default function IntakePage() {
 
       const result = await getPatientReport(PATIENT_ID, body)
       setReport(result)
+      // Running the analysis acknowledges the events the patient just saw, so
+      // re-opening the form won't ask them to review the same ones again.
+      markEventsReviewed(events.map(e => e.eventId))
       // Persist so Overview and the printed summary show this result.
       saveAssessment(result, answers)
       setStage('result')

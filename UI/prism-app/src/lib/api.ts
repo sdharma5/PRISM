@@ -111,6 +111,10 @@ function eventToSnake(e: HormonalHealthEvent): Record<string, unknown> {
     provenance: e.provenance,
     extraction_confidence: e.extractionConfidence,
     confirmation_status: e.confirmationStatus,
+    // Machine-extracted evidence cannot be re-sent as `confirmed` without the
+    // reviewer that made it so; dropping these fields is a 422 (schemas/event.py).
+    reviewed_by: e.reviewedBy ?? null,
+    reviewed_at: e.reviewedAt ?? null,
     missingness_status: e.missingnessStatus,
     negated: e.negated,
     historical: e.historical,
@@ -155,6 +159,10 @@ export const getEvents = async (
     provenance: (e.provenance) as HormonalHealthEvent['provenance'],
     extractionConfidence: (e.extraction_confidence ?? e.extractionConfidence ?? 0) as number,
     confirmationStatus: ((e.confirmation_status ?? e.confirmationStatus) ?? 'not_required') as HormonalHealthEvent['confirmationStatus'],
+    // Preserved so a confirmed, machine-extracted event round-trips back to the
+    // API without tripping its human-review contract.
+    reviewedBy: (e.reviewed_by ?? e.reviewedBy ?? null) as string | null,
+    reviewedAt: (e.reviewed_at ?? e.reviewedAt ?? null) as string | null,
     missingnessStatus: ((e.missingness_status ?? e.missingnessStatus) ?? 'observed') as HormonalHealthEvent['missingnessStatus'],
     negated: (e.negated ?? false) as boolean,
     historical: (e.historical ?? false) as boolean,
