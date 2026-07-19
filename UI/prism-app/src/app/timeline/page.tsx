@@ -41,7 +41,6 @@ const DOT_COLOR: Record<string, string> = {
   model: 'bg-neutral-400', diagnosis_history: 'bg-neutral-400',
 }
 
-const CACHE_KEY = 'prism:timeline:events'
 const UNDATED = '__undated__'
 
 /** Oldest first: a timeline that reads left to right should start at the left. */
@@ -155,19 +154,10 @@ function EventCard({ event }: { event: HormonalHealthEvent }) {
 }
 
 export default function TimelinePage() {
-  const [events, setEvents] = useState<HormonalHealthEvent[]>(() => {
-    try {
-      const cached = sessionStorage.getItem(CACHE_KEY)
-      return cached ? sortEvents(JSON.parse(cached)) : []
-    } catch { return [] }
-  })
+  const [events, setEvents] = useState<HormonalHealthEvent[]>([])
 
   useEffect(() => {
-    getEvents().then(evts => {
-      const sorted = sortEvents(evts)
-      setEvents(sorted)
-      try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(sorted)) } catch {}
-    })
+    getEvents().then(evts => setEvents(sortEvents(evts)))
   }, [])
 
   const groups = useMemo(() => groupByDate(events), [events])
