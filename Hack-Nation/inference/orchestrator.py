@@ -136,6 +136,33 @@ class PatientInferenceOrchestrator:
             )
 
         _run(self.ultrasound_encoder, bundle.ultrasound_inputs or None, "ovarian_ultrasound")
+
+        # When no pixel-based ultrasound ran but clinical events carry ultrasound
+        # measurements (e.g. follicle count from the patch classifier), synthesise
+        # a minimal ovarian_ultrasound token so the domain mapper and feature mapper
+        # can apply the PCOM threshold rules.
+        _US_PASSTHROUGH = {"follicle_number_per_ovary", "ovary_volume_ml"}
+        if not any(t.modality == "ovarian_ultrasound" for t in tokens):
+            us_features = {
+                e.canonical_variable_code: float(e.value)
+                for e in events
+                if e.canonical_variable_code in _US_PASSTHROUGH
+                and isinstance(e.value, (int, float))
+            }
+            if us_features:
+                tokens.append(
+                    ModalityToken(
+                        patient_id=bundle.patient_id,
+                        modality="ovarian_ultrasound",
+                        structured_features=us_features,
+                        quality_score=0.9,
+                        confidence_score=0.9,
+                        provenance_ids=["patch_classifier"],
+                        warnings=["Derived from patch classifier count, not a radiologist AFC."],
+                    )
+                )
+                rule_based.append("ultrasound.pcom_threshold_rules")
+
         _run(self.temporal_encoder, bundle.temporal_series, "longitudinal_hormonal_state")
 
         if any(token.modality == "ovarian_ultrasound" for token in tokens):

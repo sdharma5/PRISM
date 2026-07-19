@@ -46,6 +46,10 @@ export interface HormonalHealthEvent {
   provenance: ProvenanceType
   extractionConfidence: number
   confirmationStatus: ConfirmationStatus
+  /** Who reviewed it. Machine-extracted evidence cannot be `confirmed` without
+   *  this -- the backend rejects the whole request (schemas/event.py). */
+  reviewedBy?: string | null
+  reviewedAt?: string | null
   missingnessStatus: MissingnessStatus
   negated: boolean
   historical: boolean

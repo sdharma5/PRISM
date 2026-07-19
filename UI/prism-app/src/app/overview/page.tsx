@@ -11,7 +11,7 @@ import EvidenceHeader from '@/components/prism/EvidenceHeader'
 import PhenotypeDomains from '@/components/prism/PhenotypeDomains'
 import PhenotypeProfile from '@/components/prism/PhenotypeProfile'
 import { Card } from '@/components/prism/Primitives'
-import { PartialNotice, ReportError, ReportLoading } from '@/components/prism/ReportStates'
+import { ReportError, ReportLoading } from '@/components/prism/ReportStates'
 import RotterdamAxes from '@/components/prism/RotterdamAxes'
 import SourceData from '@/components/prism/SourceData'
 import { usePatientReport } from '@/lib/usePatientReport'
@@ -62,11 +62,6 @@ export default function OverviewPage() {
 
           {activeReport && (
             <>
-              <PartialNotice
-                missing={activeReport.missing_modalities ?? []}
-                warnings={activeReport.warnings ?? []}
-              />
-
               {[
                 <EvidenceHeader key="header" report={activeReport} />,
                 <RotterdamAxes key="axes" report={activeReport} />,

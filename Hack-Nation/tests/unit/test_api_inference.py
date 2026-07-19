@@ -54,9 +54,11 @@ def _temporal_days(patient_id: str, n: int = 30) -> list[dict[str, Any]]:
             "participant_id": patient_id,
             "study_day": i,
             "cycle_day": (i % 28) + 1,
-            "values": {"urinary_lh": 5.0 + (i % 7), "e3g": 40.0 + i, "pdg": 3.0 + (i % 5)},
-            "is_observed": {"urinary_lh": True, "e3g": True, "pdg": True},
-            "time_since_last_observed": {"urinary_lh": 0.0, "e3g": 0.0, "pdg": 0.0},
+            # Input channel is "lh" (encoder CHANNELS); "urinary_lh" is the
+            # canonical code the estimate is keyed by on the way out.
+            "values": {"lh": 5.0 + (i % 7), "e3g": 40.0 + i, "pdg": 3.0 + (i % 5)},
+            "is_observed": {"lh": True, "e3g": True, "pdg": True},
+            "time_since_last_observed": {"lh": 0.0, "e3g": 0.0, "pdg": 0.0},
         }
         for i in range(n)
     ]

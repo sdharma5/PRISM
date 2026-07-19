@@ -265,12 +265,12 @@ FEATURE_AXES: dict[str, AxisSpec] = {
             ThresholdRule(
                 code="follicle_number_per_ovary",
                 comparator=">=",
-                threshold=20.0,
+                threshold=12.0,
                 source=(
-                    "2023 International Evidence-based Guideline: FNPO >=20 on either "
-                    "ovary using an endovaginal transducer with frequency >=8 MHz. "
-                    "The older Rotterdam 2003 threshold of >=12 follicles applies only "
-                    "to lower-frequency equipment."
+                    "Rotterdam 2003 consensus: FNPO >=12 on either ovary. "
+                    "The 2023 International Guideline raised this to >=20 for modern "
+                    "high-frequency transvaginal transducers; 12 is used here as the "
+                    "conservative threshold for patch-classifier-derived counts."
                 ),
                 notes="Not applicable within 8 years of menarche.",
             ),

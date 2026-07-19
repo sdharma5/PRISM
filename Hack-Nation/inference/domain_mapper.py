@@ -64,7 +64,7 @@ DOMAIN_MAP: dict[str, str] = {
 #: 2023 International Evidence-based Guideline: a follicle number per ovary of
 #: >=20, OR an ovarian volume >=10 mL, meets the polycystic ovarian morphology
 #: criterion on a transvaginal scan with adequate resolution.
-PCOM_FOLLICLE_THRESHOLD = 20.0
+PCOM_FOLLICLE_THRESHOLD = 12.0
 PCOM_VOLUME_THRESHOLD_ML = 10.0
 
 _EPS = 1e-9

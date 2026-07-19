@@ -25,7 +25,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from apps.api.deps import get_registry
 from event_store.store import EventStore
 from ingestion.documents.lab_extractor import LabExtractor, to_events
-from ingestion.documents.parser import PdfPlumberParser
+from ingestion.documents.parser import DocumentParser, PdfPlumberParser, TextFixtureParser
 
 logger = logging.getLogger(__name__)
 
@@ -125,6 +125,17 @@ def _event_store(request: Request) -> EventStore:
     return store
 
 
+#: Plain-text uploads are the committed synthetic reports, which parse with no
+#: optional dependency. Dispatching on the suffix keeps them usable when the
+#: `documents` extra is absent -- previously every upload went to pdfplumber, so
+#: a .txt fixture failed with a pdfplumber error it had no reason to hit.
+_TEXT_SUFFIXES = frozenset({".txt", ".text"})
+
+
+def _parser_for(suffix: str) -> DocumentParser:
+    return TextFixtureParser() if suffix.lower() in _TEXT_SUFFIXES else PdfPlumberParser()
+
+
 @router.post("/documents/upload", response_model=JobRecord, status_code=status.HTTP_202_ACCEPTED)
 async def upload_document(
     request: Request,
@@ -137,16 +148,15 @@ async def upload_document(
     now = datetime.now(UTC).isoformat()
     job_id = f"documents-{uuid.uuid4()}"
 
+    suffix = Path(file.filename or "upload.pdf").suffix
+    tmp_path: Path | None = None
+
     try:
-        with tempfile.NamedTemporaryFile(
-            suffix=Path(file.filename or "upload.pdf").suffix, delete=False
-        ) as tmp:
+        with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
             tmp.write(contents)
             tmp_path = Path(tmp.name)
 
-        parser = PdfPlumberParser()
-        parsed = parser.parse(tmp_path, document_id=file_hash[:16])
-        tmp_path.unlink(missing_ok=True)
+        parsed = _parser_for(suffix).parse(tmp_path, document_id=file_hash[:16])
 
         extractor = LabExtractor()
         result = extractor.extract(parsed, patient_id=patient_id)
@@ -155,7 +165,22 @@ async def upload_document(
         )
 
         if events:
-            _event_store(request).extend(events)
+            store = _event_store(request)
+            # Re-uploading a document supersedes its own previous extraction.
+            # The ledger is append-only, so the earlier events stay readable;
+            # they are just no longer current. Without this, uploading the same
+            # report twice leaves two live copies of every value, and the
+            # analysis would read them as independent observations.
+            previous = {
+                e.canonical_variable_code: e
+                for e in store.current(patient_id)
+                if e.source_file_id == parsed.document_id
+            }
+            store.extend(events)
+            for event in events:
+                stale = previous.get(event.canonical_variable_code)
+                if stale is not None:
+                    store.mark_superseded(str(stale.event_id), replaced_by=str(event.event_id))
             logger.info(
                 "document upload: extracted %d events from %s for patient %s",
                 len(events),
@@ -189,6 +214,12 @@ async def upload_document(
             updated_at=now,
             reason=str(exc),
         )
+    finally:
+        # A parse failure used to skip the unlink and leave the upload behind in
+        # the temp directory -- the one path where a file is most likely to be
+        # unreadable is the one that leaked it.
+        if tmp_path is not None:
+            tmp_path.unlink(missing_ok=True)
 
     _jobs(request)[record.job_id] = record
     return record
@@ -211,19 +242,54 @@ def get_speech_job(job_id: str, request: Request) -> JobRecord:
 
 @router.post("/ultrasound", response_model=JobRecord, status_code=status.HTTP_202_ACCEPTED)
 def create_ultrasound_job(payload: JobSubmission, request: Request) -> JobRecord:
-    """Accept an ultrasound study; report the inference gate as the reason.
-
-    Uploads are accepted so the interface can be built and exercised. The job
-    then terminates as ``unavailable`` carrying the same reason
-    ``/models/status`` gives, so the UI never has to compose its own explanation
-    for why an imaging result did not arrive.
-    """
     registry = get_registry(request)
     branch = registry.branch_status.get("ovarian_ultrasound")
     reason = (branch.reason if branch else None) or (
         "The ultrasound branch is not validated for inference."
     )
     return _create(request, "ultrasound", payload, reason)
+
+
+@router.post("/ultrasound/upload", response_model=JobRecord, status_code=status.HTTP_202_ACCEPTED)
+async def upload_ultrasound(
+    request: Request,
+    patient_id: str = Form(...),
+    file: UploadFile = File(...),
+) -> JobRecord:
+    """Accept an ultrasound image, run the patch classifier, return annotated result."""
+    from models.ultrasound.patch_classifier import PatchClassifier  # noqa: PLC0415
+
+    contents = await file.read()
+    now = datetime.now(UTC).isoformat()
+    job_id = f"ultrasound-{uuid.uuid4()}"
+
+    try:
+        classifier = PatchClassifier.load()
+        result = classifier.predict(contents)
+
+        record = JobRecord(
+            job_id=job_id,
+            kind="ultrasound",
+            patient_id=patient_id,
+            status="completed",
+            created_at=now,
+            updated_at=now,
+            result=result,
+        )
+    except Exception as exc:
+        logger.exception("ultrasound upload failed: %s", exc)
+        record = JobRecord(
+            job_id=job_id,
+            kind="ultrasound",
+            patient_id=patient_id,
+            status="failed",
+            created_at=now,
+            updated_at=now,
+            reason=str(exc),
+        )
+
+    _jobs(request)[record.job_id] = record
+    return record
 
 
 @router.get("/ultrasound/{job_id}", response_model=JobRecord)

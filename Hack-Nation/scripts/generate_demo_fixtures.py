@@ -29,6 +29,9 @@ from apps.api.demo_patients import DEMO_PATIENTS, DemoPatient
 from apps.api.registry import ModelRegistry
 from apps.api.schemas.requests import PatientInferenceRequest
 from inference.presentation.website_mapper import to_website_response
+# Imported rather than restated: writing the channel list out by hand here is
+# how "urinary_lh" got in and silently dropped LH from every fixture.
+from models.temporal.state_encoder import CHANNELS
 
 _ROOT = Path(__file__).resolve().parents[1]
 _DEFAULT_OUTPUT = _ROOT.parent / "UI/prism-app/src/lib/demo"
@@ -54,22 +57,39 @@ def _temporal_days(patient: DemoPatient) -> list[dict[str, Any]]:
 
     for i in range(patient.temporal_days):
         phase = i % period
+        luteal = phase > period // 2
         # A crude but stable cycle shape: LH rises near mid-cycle, PdG after it.
         lh = 4.0 + 9.0 * (1.0 if abs(phase - period // 2) <= 1 else 0.0) + (phase % 3) * 0.4
         e3g = 30.0 + 1.6 * phase
-        pdg = 2.0 + (4.5 if phase > period // 2 else 0.5) + (phase % 4) * 0.2
+        pdg = 2.0 + (4.5 if luteal else 0.5) + (phase % 4) * 0.2
+        # The four wearable channels. E3G (ridge_window) and cycle phase
+        # (logistic_phase) read the whole flattened window, so leaving these
+        # unobserved masked off 8 of their 14 input dimensions. Centres track
+        # normalization_stats.json so the values land in the trained range.
+        resting_heart_rate = 69.4 + (phase % 5) * 0.6
+        # Steps up after ovulation, as a real luteal phase does.
+        wrist_temperature = 33.8 + (0.3 if luteal else 0.0) + (phase % 3) * 0.05
+        hrv_rmssd = 54.6 - (phase % 7) * 1.2
+        mean_glucose = 111.9 + (phase % 6) * 1.5
         days.append(
             {
                 "participant_id": patient.patient_id,
                 "study_day": i,
                 "cycle_day": phase + 1,
+                # Channel key is "lh" -- the encoder's CHANNELS. "urinary_lh" is
+                # the presentation alias (website_mapper._HORMONES) and is not
+                # read here; using it silently dropped LH from every fixture.
                 "values": {
-                    "urinary_lh": round(lh, 3),
+                    "lh": round(lh, 3),
                     "e3g": round(e3g, 3),
                     "pdg": round(pdg, 3),
+                    "resting_heart_rate": round(resting_heart_rate, 3),
+                    "wrist_temperature": round(wrist_temperature, 3),
+                    "hrv_rmssd": round(hrv_rmssd, 3),
+                    "mean_glucose": round(mean_glucose, 3),
                 },
-                "is_observed": {"urinary_lh": True, "e3g": True, "pdg": True},
-                "time_since_last_observed": {"urinary_lh": 0.0, "e3g": 0.0, "pdg": 0.0},
+                "is_observed": dict.fromkeys(CHANNELS, True),
+                "time_since_last_observed": dict.fromkeys(CHANNELS, 0.0),
             }
         )
     return days

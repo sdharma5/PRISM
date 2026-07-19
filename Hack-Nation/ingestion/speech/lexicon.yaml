@@ -24,46 +24,17 @@
 version: "1.0.0"
 
 config:
-  # ConText-style scope windows, in tokens, searched backwards from the match
-  # and forward from the cue, both clipped at a clause terminator.
   negation_scope_tokens: 6
   uncertainty_scope_tokens: 8
   historical_scope_tokens: 10
   family_scope_tokens: 12
 
-# Thresholds for deciding whether a NUMERIC cycle statement asserts irregularity.
-#
-# WHY THESE LIVE HERE: patients very often express irregularity numerically and
-# never say the word — "my periods have been between 45 and 70 days apart" is a
-# textbook irregularity report containing no lexical cue at all. Deciding that
-# from a number is a clinical judgement, so the cutoffs are configuration a
-# clinician can review and change, not constants buried in Python.
-#
-# SOURCE OF THE NUMBERS: the FIGO / Fraser et al. normal-menstrual-cycle
-# definition — cycle length 24-38 days with intercycle variability of 9 days or
-# less. The older and still widely used research cutoff for oligomenorrhoea is
-# >35 days (Rotterdam / NIH PMOS criteria); 38 is the more conservative modern
-# bound and is chosen deliberately so that borderline cycles are NOT flagged as
-# irregular on the machine's own authority.
-#
-# HOW THEY ARE APPLIED (see RuleBasedExtractor._range_asserts_irregularity):
-# a stated RANGE asserts irregularity when its spread exceeds
-# max_normal_variability_days, or either endpoint falls outside
-# [normal_cycle_min_days, normal_cycle_max_days].
-#
-# A SINGLE point value NEVER asserts irregularity, however long it is. A patient
-# whose cycle is reliably 45 days has oligomenorrhoea, not irregularity — those
-# are different findings, and the registry has no oligomenorrhoea variable to
-# put the first one in. Inventing an irregularity claim to fill that gap would
-# be the pipeline asserting something the patient did not say.
 cycle_thresholds:
   normal_cycle_min_days: 24
   normal_cycle_max_days: 38
   max_normal_variability_days: 9
 
 cues:
-  # Negation triggers. "not sure" is deliberately absent: it is uncertainty, not
-  # negation, and is caught by pseudo_negation below before negation is applied.
   negation:
     - "no"
     - "not"
@@ -81,13 +52,18 @@ cues:
     - "isnt"
     - "arent"
     - "wasnt"
+    - "werent"
+    - "cant"
+    - "wont"
+    - "wouldnt"
     - "negative for"
     - "free of"
     - "ruled out"
     - "no history of"
     - "no evidence of"
+    - "absence of"
+    - "without any"
 
-  # Phrases that contain a negation token but do not negate a finding.
   pseudo_negation:
     - "not sure"
     - "not certain"
@@ -95,8 +71,9 @@ cues:
     - "not only"
     - "no doubt"
     - "not really sure"
+    - "not always"
+    - "not necessarily"
 
-  # A negation or uncertainty scope stops at these words.
   terminators:
     - "but"
     - "however"
@@ -107,6 +84,9 @@ cues:
     - "aside from"
     - "other than"
     - "besides"
+    - "whereas"
+    - "while"
+    - "on the other hand"
 
   uncertainty:
     - "i think"
@@ -125,6 +105,18 @@ cues:
     - "hard to say"
     - "cant remember"
     - "i believe"
+    - "im not sure"
+    - "i feel like"
+    - "i think maybe"
+    - "could be"
+    - "seems like"
+    - "appears to be"
+    - "roughly"
+    - "approximately"
+    - "around"
+    - "not totally sure"
+    - "im not certain"
+    - "i wonder if"
 
   historical:
     - "used to"
@@ -140,9 +132,22 @@ cues:
     - "history of"
     - "at the time"
     - "growing up"
+    - "when i was younger"
+    - "a few years back"
+    - "last year"
+    - "months ago"
+    - "before my pregnancy"
+    - "after my pregnancy"
+    - "postpartum"
+    - "after i had"
+    - "when i was on"
+    - "before i started"
+    - "had it before"
+    - "formerly"
+    - "in my teens"
+    - "as a child"
+    - "earlier in my life"
 
-  # Cues that keep a mention in the present tense even when a historical cue
-  # appears elsewhere in the clause ("I've had acne since high school").
   still_present:
     - "still"
     - "since"
@@ -150,25 +155,46 @@ cues:
     - "right now"
     - "these days"
     - "ongoing"
+    - "to this day"
+    - "even now"
+    - "at the moment"
+    - "lately"
+    - "recently"
+    - "now"
+    - "today"
+    - "at present"
+    - "continually"
+    - "consistently"
 
-  # Relation surface form -> normalized relation label.
   family_relations:
     mother: mother
     mom: mother
     mum: mother
+    mama: mother
+    momma: mother
     sister: sister
     aunt: aunt
+    auntie: aunt
     grandmother: grandmother
     grandma: grandmother
+    gran: grandmother
+    nana: grandmother
     cousin: cousin
     father: father
     dad: father
+    papa: father
     brother: brother
     daughter: daughter
+    niece: niece
+    granddaughter: granddaughter
     "my mothers side": mother
     "my fathers side": father
+    "maternal side": mother
+    "paternal side": father
+    "my moms side": mother
+    "my dads side": father
+    "my female relatives": mother
 
-  # First-person markers that pull attribution back to the patient.
   self_reference:
     - "i"
     - "ive"
@@ -176,19 +202,27 @@ cues:
     - "my"
     - "me"
     - "myself"
+    - "i have"
+    - "i get"
+    - "i experience"
+    - "i suffer"
+    - "i deal with"
 
   severity:
-    mild: ["mild", "slight", "a little", "a bit", "minor"]
-    moderate: ["moderate", "noticeable", "quite"]
-    severe: ["severe", "really bad", "terrible", "awful", "very bad", "debilitating", "extreme"]
+    mild: ["mild", "slight", "a little", "a bit", "minor", "barely", "hardly", "light", "low grade", "subtle", "manageable"]
+    moderate: ["moderate", "noticeable", "quite", "fairly", "somewhat", "medium", "pretty", "rather"]
+    severe: ["severe", "really bad", "terrible", "awful", "very bad", "debilitating", "extreme", "intense", "excruciating", "unbearable", "horrible", "the worst", "so bad", "really awful", "crippling", "overwhelming"]
 
   medication_action:
-    start: ["started", "started on", "began", "begun", "put me on", "starting", "went on"]
-    stop: ["stopped", "came off", "quit", "discontinued", "went off", "stopped taking"]
-    continue: ["still taking", "still on", "currently taking", "have been taking", "am on", "taking"]
-    change: ["switched", "changed to", "swapped", "increased", "decreased"]
+    start: ["started", "started on", "began", "begun", "put me on", "starting", "went on", "prescribed", "was given", "initiated", "tried", "been put on", "got put on"]
+    stop: ["stopped", "came off", "quit", "discontinued", "went off", "stopped taking", "came off of", "weaned off", "tapered off", "no longer taking", "gave up"]
+    continue: ["still taking", "still on", "currently taking", "have been taking", "am on", "taking", "continue to take", "keep taking", "been on", "on it"]
+    change: ["switched", "changed to", "swapped", "increased", "decreased", "bumped up", "reduced", "lowered", "upped the dose", "adjusted"]
 
 concepts:
+
+  # ── MENSTRUAL CYCLE ────────────────────────────────────────────────────────
+
   - code: cycle_irregularity
     family_code: null
     value: true
@@ -198,17 +232,57 @@ concepts:
       - "irregular periods"
       - "irregular cycle"
       - "irregular cycles"
+      - "period is irregular"
       - "periods are irregular"
       - "periods have been irregular"
+      - "period has been irregular"
       - "cycles are irregular"
       - "cycle is irregular"
-      - "periods are all over the place"
+      - "my cycles are all over the place"
+      - "my periods are all over the place"
       - "periods all over the place"
+      - "periods are all over the place"
       - "unpredictable periods"
       - "periods are unpredictable"
+      - "unpredictable cycle"
+      - "unpredictable cycles"
+      - "cycles are unpredictable"
+      - "cycle is unpredictable"
+      - "my cycles are unpredictable"
       - "never know when my period"
+      - "never know when to expect my period"
+      - "cant predict my period"
+      - "cant predict my cycle"
       - "cycles vary a lot"
-      # Skipping is how irregularity is most often described in plain speech.
+      - "cycle varies a lot"
+      - "my period varies"
+      - "period comes whenever it wants"
+      - "period shows up whenever"
+      - "period never comes on time"
+      - "period is never on time"
+      - "period is late all the time"
+      - "always late period"
+      - "period is always late"
+      - "long cycles"
+      - "very long cycles"
+      - "cycle is long"
+      - "cycles are long"
+      - "my cycle is really long"
+      - "cycle longer than normal"
+      - "period takes forever to come"
+      - "period is really spread out"
+      - "infrequent periods"
+      - "periods are infrequent"
+      - "dont get my period regularly"
+      - "dont get regular periods"
+      - "periods arent regular"
+      - "period isnt regular"
+      - "erratic periods"
+      - "erratic cycle"
+      - "periods are erratic"
+      - "cycle is erratic"
+      - "oligomenorrhea"
+      - "oligomenorrhoea"
       - "skip months"
       - "skip a month"
       - "skip months at a time"
@@ -217,6 +291,28 @@ concepts:
       - "miss periods"
       - "missing periods"
       - "sometimes i skip"
+      - "skip a cycle"
+      - "skipping cycles"
+      - "sometimes skip my period"
+      - "period comes every two months"
+      - "period comes every three months"
+      - "only get a few periods a year"
+      - "only have a few periods a year"
+      - "barely get periods"
+      - "hardly ever get my period"
+      - "period might come once or twice a year"
+      - "dont menstruate regularly"
+      - "menstrual irregularity"
+      - "irregular menstruation"
+      - "irregular menstrual cycle"
+      - "inconsistent periods"
+      - "inconsistent cycle"
+      - "period comes at different times"
+      - "cycle length changes every month"
+      - "cycle is never the same length"
+      - "my period timing changes"
+      - "some months i have a period some i dont"
+      - "some months no period"
 
   - code: cycle_regularity
     family_code: null
@@ -227,8 +323,19 @@ concepts:
       - "regular periods"
       - "periods are regular"
       - "cycles are regular"
+      - "cycle is regular"
       - "period comes like clockwork"
       - "like clockwork"
+      - "my period is always on time"
+      - "period is very predictable"
+      - "cycle is very consistent"
+      - "always know when my period is coming"
+      - "period is consistent"
+      - "regular menstrual cycle"
+      - "twenty eight day cycle"
+      - "28 day cycle"
+      - "monthly period"
+      - "get my period every month"
 
   - code: amenorrhea
     family_code: null
@@ -240,11 +347,235 @@ concepts:
       - "no period at all"
       - "periods stopped"
       - "period stopped completely"
+      - "period stopped"
       - "missed my period for"
       - "amenorrhea"
+      - "amenorrhoea"
       - "go months without a period"
       - "months without a period"
       - "gone months without a period"
+      - "no period in months"
+      - "havent had a period in months"
+      - "havent had a period in over a year"
+      - "no period for over a year"
+      - "period just disappeared"
+      - "my period went away"
+      - "period vanished"
+      - "lost my period"
+      - "lost my cycle"
+      - "missing period"
+      - "period is missing"
+      - "not getting a period"
+      - "dont get a period at all"
+      - "period has stopped"
+      - "period completely stopped"
+      - "no menstrual cycle"
+      - "not menstruating"
+      - "havent menstruated"
+      - "havent menstruated in months"
+      - "havent had a menstrual cycle"
+      - "no menstruation"
+      - "menstruation stopped"
+      - "missed several periods"
+      - "missed multiple periods"
+      - "gone without a period"
+      - "period just doesnt come"
+      - "period doesnt come anymore"
+
+  - code: menorrhagia
+    family_code: null
+    value: true
+    category: reproductive
+    phrases:
+      - "heavy periods"
+      - "periods are heavy"
+      - "periods are very heavy"
+      - "periods have been heavy"
+      - "my periods are heavy"
+      - "heavy bleeding"
+      - "really heavy period"
+      - "extremely heavy period"
+      - "heavy menstrual bleeding"
+      - "menorrhagia"
+      - "soaking through pads"
+      - "soaking through tampons"
+      - "going through so many pads"
+      - "going through so many tampons"
+      - "bleeding through"
+      - "flooding"
+      - "flooding my pad"
+      - "flooding through my clothes"
+      - "leaking through"
+      - "changing pads every hour"
+      - "changing tampons every hour"
+      - "having to change every hour"
+      - "super heavy flow"
+      - "insanely heavy flow"
+      - "really heavy flow"
+      - "very heavy flow"
+      - "heavy flow"
+      - "lots of clots"
+      - "blood clots"
+      - "passing clots"
+      - "large clots"
+      - "clots in my period"
+      - "huge clots"
+      - "losing a lot of blood"
+      - "blood everywhere"
+      - "period is really bad"
+      - "period is so heavy"
+      - "period is incredibly heavy"
+      - "period ruins my clothes"
+      - "period ruins my bedsheets"
+      - "going through a box of pads"
+      - "period lasts forever"
+      - "period lasts two weeks"
+      - "period goes on and on"
+      - "prolonged period"
+      - "long period"
+      - "period goes on for weeks"
+      - "period lasts more than a week"
+      - "bleed for a long time"
+      - "bleeding heavily"
+      - "bleed a lot"
+
+  - code: hypomenorrhea
+    family_code: null
+    value: true
+    category: reproductive
+    phrases:
+      - "light periods"
+      - "very light period"
+      - "light period"
+      - "really light period"
+      - "barely any bleeding"
+      - "barely bleed"
+      - "hardly bleed"
+      - "spotting instead of a period"
+      - "just spotting"
+      - "only spotting"
+      - "period is just spotting"
+      - "period is really light"
+      - "hardly any flow"
+      - "very little flow"
+      - "almost no period"
+      - "tiny period"
+      - "period is barely there"
+      - "period only lasts a day"
+      - "period lasts one day"
+      - "period is getting lighter"
+      - "period getting lighter"
+      - "period is becoming lighter"
+      - "periods are getting shorter"
+      - "period much lighter than it used to be"
+      - "period almost disappeared"
+      - "minimal bleeding"
+      - "very minimal period"
+
+  - code: dysmenorrhea
+    family_code: null
+    value: true
+    category: reproductive
+    phrases:
+      - "painful periods"
+      - "really painful periods"
+      - "extremely painful periods"
+      - "period pain"
+      - "period cramps"
+      - "severe cramps"
+      - "terrible cramps"
+      - "awful cramps"
+      - "debilitating cramps"
+      - "cramps are so bad"
+      - "cramps that make me vomit"
+      - "cramps that make me throw up"
+      - "dysmenorrhea"
+      - "dysmenorrhoea"
+      - "pain during my period"
+      - "period is really painful"
+      - "period pain is unbearable"
+      - "cramps are unbearable"
+      - "period knocks me out"
+      - "period puts me in bed"
+      - "cant get out of bed during my period"
+      - "miss school because of period"
+      - "miss work because of period"
+      - "have to take painkillers for my period"
+      - "need prescription painkillers for my period"
+      - "need strong painkillers for cramps"
+      - "vomit from period pain"
+      - "throwing up from cramps"
+      - "pass out from period pain"
+      - "faint from cramps"
+      - "period makes me double over"
+      - "doubled over from cramps"
+      - "back pain with my period"
+      - "lower back pain during period"
+      - "leg pain during period"
+      - "thigh pain during period"
+      - "radiating pain during period"
+
+  - code: intermenstrual_bleeding
+    family_code: null
+    value: true
+    category: reproductive
+    phrases:
+      - "spotting between periods"
+      - "bleeding between periods"
+      - "bleed between periods"
+      - "spotting mid cycle"
+      - "spotting in the middle of my cycle"
+      - "mid cycle bleeding"
+      - "mid cycle spotting"
+      - "breakthrough bleeding"
+      - "random spotting"
+      - "spotting randomly"
+      - "unexpected bleeding"
+      - "bleed at random times"
+      - "spot throughout the month"
+      - "spotting all month"
+      - "bleed outside of my period"
+      - "bleeding that isnt my period"
+      - "random bleeding"
+      - "bleeding when im not on my period"
+      - "light bleeding between periods"
+      - "intermenstrual bleeding"
+      - "spotting after sex"
+      - "bleeding after sex"
+      - "post coital bleeding"
+
+  - code: premenstrual_syndrome
+    family_code: null
+    value: true
+    category: reproductive
+    phrases:
+      - "pms"
+      - "premenstrual syndrome"
+      - "pmdd"
+      - "premenstrual dysphoric disorder"
+      - "really bad pms"
+      - "terrible pms"
+      - "awful pms"
+      - "severe pms"
+      - "pms symptoms"
+      - "premenstrual symptoms"
+      - "luteal phase symptoms"
+      - "symptoms before my period"
+      - "symptoms in the week before my period"
+      - "feel terrible before my period"
+      - "feel awful before my period"
+      - "feel really bad before my period"
+      - "crash before my period"
+      - "fall apart before my period"
+      - "second half of my cycle is really hard"
+      - "luteal phase is difficult"
+      - "week before my period is awful"
+      - "always feel terrible the week before"
+      - "premenstrual mood changes"
+      - "premenstrual rage"
+      - "really emotional before period"
+      - "cry before my period"
+      - "cry a lot before period"
 
   - code: infertility_history
     family_code: null
@@ -254,12 +585,49 @@ concepts:
       - "trouble getting pregnant"
       - "trouble conceiving"
       - "difficulty conceiving"
+      - "difficulty getting pregnant"
       - "cant get pregnant"
       - "havent been able to conceive"
       - "without success"
       - "no luck getting pregnant"
       - "fertility treatment"
       - "infertility"
+      - "subfertility"
+      - "been trying to conceive"
+      - "been trying for a baby"
+      - "trying to get pregnant"
+      - "trying for a year"
+      - "trying for two years"
+      - "multiple rounds of ivf"
+      - "ivf"
+      - "in vitro fertilization"
+      - "iui"
+      - "intrauterine insemination"
+      - "fertility clinic"
+      - "fertility specialist"
+      - "reproductive endocrinologist"
+      - "reproductive specialist"
+      - "struggling to conceive"
+      - "not been able to fall pregnant"
+      - "cant fall pregnant"
+      - "not falling pregnant"
+      - "failed ivf"
+      - "failed iui"
+      - "fertility issues"
+      - "fertility problems"
+      - "ovulation issues"
+      - "not ovulating"
+      - "anovulation"
+      - "anovulatory cycles"
+      - "dont ovulate"
+      - "not ovulating regularly"
+      - "ovulation problems"
+      - "recurrent miscarriage"
+      - "multiple miscarriages"
+      - "pregnancy loss"
+      - "keep miscarrying"
+
+  # ── ANDROGENIC SYMPTOMS ────────────────────────────────────────────────────
 
   - code: hirsutism
     family_code: null
@@ -272,6 +640,40 @@ concepts:
       - "unwanted hair growth"
       - "coarse hair growth"
       - "dark hair growth"
+      - "hair growing in weird places"
+      - "hair growing where it shouldnt"
+      - "hair in places women dont usually get hair"
+      - "body hair is excessive"
+      - "too much body hair"
+      - "so much body hair"
+      - "abnormal hair growth"
+      - "male pattern hair growth"
+      - "hair like a man"
+      - "growing hair like a man"
+      - "thick dark hair all over"
+      - "coarse dark hair"
+      - "hormonal hair growth"
+      - "hair growing on my stomach"
+      - "hair on my stomach"
+      - "belly hair"
+      - "stomach hair"
+      - "hair on my chest"
+      - "chest hair"
+      - "hair around my nipples"
+      - "nipple hair"
+      - "hair on my lower back"
+      - "lower back hair"
+      - "hair on my inner thighs"
+      - "inner thigh hair"
+      - "hair on my buttocks"
+      - "hair on my bum"
+      - "hair on my toes"
+      - "toe hair"
+      - "hair on my arms is really dark"
+      - "really dark arm hair"
+      - "really thick arm hair"
+      - "sideburns"
+      - "hair on my sideburns"
 
   - code: hair_growth_face
     family_code: null
@@ -284,25 +686,54 @@ concepts:
       - "chin hairs"
       - "hairs on my chin"
       - "hair on my upper lip"
+      - "upper lip hair"
+      - "mustache"
+      - "moustache"
+      - "growing a mustache"
+      - "growing a moustache"
       - "growing a beard"
-      # Grooming behaviour is a proxy, but an entailing one: a patient who
-      # shaves or waxes her chin is reporting that there is hair there. The
-      # frequency ("every day") is captured separately as severity/duration.
+      - "beard hair"
+      - "beard growth"
+      - "stubble on my chin"
+      - "stubble on my face"
+      - "shadow on my face"
+      - "five oclock shadow"
+      - "hair around my mouth"
+      - "hair on my jawline"
+      - "jawline hair"
+      - "cheek hair"
+      - "hair on my cheeks"
+      - "thick eyebrows"
+      - "unibrow"
+      - "hair between my eyebrows"
       - "shave my chin"
       - "shave my face"
       - "shaving my chin"
+      - "shaving my upper lip"
+      - "shave my upper lip"
       - "pluck my chin"
       - "plucking my chin"
       - "tweeze my chin"
+      - "tweezing my chin"
+      - "tweeze my upper lip"
       - "wax my chin"
       - "wax my upper lip"
       - "waxing my upper lip"
       - "threading my upper lip"
+      - "threading my chin"
       - "laser on my chin"
+      - "laser hair removal on my face"
       - "electrolysis on my chin"
+      - "electrolysis on my face"
       - "hair removal cream on my face"
       - "hair removal cream on my chin"
       - "hair removal on my face"
+      - "bleach my upper lip"
+      - "bleaching my chin"
+      - "have to remove facial hair"
+      - "getting rid of facial hair"
+      - "deal with facial hair constantly"
+      - "facial hair is embarrassing"
 
   - code: acne
     family_code: null
@@ -316,6 +747,50 @@ concepts:
       - "spots on my face"
       - "cystic acne"
       - "skin breaking out"
+      - "hormonal acne"
+      - "hormonal breakouts"
+      - "adult acne"
+      - "jawline acne"
+      - "jawline breakouts"
+      - "chin acne"
+      - "chin breakouts"
+      - "cheek acne"
+      - "forehead acne"
+      - "back acne"
+      - "chest acne"
+      - "body acne"
+      - "acne all over"
+      - "really bad skin"
+      - "skin is terrible"
+      - "terrible skin"
+      - "skin is a mess"
+      - "my skin is awful"
+      - "blemishes"
+      - "lots of blemishes"
+      - "blackheads"
+      - "whiteheads"
+      - "papules"
+      - "nodules on my skin"
+      - "cysts on my skin"
+      - "painful pimples"
+      - "deep painful spots"
+      - "painful cysts on face"
+      - "pimples that dont go away"
+      - "spots that wont clear"
+      - "acne scars"
+      - "scarring from acne"
+      - "post acne marks"
+      - "acne on my back and chest"
+      - "keep breaking out"
+      - "constantly breaking out"
+      - "never clear skin"
+      - "skin never clears up"
+      - "skin has been terrible for years"
+      - "tried everything for my skin"
+      - "nothing clears my skin"
+      - "oily skin and acne"
+      - "congested skin"
+      - "blocked pores"
 
   - code: androgenic_alopecia
     family_code: null
@@ -329,7 +804,54 @@ concepts:
       - "hair falling out"
       - "hair is falling out"
       - "bald patch"
+      - "bald patches"
       - "receding hairline"
+      - "losing my hair"
+      - "hair falling out in clumps"
+      - "clumps of hair falling out"
+      - "clumps of hair in the shower"
+      - "hair all over the shower"
+      - "hair all over my pillow"
+      - "hair on my pillow"
+      - "lots of hair on my brush"
+      - "hair all over my brush"
+      - "hair clogging the drain"
+      - "drain is always clogged with hair"
+      - "so much hair in the drain"
+      - "shedding hair"
+      - "shedding so much"
+      - "shedding excessively"
+      - "excessive shedding"
+      - "excessive hair shedding"
+      - "diffuse hair loss"
+      - "hair is getting thinner"
+      - "hair getting thinner"
+      - "hair is thinner than it used to be"
+      - "ponytail is so thin"
+      - "ponytail getting thinner"
+      - "can see my scalp"
+      - "scalp is visible"
+      - "scalp showing through"
+      - "part is getting wider"
+      - "widening part"
+      - "thinning at the crown"
+      - "crown is thinning"
+      - "top of my head is thinning"
+      - "temples are thinning"
+      - "thinning temples"
+      - "hair around temples"
+      - "frontal hair loss"
+      - "losing hair at the front"
+      - "hairline is receding"
+      - "androgenic alopecia"
+      - "female pattern baldness"
+      - "female pattern hair loss"
+      - "alopecia"
+      - "telogen effluvium"
+      - "hair is weak"
+      - "hair breaks easily"
+      - "hair is brittle"
+      - "hair is snapping off"
 
   - code: skin_darkening
     family_code: null
@@ -341,7 +863,84 @@ concepts:
       - "dark patches on my neck"
       - "darkening around my neck"
       - "acanthosis"
+      - "acanthosis nigricans"
       - "velvety patches"
+      - "velvety skin"
+      - "dark velvety skin"
+      - "dark patches on my skin"
+      - "dark discoloration"
+      - "skin discoloration"
+      - "hyperpigmentation"
+      - "skin is getting darker in patches"
+      - "patches of dark skin"
+      - "dark neck"
+      - "darkness around my neck"
+      - "dark underarms"
+      - "dark armpits"
+      - "darkening underarms"
+      - "dark under my arms"
+      - "dark groin"
+      - "darkening in my groin"
+      - "dark inner thighs"
+      - "darkening inner thighs"
+      - "dark skin folds"
+      - "darkness in my skin folds"
+      - "dark knuckles"
+      - "darkness on my knuckles"
+      - "dark elbows"
+      - "dark knees"
+      - "looks dirty but isnt"
+      - "looks like i havent washed"
+      - "people think im dirty"
+      - "velvet texture on skin"
+      - "rough dark patches"
+      - "my skin has dark patches"
+
+  - code: oily_skin
+    family_code: null
+    value: true
+    category: androgenic_symptom
+    phrases:
+      - "oily skin"
+      - "really oily skin"
+      - "skin is so oily"
+      - "excessive oil"
+      - "very oily face"
+      - "greasy skin"
+      - "greasy face"
+      - "shiny face"
+      - "face is always shiny"
+      - "seborrheic"
+      - "excessive sebum"
+      - "too much oil on my skin"
+      - "skin produces so much oil"
+      - "pores are always clogged with oil"
+      - "oily t zone"
+      - "oily scalp"
+      - "scalp is oily"
+      - "greasy hair"
+      - "hair gets greasy quickly"
+      - "hair is always greasy"
+      - "have to wash my hair every day"
+      - "hair is oily by the afternoon"
+
+  - code: skin_tags
+    family_code: null
+    value: true
+    category: androgenic_symptom
+    phrases:
+      - "skin tags"
+      - "skin tag"
+      - "have a lot of skin tags"
+      - "getting skin tags"
+      - "little skin growths"
+      - "small growths on my skin"
+      - "tags on my skin"
+      - "little bumps that hang off"
+      - "hanging skin bumps"
+      - "acrochordons"
+
+  # ── METABOLIC ─────────────────────────────────────────────────────────────
 
   - code: weight_gain
     family_code: null
@@ -354,6 +953,172 @@ concepts:
       - "put on weight"
       - "putting on weight"
       - "weight has gone up"
+      - "cant stop gaining weight"
+      - "keep gaining weight"
+      - "keep putting on weight"
+      - "weight just keeps going up"
+      - "weight creeping up"
+      - "unexplained weight gain"
+      - "gaining weight without reason"
+      - "gaining weight for no reason"
+      - "gaining weight despite diet"
+      - "gaining weight even though i eat healthy"
+      - "gaining weight even though i exercise"
+      - "gaining weight even when i eat well"
+      - "cant lose weight"
+      - "impossible to lose weight"
+      - "weight wont budge"
+      - "weight wont come off"
+      - "struggling to lose weight"
+      - "really hard to lose weight"
+      - "losing weight is really difficult"
+      - "cant seem to lose weight"
+      - "nothing helps me lose weight"
+      - "weight loss resistant"
+      - "resistant to weight loss"
+      - "stubborn weight"
+      - "stubborn belly fat"
+      - "belly fat"
+      - "abdominal weight gain"
+      - "weight around my middle"
+      - "weight around my waist"
+      - "central obesity"
+      - "putting weight on around my belly"
+      - "gaining around my stomach"
+      - "apple shaped"
+      - "all my weight goes to my stomach"
+      - "carry weight in my middle"
+      - "gained so much weight recently"
+      - "put on a lot of weight"
+      - "put on ten pounds"
+      - "put on twenty pounds"
+      - "my clothes dont fit"
+      - "clothes are getting tight"
+      - "gone up a dress size"
+      - "gone up two dress sizes"
+
+  - code: insulin_resistance
+    family_code: null
+    value: true
+    category: metabolic
+    phrases:
+      - "insulin resistance"
+      - "insulin resistant"
+      - "prediabetes"
+      - "pre diabetes"
+      - "pre-diabetic"
+      - "blood sugar issues"
+      - "blood sugar problems"
+      - "high blood sugar"
+      - "elevated blood sugar"
+      - "blood glucose issues"
+      - "glucose intolerance"
+      - "impaired glucose tolerance"
+      - "metabolic syndrome"
+      - "carb intolerance"
+      - "carb sensitivity"
+      - "sensitive to carbs"
+      - "carbs affect me a lot"
+      - "carbs make me gain weight"
+      - "sugar makes me gain weight"
+      - "crash after eating carbs"
+      - "crash after eating sugar"
+      - "energy crash after meals"
+      - "feel terrible after eating carbs"
+      - "feel awful after sugar"
+      - "reactive hypoglycemia"
+      - "blood sugar crashes"
+      - "blood sugar spikes"
+      - "sugar spikes"
+      - "high fasting glucose"
+      - "elevated fasting glucose"
+      - "fasting glucose is high"
+      - "hba1c is elevated"
+      - "a1c is elevated"
+
+  - code: sugar_cravings
+    family_code: null
+    value: true
+    category: metabolic
+    phrases:
+      - "sugar cravings"
+      - "craving sugar"
+      - "crave sugar"
+      - "craving sweets"
+      - "crave sweets"
+      - "sweet tooth"
+      - "really bad sweet tooth"
+      - "carb cravings"
+      - "craving carbs"
+      - "crave carbs"
+      - "craving bread"
+      - "crave bread"
+      - "craving pasta"
+      - "craving junk food"
+      - "craving chocolate"
+      - "crave chocolate"
+      - "cant stop eating sugar"
+      - "addicted to sugar"
+      - "sugar addiction"
+      - "cant resist sweets"
+      - "always want something sweet"
+      - "always craving something sweet"
+      - "intense food cravings"
+      - "insatiable appetite"
+      - "always hungry"
+      - "never feel full"
+      - "constant hunger"
+      - "hunger all the time"
+      - "hangry all the time"
+      - "get really hungry really fast"
+      - "hungry even after eating"
+      - "not satisfied after meals"
+      - "feel hungry an hour after eating"
+
+  - code: increased_thirst
+    family_code: null
+    value: true
+    category: metabolic
+    phrases:
+      - "really thirsty"
+      - "extremely thirsty"
+      - "always thirsty"
+      - "constantly thirsty"
+      - "increased thirst"
+      - "polydipsia"
+      - "drinking a lot of water"
+      - "cant stop drinking water"
+      - "drink so much water"
+      - "drink a lot of fluids"
+      - "thirst is insatiable"
+      - "cant quench my thirst"
+      - "thirsty all the time"
+      - "dry mouth all the time"
+      - "mouth is always dry"
+      - "dry mouth constantly"
+
+  - code: frequent_urination
+    family_code: null
+    value: true
+    category: metabolic
+    phrases:
+      - "frequent urination"
+      - "urinating a lot"
+      - "peeing a lot"
+      - "always need to pee"
+      - "constantly need to pee"
+      - "going to the bathroom a lot"
+      - "going to the toilet a lot"
+      - "waking up to pee"
+      - "waking up at night to urinate"
+      - "nocturia"
+      - "polyuria"
+      - "peeing all the time"
+      - "need to urinate frequently"
+      - "urge to urinate frequently"
+      - "urgency to urinate"
+
+  # ── FATIGUE AND SLEEP ─────────────────────────────────────────────────────
 
   - code: fatigue
     family_code: null
@@ -367,6 +1132,125 @@ concepts:
       - "no energy"
       - "wiped out"
       - "tired all the time"
+      - "chronically tired"
+      - "chronic fatigue"
+      - "constant fatigue"
+      - "constant tiredness"
+      - "always exhausted"
+      - "constantly exhausted"
+      - "extreme fatigue"
+      - "severe fatigue"
+      - "debilitating fatigue"
+      - "overwhelming fatigue"
+      - "bone tired"
+      - "bone deep exhaustion"
+      - "run down"
+      - "run down all the time"
+      - "feel run down"
+      - "completely drained"
+      - "always drained"
+      - "drained all the time"
+      - "energy is just gone"
+      - "no energy whatsoever"
+      - "zero energy"
+      - "low energy"
+      - "really low energy"
+      - "energy levels are terrible"
+      - "energy levels are really low"
+      - "cant get through the day"
+      - "struggling to get through the day"
+      - "need to nap every day"
+      - "napping during the day"
+      - "afternoon energy crash"
+      - "energy crash in the afternoon"
+      - "crash in the afternoon"
+      - "hit a wall in the afternoon"
+      - "hit a wall every afternoon"
+      - "running on empty"
+      - "dragging myself through the day"
+      - "can barely function"
+      - "barely functioning"
+      - "feel like i have no fuel"
+      - "lethargic"
+      - "lethargy"
+      - "sluggish"
+      - "sluggishness"
+      - "heavy limbs"
+      - "limbs feel heavy"
+      - "feel weighed down"
+      - "weak"
+      - "weakness"
+      - "generalized weakness"
+      - "physically exhausted"
+      - "mentally exhausted"
+      - "physically and mentally exhausted"
+      - "not waking up refreshed"
+      - "wake up tired"
+      - "wake up exhausted"
+      - "still tired after sleeping"
+      - "sleep doesnt help"
+      - "sleep doesnt refresh me"
+      - "unrefreshing sleep"
+
+  - code: insomnia
+    family_code: null
+    value: true
+    category: symptom
+    phrases:
+      - "insomnia"
+      - "cant sleep"
+      - "trouble sleeping"
+      - "difficulty sleeping"
+      - "sleep problems"
+      - "poor sleep"
+      - "bad sleep"
+      - "terrible sleep"
+      - "sleep is really bad"
+      - "not sleeping well"
+      - "cant fall asleep"
+      - "trouble falling asleep"
+      - "difficulty falling asleep"
+      - "takes forever to fall asleep"
+      - "takes hours to fall asleep"
+      - "lying awake"
+      - "lie awake for hours"
+      - "cant get to sleep"
+      - "toss and turn"
+      - "tossing and turning"
+      - "waking up in the night"
+      - "wake up at night"
+      - "waking up multiple times"
+      - "wake up several times a night"
+      - "cant stay asleep"
+      - "difficulty staying asleep"
+      - "trouble staying asleep"
+      - "waking early"
+      - "waking up really early"
+      - "wake up too early"
+      - "wake up at 3am"
+      - "wake up at 4am"
+      - "cant get back to sleep"
+      - "early morning waking"
+      - "sleep deprivation"
+      - "sleep deprived"
+      - "chronically sleep deprived"
+      - "never get enough sleep"
+      - "always sleep deprived"
+      - "only sleeping a few hours"
+      - "only getting four hours"
+      - "only getting five hours"
+      - "broken sleep"
+      - "fragmented sleep"
+      - "restless sleep"
+      - "restless at night"
+      - "racing thoughts at night"
+      - "mind races at night"
+      - "cant switch my brain off"
+      - "brain wont shut off at night"
+      - "anxious at night"
+      - "anxiety keeps me awake"
+
+  # ── MOOD AND MENTAL HEALTH ────────────────────────────────────────────────
 
   - code: mood_change
     family_code: null
@@ -376,10 +1260,182 @@ concepts:
       - "mood swings"
       - "mood changes"
       - "irritable"
+      - "irritability"
       - "low mood"
       - "feeling down"
       - "anxious"
       - "anxiety"
+      - "depression"
+      - "depressed"
+      - "feeling depressed"
+      - "really moody"
+      - "so moody"
+      - "emotional"
+      - "really emotional"
+      - "all over the place emotionally"
+      - "emotions are all over the place"
+      - "cry at everything"
+      - "cry for no reason"
+      - "cry randomly"
+      - "crying a lot"
+      - "crying all the time"
+      - "crying for no apparent reason"
+      - "feeling hopeless"
+      - "hopeless"
+      - "feel worthless"
+      - "worthless"
+      - "cant cope"
+      - "struggling to cope"
+      - "feel like i cant cope"
+      - "mental health has suffered"
+      - "mental health is really bad"
+      - "really struggling mentally"
+      - "struggling mentally"
+      - "not myself"
+      - "not feeling like myself"
+      - "dont feel like me"
+      - "feel like a different person"
+      - "feel like ive lost myself"
+      - "rage"
+      - "really angry"
+      - "angry all the time"
+      - "losing my temper"
+      - "snapping at people"
+      - "snap easily"
+      - "really short fuse"
+      - "short tempered"
+      - "quick to anger"
+      - "feel like im going crazy"
+      - "feel crazy"
+      - "emotional instability"
+      - "emotionally unstable"
+      - "emotionally volatile"
+      - "volatile emotions"
+      - "dysphoria"
+      - "emotional dysregulation"
+      - "flat affect"
+      - "emotionally flat"
+      - "numb emotionally"
+      - "feel numb"
+      - "feel nothing"
+      - "anhedonia"
+      - "cant enjoy things"
+      - "lost interest in things i used to enjoy"
+      - "nothing brings me joy"
+      - "no motivation"
+      - "lost motivation"
+      - "dont want to do anything"
+      - "really withdrawn"
+      - "isolating myself"
+      - "social withdrawal"
+      - "avoiding people"
+      - "dont want to see anyone"
+      - "feeling lonely"
+      - "overwhelmed"
+      - "overwhelmed easily"
+      - "easily overwhelmed"
+      - "panic attacks"
+      - "having panic attacks"
+      - "panic"
+      - "panic disorder"
+      - "social anxiety"
+      - "general anxiety"
+      - "generalized anxiety"
+      - "health anxiety"
+      - "worry constantly"
+      - "worrying all the time"
+      - "cant stop worrying"
+      - "always stressed"
+      - "really stressed"
+      - "chronic stress"
+      - "feel burned out"
+      - "burnout"
+      - "feeling burned out"
+
+  - code: brain_fog
+    family_code: null
+    value: true
+    category: symptom
+    phrases:
+      - "brain fog"
+      - "mental fog"
+      - "foggy brain"
+      - "foggy headed"
+      - "cognitive fog"
+      - "cant think clearly"
+      - "cant concentrate"
+      - "difficulty concentrating"
+      - "trouble concentrating"
+      - "concentration problems"
+      - "really hard to concentrate"
+      - "cant focus"
+      - "difficulty focusing"
+      - "trouble focusing"
+      - "focus is really bad"
+      - "cant remember things"
+      - "memory problems"
+      - "memory issues"
+      - "poor memory"
+      - "bad memory"
+      - "forgetting things"
+      - "forgetful"
+      - "really forgetful"
+      - "cant remember words"
+      - "word finding difficulty"
+      - "forgetting words"
+      - "losing words"
+      - "tip of my tongue"
+      - "mental clarity is gone"
+      - "no mental clarity"
+      - "feel mentally slow"
+      - "thinking is slow"
+      - "slow thinking"
+      - "feel like im in a haze"
+      - "feel like im in a fog"
+      - "mind is hazy"
+      - "mind is cloudy"
+      - "muddled thinking"
+      - "cant think straight"
+      - "feel spaced out"
+      - "spaced out"
+      - "feeling out of it"
+      - "feel out of it"
+      - "cant retain information"
+      - "information doesnt stick"
+      - "reading things over and over"
+      - "have to read things multiple times"
+
+  - code: libido_change
+    family_code: null
+    value: true
+    category: symptom
+    phrases:
+      - "low libido"
+      - "low sex drive"
+      - "no sex drive"
+      - "decreased sex drive"
+      - "decreased libido"
+      - "reduced libido"
+      - "lost my sex drive"
+      - "no interest in sex"
+      - "not interested in sex"
+      - "dont want sex"
+      - "dont want to have sex"
+      - "sex drive is really low"
+      - "sex drive has disappeared"
+      - "sex drive has gone"
+      - "never in the mood"
+      - "never feel like sex"
+      - "libido is non existent"
+      - "libido has tanked"
+      - "libido tanked"
+      - "no desire for intimacy"
+      - "lost interest in intimacy"
+      - "not interested in intimacy"
+      - "intimacy issues"
+      - "problems with intimacy"
+
+  # ── PAIN AND PHYSICAL SYMPTOMS ────────────────────────────────────────────
 
   - code: pelvic_pain
     family_code: null
@@ -392,11 +1448,350 @@ concepts:
       - "cramps"
       - "lower abdominal pain"
       - "pain in my lower belly"
+      - "pelvic pressure"
+      - "pressure in my pelvis"
+      - "pelvic discomfort"
+      - "ovarian pain"
+      - "pain in my ovaries"
+      - "ovary pain"
+      - "pain in my left ovary"
+      - "pain in my right ovary"
+      - "stabbing pelvic pain"
+      - "stabbing pain in my pelvis"
+      - "sharp pelvic pain"
+      - "sharp pain in my pelvis"
+      - "dull pelvic ache"
+      - "dull ache in my pelvis"
+      - "throbbing pelvic pain"
+      - "chronic pelvic pain"
+      - "constant pelvic pain"
+      - "recurring pelvic pain"
+      - "pain during ovulation"
+      - "mittelschmerz"
+      - "ovulation pain"
+      - "pain in the middle of my cycle"
+      - "mid cycle pain"
+      - "lower back pain"
+      - "pain in my lower back"
+      - "lower back ache"
+      - "pelvic floor pain"
+      - "pain during sex"
+      - "sex is painful"
+      - "dyspareunia"
+      - "intercourse is painful"
+      - "painful intercourse"
+      - "pain after sex"
+      - "pain during urination"
+      - "burning when i pee"
+      - "bladder pain"
+      - "bladder pressure"
 
-  # Diagnosis-level concepts. `code: null` means "no patient-level canonical
-  # variable exists" — see the header. Only the family_code path can produce an
-  # event, which is exactly the guarantee that family history never becomes the
-  # patient's diagnosis.
+  - code: bloating
+    family_code: null
+    value: true
+    category: symptom
+    phrases:
+      - "bloating"
+      - "feel bloated"
+      - "am bloated"
+      - "so bloated"
+      - "am so bloated"
+      - "feeling bloated"
+      - "really bloated"
+      - "always bloated"
+      - "constantly bloated"
+      - "bloated all the time"
+      - "belly is bloated"
+      - "stomach is bloated"
+      - "abdominal bloating"
+      - "bloat after eating"
+      - "bloat after meals"
+      - "bloat really easily"
+      - "belly swells up"
+      - "stomach swells"
+      - "stomach swells after eating"
+      - "distended stomach"
+      - "distended abdomen"
+      - "abdomen is distended"
+      - "look pregnant"
+      - "look like im pregnant"
+      - "look five months pregnant after eating"
+      - "food baby"
+      - "stomach looks huge"
+      - "tummy swells"
+      - "feel so full"
+      - "feel full quickly"
+      - "fullness"
+      - "uncomfortable fullness"
+      - "gas"
+      - "really gassy"
+      - "so much gas"
+      - "bloating and gas"
+      - "trapped gas"
+      - "wind"
+      - "lots of wind"
+      - "flatulence"
+
+  - code: water_retention
+    family_code: null
+    value: true
+    category: symptom
+    phrases:
+      - "water retention"
+      - "retaining water"
+      - "holding water"
+      - "fluid retention"
+      - "holding fluid"
+      - "swollen ankles"
+      - "swollen feet"
+      - "swollen hands"
+      - "swollen fingers"
+      - "puffy face"
+      - "puffy eyes"
+      - "puffiness"
+      - "face is puffy"
+      - "hands are puffy"
+      - "edema"
+      - "oedema"
+      - "swelling"
+      - "feel swollen"
+      - "feel puffy"
+      - "always puffy"
+      - "ring is tight"
+      - "rings dont fit"
+      - "shoes dont fit"
+      - "weight fluctuates"
+      - "weight goes up and down a lot"
+      - "five pounds heavier in the evening"
+
+  - code: headache
+    family_code: null
+    value: true
+    category: symptom
+    phrases:
+      - "headaches"
+      - "headache"
+      - "migraines"
+      - "migraine"
+      - "really bad headaches"
+      - "frequent headaches"
+      - "constant headaches"
+      - "headaches all the time"
+      - "tension headache"
+      - "tension headaches"
+      - "hormonal headaches"
+      - "hormonal migraines"
+      - "menstrual migraines"
+      - "menstrual headaches"
+      - "headaches around my period"
+      - "get headaches before my period"
+      - "get migraines before my period"
+      - "headaches with my period"
+      - "migraines with my period"
+      - "chronic migraine"
+      - "migraine with aura"
+      - "aura"
+      - "visual aura"
+      - "headache that lasts days"
+      - "debilitating headache"
+      - "debilitating migraine"
+      - "migraine puts me in bed"
+      - "headache behind my eyes"
+      - "pressure behind my eyes"
+      - "pressure in my head"
+      - "throbbing headache"
+      - "throbbing migraine"
+      - "pounding headache"
+      - "head is pounding"
+
+  - code: breast_tenderness
+    family_code: null
+    value: true
+    category: symptom
+    phrases:
+      - "breast tenderness"
+      - "sore breasts"
+      - "tender breasts"
+      - "painful breasts"
+      - "breast pain"
+      - "boobs are sore"
+      - "boobs hurt"
+      - "breasts are really sore"
+      - "breasts are tender"
+      - "breasts hurt"
+      - "breast soreness"
+      - "mastalgia"
+      - "cyclical breast pain"
+      - "breasts are swollen"
+      - "breasts feel swollen"
+      - "swollen breasts"
+      - "engorged breasts"
+      - "nipple tenderness"
+      - "nipples are sore"
+      - "sore nipples"
+      - "breast lumpiness"
+      - "lumpy breasts"
+      - "fibrocystic breasts"
+
+  - code: hot_flashes
+    family_code: null
+    value: true
+    category: symptom
+    phrases:
+      - "hot flashes"
+      - "hot flash"
+      - "hot flushes"
+      - "hot flush"
+      - "flushing"
+      - "suddenly feel hot"
+      - "suddenly feel really hot"
+      - "waves of heat"
+      - "heat waves"
+      - "sudden heat"
+      - "sweating suddenly"
+      - "suddenly sweating"
+      - "flush red"
+      - "flushing red"
+      - "face goes red"
+      - "face flushes"
+      - "burning sensation"
+      - "burning up"
+      - "feel like im burning"
+      - "overheating"
+      - "always overheating"
+      - "always hot"
+      - "always feel hot"
+      - "temperature regulation problems"
+      - "cant regulate my temperature"
+      - "thermoregulation issues"
+      - "vasomotor symptoms"
+
+  - code: night_sweats
+    family_code: null
+    value: true
+    category: symptom
+    phrases:
+      - "night sweats"
+      - "night sweat"
+      - "sweating at night"
+      - "sweat at night"
+      - "wake up sweating"
+      - "wake up drenched in sweat"
+      - "drenched in sweat"
+      - "soaked in sweat at night"
+      - "soaking the sheets"
+      - "sheets are soaked"
+      - "pajamas are soaked"
+      - "have to change my sheets"
+      - "have to change my clothes in the night"
+      - "sweating through my clothes"
+      - "profuse sweating at night"
+      - "excessive sweating at night"
+
+  - code: nausea
+    family_code: null
+    value: true
+    category: symptom
+    phrases:
+      - "nausea"
+      - "nauseous"
+      - "feel sick"
+      - "feel nauseous"
+      - "always nauseous"
+      - "constantly nauseous"
+      - "morning nausea"
+      - "nausea in the morning"
+      - "feel sick in the morning"
+      - "nausea around my period"
+      - "feel sick during my period"
+      - "sick to my stomach"
+      - "upset stomach"
+      - "stomach upset"
+      - "feel like im going to be sick"
+      - "feel like throwing up"
+      - "vomiting"
+      - "vomit"
+      - "throwing up"
+      - "queasiness"
+      - "queasy"
+      - "feel queasy"
+
+  - code: joint_pain
+    family_code: null
+    value: true
+    category: symptom
+    phrases:
+      - "joint pain"
+      - "achy joints"
+      - "joints ache"
+      - "joints hurt"
+      - "stiff joints"
+      - "joint stiffness"
+      - "arthralgia"
+      - "painful joints"
+      - "inflamed joints"
+      - "swollen joints"
+      - "knee pain"
+      - "hip pain"
+      - "shoulder pain"
+      - "wrist pain"
+      - "ankle pain"
+      - "back pain"
+      - "joint inflammation"
+      - "body aches"
+      - "aches and pains"
+      - "achy all over"
+      - "body is achy"
+      - "muscle aches"
+      - "muscle pain"
+      - "myalgia"
+      - "muscle soreness"
+
+  - code: thyroid_symptoms
+    family_code: null
+    value: true
+    category: metabolic
+    phrases:
+      - "thyroid problems"
+      - "thyroid issues"
+      - "thyroid condition"
+      - "hypothyroidism"
+      - "underactive thyroid"
+      - "thyroid is underactive"
+      - "hyperthyroidism"
+      - "overactive thyroid"
+      - "thyroid is overactive"
+      - "thyroiditis"
+      - "hashimotos"
+      - "hashimoto thyroiditis"
+      - "graves disease"
+      - "thyroid nodules"
+      - "goiter"
+      - "enlarged thyroid"
+      - "thyroid swelling"
+      - "cold all the time"
+      - "always cold"
+      - "constantly cold"
+      - "cant warm up"
+      - "feel cold all the time"
+      - "cold intolerance"
+      - "heat intolerance"
+      - "always hot"
+      - "dry skin"
+      - "really dry skin"
+      - "skin is really dry"
+      - "constipation"
+      - "always constipated"
+      - "chronic constipation"
+      - "slow digestion"
+      - "heart racing"
+      - "heart palpitations"
+      - "palpitations"
+      - "rapid heart rate"
+      - "fast heartbeat"
+
+  # ── DIAGNOSES (family history only) ──────────────────────────────────────
+
   - code: null
     family_code: family_history_pmos
     value: true
@@ -406,8 +1801,15 @@ concepts:
       self-reported PMOS diagnosis has no canonical patient variable.
     phrases:
       - "pmos"
+      - "pcos"
       - "polycystic ovary syndrome"
       - "polycystic ovaries syndrome"
+      - "polycystic ovaries"
+      - "polycystic ovarian syndrome"
+      - "poly cystic ovary syndrome"
+      - "poly cystic ovaries"
+      - "hormonal condition"
+      - "hormonal imbalance condition"
 
   - code: null
     family_code: family_history_diabetes
@@ -421,19 +1823,221 @@ concepts:
       - "type 2 diabetes"
       - "type two diabetes"
       - "diabetic"
+      - "type 1 diabetes"
+      - "type one diabetes"
+      - "gestational diabetes"
+      - "borderline diabetes"
+      - "blood sugar condition"
+
+  - code: null
+    family_code: family_history_cardiovascular
+    value: true
+    category: diagnosis
+    unmapped_reason: >-
+      no patient-level cardiovascular diagnosis variable in registry.
+    phrases:
+      - "heart disease"
+      - "heart condition"
+      - "heart attack"
+      - "cardiac condition"
+      - "cardiovascular disease"
+      - "high blood pressure"
+      - "hypertension"
+      - "high cholesterol"
+      - "elevated cholesterol"
+      - "stroke"
+      - "coronary artery disease"
+      - "coronary heart disease"
+      - "heart failure"
+      - "atrial fibrillation"
+      - "a fib"
+
+  - code: null
+    family_code: family_history_thyroid
+    value: true
+    category: diagnosis
+    unmapped_reason: >-
+      no patient-level thyroid diagnosis variable in registry.
+    phrases:
+      - "thyroid disease"
+      - "thyroid problems"
+      - "thyroid condition"
+      - "hypothyroidism"
+      - "hyperthyroidism"
+      - "underactive thyroid"
+      - "overactive thyroid"
+      - "hashimotos"
+      - "graves"
+      - "thyroid cancer"
+      - "thyroid disorder"
+
+  - code: null
+    family_code: family_history_endometriosis
+    value: true
+    category: diagnosis
+    unmapped_reason: >-
+      no patient-level endometriosis variable in registry.
+    phrases:
+      - "endometriosis"
+      - "endo"
+      - "endometrial condition"
+
+  - code: null
+    family_code: family_history_cancer
+    value: true
+    category: diagnosis
+    unmapped_reason: >-
+      no patient-level cancer variable in registry.
+    phrases:
+      - "cancer"
+      - "ovarian cancer"
+      - "endometrial cancer"
+      - "uterine cancer"
+      - "breast cancer"
+      - "cervical cancer"
+      - "colon cancer"
+      - "bowel cancer"
+      - "melanoma"
 
 medications:
   - name: metformin
-    phrases: ["metformin", "glucophage"]
+    phrases:
+      - "metformin"
+      - "glucophage"
+      - "fortamet"
+      - "glumetza"
+      - "riomet"
+
   - name: spironolactone
-    phrases: ["spironolactone", "spiro", "aldactone"]
+    phrases:
+      - "spironolactone"
+      - "spiro"
+      - "aldactone"
+      - "spiractin"
+
   - name: combined_oral_contraceptive
-    phrases: ["birth control", "birth control pill", "the pill", "oral contraceptive", "combined pill"]
+    phrases:
+      - "birth control"
+      - "birth control pill"
+      - "the pill"
+      - "oral contraceptive"
+      - "combined pill"
+      - "contraceptive pill"
+      - "yasmin"
+      - "yaz"
+      - "dianette"
+      - "diane 35"
+      - "cilest"
+      - "microgynon"
+      - "loestrin"
+      - "levlen"
+      - "ortho tri cyclen"
+      - "combined oral contraceptive"
+      - "ocp"
+      - "coc"
+      - "hormonal contraception"
+      - "contraception"
+      - "on the pill"
+      - "started the pill"
+      - "came off the pill"
+      - "stopped the pill"
+      - "went on the pill"
+
+  - name: progestogen_only_pill
+    phrases:
+      - "mini pill"
+      - "progestogen only pill"
+      - "progesterone only pill"
+      - "pop"
+      - "cerelle"
+      - "cerazette"
+      - "noriday"
+      - "micronor"
+
+  - name: hormonal_iud
+    phrases:
+      - "mirena"
+      - "kyleena"
+      - "liletta"
+      - "skyla"
+      - "hormonal iud"
+      - "hormonal coil"
+      - "the coil"
+      - "iud"
+      - "intrauterine device"
+
   - name: letrozole
-    phrases: ["letrozole", "femara"]
+    phrases:
+      - "letrozole"
+      - "femara"
+
   - name: inositol
-    phrases: ["inositol", "myo inositol"]
+    phrases:
+      - "inositol"
+      - "myo inositol"
+      - "myo-inositol"
+      - "d chiro inositol"
+      - "d-chiro-inositol"
+
   - name: clomiphene
-    phrases: ["clomiphene", "clomid"]
+    phrases:
+      - "clomiphene"
+      - "clomid"
+      - "serophene"
+      - "clomifene"
+
   - name: levothyroxine
-    phrases: ["levothyroxine", "synthroid"]
+    phrases:
+      - "levothyroxine"
+      - "synthroid"
+      - "eltroxin"
+      - "euthyrox"
+      - "thyroxine"
+      - "t4"
+
+  - name: progesterone
+    phrases:
+      - "progesterone"
+      - "prometrium"
+      - "utrogestan"
+      - "cyclogest"
+      - "natural progesterone"
+      - "bioidentical progesterone"
+
+  - name: testosterone
+    phrases:
+      - "testosterone"
+      - "androgel"
+      - "testogel"
+      - "testosterone gel"
+      - "testosterone cream"
+
+  - name: ozempic
+    phrases:
+      - "ozempic"
+      - "semaglutide"
+      - "wegovy"
+      - "mounjaro"
+      - "tirzepatide"
+      - "glp1"
+      - "glp 1"
+      - "glp-1"
+      - "liraglutide"
+      - "victoza"
+
+  - name: berberine
+    phrases:
+      - "berberine"
+      - "natural metformin"
+
+  - name: naltrexone
+    phrases:
+      - "low dose naltrexone"
+      - "ldn"
+      - "naltrexone"
+
+  - name: eflornithine
+    phrases:
+      - "eflornithine"
+      - "vaniqa"
+      - "hair removal cream"

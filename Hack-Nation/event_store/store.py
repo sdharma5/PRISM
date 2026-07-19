@@ -124,9 +124,27 @@ class EventStore:
         """Every patient id in the store."""
         return sorted(self._by_patient)
 
+    def mark_superseded(self, event_id: str, *, replaced_by: str) -> None:
+        """Record that a stored event has been replaced by a later one.
+
+        Used when the same source document is ingested again: the earlier
+        extraction is not wrong, it is simply no longer current. Both events
+        stay in the ledger -- this only records which one supersedes which, so
+        readers can show the current view without losing the history.
+        """
+        for key in (str(event_id), str(replaced_by)):
+            if key not in self._by_id:
+                raise KeyError(f"No event with id '{key}'.")
+        self._supersessions[str(event_id)] = str(replaced_by)
+
     def superseded_ids(self) -> set[str]:
-        """Ids of events replaced by a later confirmation revision."""
+        """Ids of events replaced by a later revision or re-ingestion."""
         return set(self._supersessions)
+
+    def current(self, patient_id: str) -> list[HormonalHealthEvent]:
+        """One patient's events with superseded ones filtered out."""
+        superseded = self._supersessions
+        return [e for e in self.get(patient_id) if str(e.event_id) not in superseded]
 
     # -- Persistence --------------------------------------------------------
 

@@ -105,11 +105,20 @@ def review_event(event_id: str, payload: ReviewDecision, request: Request) -> Ho
 
 
 @router.get("/{patient_id}", response_model=list[HormonalHealthEvent])
-def get_events(patient_id: str, request: Request) -> list[HormonalHealthEvent]:
-    """Every stored event for one patient.
+def get_events(
+    patient_id: str, request: Request, include_superseded: bool = False
+) -> list[HormonalHealthEvent]:
+    """One patient's current events.
+
+    Superseded events -- an earlier extraction of a re-uploaded document, or a
+    value replaced by a later revision -- are excluded by default, so callers
+    see one live copy of each reading rather than one per upload. Pass
+    ``include_superseded=true`` to read the full ledger for audit.
 
     An unknown patient returns an empty list rather than a 404: "this patient
     has no events yet" is the normal state during onboarding, not an error.
     """
     store = _store(request)
-    return by_patient(store.events, patient_id)
+    if include_superseded:
+        return by_patient(store.events, patient_id)
+    return store.current(patient_id)
