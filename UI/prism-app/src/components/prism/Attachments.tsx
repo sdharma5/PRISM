@@ -12,7 +12,7 @@ import { AlertCircle, Check, FileText, FlaskConical, Image as ImageIcon, Loader2
 import { Card, SectionHeading, StatusPill } from './Primitives'
 import { createUltrasoundJob, getEvents, getPatientReport, submitSpeechRecording, uploadDocumentFile } from '@/lib/api'
 import { ApiError, DEFAULT_DEMO_PATIENT, apiMode } from '@/lib/apiClient'
-import { saveAssessment } from '@/lib/reportStore'
+import { saveAssessment, saveInjectedTemporal } from '@/lib/reportStore'
 import type { SpeechPipelineResult } from '@/types'
 
 type JobKind = 'documents' | 'ultrasound'
@@ -288,14 +288,6 @@ function FileBlock({
             <div className="min-w-0">
               <p className="text-sm font-semibold text-neutral-900">{label}</p>
               <p className="mt-0.5 text-xs text-neutral-500">{hint}</p>
-              {outcome?.status === 'completed' && isDemo && (
-                <div className="mt-2 flex flex-col gap-1.5">
-                  <p className="text-sm font-semibold text-neutral-900">12 follicles detected</p>
-                  <span className="inline-flex w-fit items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-xs text-amber-700">
-                    Awaiting clinician review
-                  </span>
-                </div>
-              )}
               {outcome && outcome.status !== 'completed' && (
                 <p className="mt-2 flex items-center gap-1.5 text-xs text-rose-600">
                   <AlertCircle className="h-3.5 w-3.5" />
@@ -437,6 +429,9 @@ function TemporalDemoBlock({ patientId }: { patientId: string }) {
     setError(null)
     try {
       const temporalObs = buildDemoTemporalDays(patientId)
+      // Persist so a later main analysis re-sends these days rather than
+      // clobbering the longitudinal branch this inject produced.
+      saveInjectedTemporal(temporalObs)
       const events = await getEvents(patientId)
       const confirmed = events.filter(e => e.confirmationStatus === 'confirmed' || e.confirmationStatus === 'not_required')
       const result = await getPatientReport(patientId, { confirmed_events: confirmed, temporal_observations: temporalObs })
