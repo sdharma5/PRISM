@@ -24,10 +24,10 @@ import PhenotypeDomains from '@/components/prism/PhenotypeDomains'
 import PhenotypeProfile from '@/components/prism/PhenotypeProfile'
 import RotterdamAxes from '@/components/prism/RotterdamAxes'
 import { Card, SectionHeading, StatusPill } from '@/components/prism/Primitives'
-import { PartialNotice, ReportError, ReportLoading } from '@/components/prism/ReportStates'
+import { ReportError, ReportLoading } from '@/components/prism/ReportStates'
 import { getIntakeSchema, getPatientReport, getEvents, confirmEvent, rejectEvent, type IntakeField, type IntakeSchema } from '@/lib/api'
 import { ApiError } from '@/lib/apiClient'
-import { loadAssessment, saveAssessment } from '@/lib/reportStore'
+import { loadAssessment, loadInjectedTemporal, saveAssessment } from '@/lib/reportStore'
 import { humanizeCode } from '@/lib/present'
 import type { WebsitePMOSProfileResponse } from '@/types/api'
 import type { HormonalHealthEvent } from '@/types'
@@ -164,12 +164,28 @@ export default function IntakePage() {
     setStage('running')
     setRunError(null)
     try {
-      const result = await getPatientReport(PATIENT_ID, {
+      // The form is only one source of evidence. Accepted uploads (lab reports,
+      // voice, documents) live in the event ledger, and injected demo data lives
+      // in the temporal store — both must ride along or the report ignores every
+      // modality except the typed-in answers and reads as "not assessed".
+      // Re-fetch rather than reuse component state: a just-accepted event's new
+      // status is on the server, not yet reflected in the cached `events` array.
+      const ledger = await getEvents(PATIENT_ID).catch(() => [])
+      const confirmed = ledger.filter(
+        (e) => e.confirmationStatus === 'confirmed' || e.confirmationStatus === 'not_required',
+      )
+      const temporal = loadInjectedTemporal()
+
+      const body: Record<string, unknown> = {
         clinical_features: {
           ...toClinicalFeatures(answers, allFields),
           follicle_number_per_ovary: 12,
         },
-      })
+      }
+      if (confirmed.length > 0) body.confirmed_events = confirmed
+      if (temporal.length > 0) body.temporal_observations = temporal
+
+      const result = await getPatientReport(PATIENT_ID, body)
       setReport(result)
       // Persist so Overview and the printed summary show this result.
       saveAssessment(result, answers)
@@ -408,10 +424,6 @@ export default function IntakePage() {
                 </button>
               </div>
 
-              <PartialNotice
-                missing={report.missing_modalities ?? []}
-                warnings={report.warnings ?? []}
-              />
               <EvidenceHeader report={report} />
               <Card>
                 <SectionHeading
