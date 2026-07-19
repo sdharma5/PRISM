@@ -13,7 +13,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowLeft, ArrowRight, Check, ChevronRight, Loader2, Play, X } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, ChevronRight, FlaskConical, Loader2, Play, X } from 'lucide-react'
 
 import Sidebar from '@/components/Sidebar'
 import Attachments from '@/components/prism/Attachments'
@@ -39,6 +39,37 @@ type Stage = 'form' | 'review' | 'running' | 'result'
 type Answers = Record<string, string | boolean | undefined>
 
 const PATIENT_ID = 'sarah'
+
+const DEMO_ANSWERS: Answers = {
+  age: '25',
+  weight: '63',
+  height: '166',
+  cycle_length: '47',
+  menses_duration: '6',
+  cycle_irregularity: true,
+  menstrual_frequency_per_year: '6',
+  amenorrhea: false,
+  hirsutism: false,
+  acne: false,
+  androgenic_alopecia: false,
+  skin_darkening: false,
+  weight_gain: false,
+  fatigue: false,
+  family_history_pmos: true,
+  family_history_diabetes: false,
+  waist_circumference: '76',
+  hip_circumference: '98',
+  systolic_blood_pressure: '112',
+  diastolic_blood_pressure: '69',
+  shbg: '45',
+  anti_mullerian_hormone: '9',
+  luteinizing_hormone: '15',
+  follicle_stimulating_hormone: '4',
+  fasting_glucose: '81',
+  fasting_insulin: '6',
+  hdl_cholesterol: '62',
+  triglycerides: '79',
+}
 
 // Captured once per page load: module state survives in-app navigation but is
 // re-initialised on a real browser refresh, which is exactly when we want the
@@ -79,6 +110,7 @@ export default function IntakePage() {
   const [schema, setSchema] = useState<IntakeSchema | null>(null)
   const [schemaError, setSchemaError] = useState<ApiError | null>(null)
   const [answers, setAnswers] = useState<Answers>({})
+  const [demoTrigger, setDemoTrigger] = useState(0)
 
   // Load draft from sessionStorage after mount (SSR-safe).
   // sessionStorage survives tab navigation but is wiped on browser refresh.
@@ -247,6 +279,20 @@ export default function IntakePage() {
 
           {schema && stage === 'form' && (
             <>
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAnswers(DEMO_ANSWERS)
+                    setDemoTrigger(t => t + 1)
+                  }}
+                  className="inline-flex items-center gap-2 rounded-lg border border-violet-300 bg-violet-50 px-4 py-2 text-sm font-semibold text-violet-700 transition-colors hover:bg-violet-100"
+                >
+                  <FlaskConical className="h-4 w-4" />
+                  Try demo user
+                </button>
+              </div>
+
               {schema.groups.map((group, index) => (
                 <motion.div
                   key={group.key}
@@ -271,7 +317,7 @@ export default function IntakePage() {
                 </motion.div>
               ))}
 
-              <Attachments patientId={PATIENT_ID} />
+              <Attachments patientId={PATIENT_ID} demoTrigger={demoTrigger} />
 
               <div className="flex items-center justify-between">
                 <p className="text-sm text-neutral-500">

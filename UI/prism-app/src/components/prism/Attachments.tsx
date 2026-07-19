@@ -6,7 +6,7 @@
 // on the server, and the rest submit a real job and render whatever the service
 // returns rather than a local progress animation.
 
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AlertCircle, Check, FileText, FlaskConical, Image as ImageIcon, Loader2, Mic, Square, Upload, Watch } from 'lucide-react'
 
 import { Card, SectionHeading, StatusPill } from './Primitives'
@@ -26,9 +26,11 @@ interface JobOutcome {
 export default function Attachments({
   patientId,
   onSpeechEvents,
+  demoTrigger,
 }: {
   patientId: string
   onSpeechEvents?: (result: SpeechPipelineResult) => void
+  demoTrigger?: number
 }) {
   return (
     <Card>
@@ -45,6 +47,7 @@ export default function Attachments({
           Icon={FileText}
           patientId={patientId}
           demoPdfPath="/demo-lab-report.pdf"
+          demoTrigger={demoTrigger}
         />
         <FileBlock
           kind="ultrasound"
@@ -53,6 +56,7 @@ export default function Attachments({
           Icon={ImageIcon}
           patientId={patientId}
           demoImagePath="/orig_image1148.jpg"
+          demoTrigger={demoTrigger}
         />
         {apiMode() !== 'mock' && (
           <>
@@ -63,7 +67,7 @@ export default function Attachments({
               </span>
               <div className="h-px flex-1 bg-neutral-200" />
             </div>
-            <TemporalDemoBlock patientId={patientId} />
+            <TemporalDemoBlock patientId={patientId} demoTrigger={demoTrigger} />
           </>
         )}
       </div>
@@ -189,6 +193,7 @@ function FileBlock({
   experimental = false,
   demoPdfPath,
   demoImagePath,
+  demoTrigger,
 }: {
   kind: JobKind
   label: string
@@ -198,12 +203,20 @@ function FileBlock({
   experimental?: boolean
   demoPdfPath?: string
   demoImagePath?: string
+  demoTrigger?: number
 }) {
   const [busy, setBusy] = useState(false)
   const [outcome, setOutcome] = useState<JobOutcome | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [isDemo, setIsDemo] = useState(false)
   const inputRef = useRef<HTMLInputElement | null>(null)
+
+  useEffect(() => {
+    if (!demoTrigger || outcome) return
+    if (demoPdfPath) void loadAndSubmitDemo()
+    if (demoImagePath) void loadDemoImage()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [demoTrigger])
 
   async function loadAndSubmitDemo() {
     if (!demoPdfPath) return
@@ -419,10 +432,16 @@ function buildDemoTemporalDays(patientId: string) {
   return days
 }
 
-function TemporalDemoBlock({ patientId }: { patientId: string }) {
+function TemporalDemoBlock({ patientId, demoTrigger }: { patientId: string; demoTrigger?: number }) {
   const [busy, setBusy] = useState(false)
   const [done, setDone] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!demoTrigger || done) return
+    void run()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [demoTrigger])
 
   async function run() {
     setBusy(true)
