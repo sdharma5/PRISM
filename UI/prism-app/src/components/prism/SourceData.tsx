@@ -108,7 +108,7 @@ export default function SourceData({
               </div>
               <div className="flex gap-2">
                 <dt className="text-neutral-400">Generated</dt>
-                <dd>{new Date(report.generated_at).toLocaleString()}</dd>
+                <dd>{new Date().toLocaleString()}</dd>
               </div>
               <div className="flex gap-2">
                 <dt className="text-neutral-400">Schema</dt>

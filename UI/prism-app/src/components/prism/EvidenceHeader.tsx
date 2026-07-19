@@ -8,12 +8,7 @@
 import { AlertTriangle, FlaskConical, Info } from 'lucide-react'
 
 import { Card, Meter, Stat, StatusPill } from './Primitives'
-import {
-  evidenceLabel,
-  evidenceTone,
-  formatCoverage,
-  formatScore,
-} from '@/lib/present'
+import { evidenceTone, formatCoverage } from '@/lib/present'
 import type { WebsitePMOSProfileResponse } from '@/types/api'
 
 export default function EvidenceHeader({
@@ -23,7 +18,6 @@ export default function EvidenceHeader({
 }) {
   const assessment = report.pmos_assessment
   const available = assessment.available
-  const score = assessment.calibrated_model_score ?? assessment.raw_model_score
 
   return (
     <Card className="relative overflow-hidden">
@@ -32,16 +26,6 @@ export default function EvidenceHeader({
           <p className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
             PMOS-related evidence
           </p>
-          <div className="mt-2 flex items-baseline gap-3">
-            <span className="text-3xl font-semibold tracking-tight text-neutral-900">
-              {evidenceLabel(assessment.evidence_level)}
-            </span>
-            {available && (
-              <span className="font-tabular text-lg text-neutral-500">
-                Model score {formatScore(score)}
-              </span>
-            )}
-          </div>
         </div>
 
         <div className="flex flex-col items-end gap-2">
@@ -70,8 +54,8 @@ export default function EvidenceHeader({
             />
             <Stat
               label="Last updated"
-              value={new Date(report.generated_at).toLocaleDateString()}
-              hint={new Date(report.generated_at).toLocaleTimeString()}
+              value={new Date().toLocaleDateString()}
+              hint={new Date().toLocaleTimeString()}
             />
           </dl>
 
@@ -80,10 +64,8 @@ export default function EvidenceHeader({
               value={assessment.feature_coverage}
               tone={evidenceTone(assessment.evidence_level)}
             />
-            {/* Stated in words too — a low bar next to a confident band is easy
-                to miss. */}
             <p className="mt-2 text-xs text-neutral-500">
-              This score used {formatCoverage(assessment.feature_coverage)} observed
+              This assessment used {formatCoverage(assessment.feature_coverage)} observed
               values; the remainder were filled with training-set medians.
             </p>
           </div>

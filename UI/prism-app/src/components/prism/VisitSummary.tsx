@@ -74,7 +74,7 @@ export default function VisitSummary({
   const verdict = phenotypeVerdict(report)
   const axes = Object.entries(report.rotterdam_axes ?? {})
   const domains = orderedDomains(report.phenotype?.domain_scores)
-  const generated = new Date(report.generated_at).toLocaleString()
+  const generated = new Date().toLocaleString()
 
   return (
     <div className="print-page" style={PAGE}>
