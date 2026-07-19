@@ -49,10 +49,9 @@ export default function Attachments({
         <FileBlock
           kind="ultrasound"
           label="Ovarian ultrasound"
-          hint="Imaging is experimental and is not used to score your result."
+          hint="Runs a follicle detector. Count feeds into your analysis."
           Icon={ImageIcon}
           patientId={patientId}
-          experimental
           demoImagePath="/orig_image1148.jpg"
         />
         {apiMode() !== 'mock' && (
@@ -258,51 +257,113 @@ function FileBlock({
     }
   }
 
+  const isUltrasound = kind === 'ultrasound'
+
   return (
     <div className="rounded-xl border border-neutral-200 p-4">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex items-start gap-3">
-          <Icon className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" />
-          <div>
-            <p className="text-sm font-semibold text-neutral-900">{label}</p>
-            <p className="mt-0.5 text-xs text-neutral-500">{hint}</p>
+      {isUltrasound ? (
+        /* Ultrasound layout: thumbnail | icon+title+desc+result | buttons */
+        <div className="flex items-center gap-4">
+          {/* Thumbnail always shown — example before click, preview after */}
+          <div className="shrink-0 text-center">
+            <div className="relative">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={imagePreview ?? demoImagePath}
+                alt="Ovarian ultrasound scan"
+                className="h-20 w-20 rounded-lg object-cover border border-neutral-200"
+              />
+              {busy && (
+                <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-neutral-900/40">
+                  <Loader2 className="h-5 w-5 animate-spin text-white" />
+                </div>
+              )}
+            </div>
+            {!outcome && <p className="mt-1 text-xs text-neutral-400">Example</p>}
+          </div>
+
+          {/* Center: icon + title + description + inline result */}
+          <div className="flex flex-1 min-w-0 items-start gap-3">
+            <Icon className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" />
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-neutral-900">{label}</p>
+              <p className="mt-0.5 text-xs text-neutral-500">{hint}</p>
+              {outcome?.status === 'completed' && isDemo && (
+                <div className="mt-2 flex flex-col gap-1.5">
+                  <p className="text-sm font-semibold text-neutral-900">12 follicles detected</p>
+                  <span className="inline-flex w-fit items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-xs text-amber-700">
+                    Awaiting clinician review
+                  </span>
+                </div>
+              )}
+              {outcome && outcome.status !== 'completed' && (
+                <p className="mt-2 flex items-center gap-1.5 text-xs text-rose-600">
+                  <AlertCircle className="h-3.5 w-3.5" />
+                  {outcome.reason ?? 'Upload failed.'}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Right: buttons */}
+          <div className="flex shrink-0 items-center gap-2">
+            {demoImagePath && !outcome && (
+              <button
+                type="button"
+                disabled={busy}
+                onClick={loadDemoImage}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-semibold text-violet-700 hover:bg-violet-100 disabled:opacity-50"
+              >
+                {busy ? <Loader2 className="h-3 w-3 animate-spin" /> : <FlaskConical className="h-3 w-3" />}
+                Try demo
+              </button>
+            )}
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => inputRef.current?.click()}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:border-neutral-400 disabled:opacity-50"
+            >
+              {busy && !isDemo ? <Loader2 className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />}
+              Upload
+            </button>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          {experimental && <StatusPill tone="warn">Experimental</StatusPill>}
-          {demoPdfPath && (
+      ) : (
+        /* Standard layout for documents */
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <Icon className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" />
+            <div>
+              <p className="text-sm font-semibold text-neutral-900">{label}</p>
+              <p className="mt-0.5 text-xs text-neutral-500">{hint}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            {experimental && <StatusPill tone="warn">Experimental</StatusPill>}
+            {demoPdfPath && (
+              <button
+                type="button"
+                disabled={busy}
+                onClick={loadAndSubmitDemo}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-semibold text-violet-700 hover:bg-violet-100 disabled:opacity-50"
+              >
+                {busy ? <Loader2 className="h-3 w-3 animate-spin" /> : <FlaskConical className="h-3 w-3" />}
+                Try demo report
+              </button>
+            )}
             <button
               type="button"
               disabled={busy}
-              onClick={loadAndSubmitDemo}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-semibold text-violet-700 hover:bg-violet-100 disabled:opacity-50"
+              onClick={() => inputRef.current?.click()}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:border-neutral-400 disabled:opacity-50"
             >
-              {busy ? <Loader2 className="h-3 w-3 animate-spin" /> : <FlaskConical className="h-3 w-3" />}
-              Try demo report
+              {busy ? <Loader2 className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />}
+              Choose file
             </button>
-          )}
-          {demoImagePath && !outcome && (
-            <button
-              type="button"
-              disabled={busy}
-              onClick={loadDemoImage}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-semibold text-violet-700 hover:bg-violet-100 disabled:opacity-50"
-            >
-              {busy ? <Loader2 className="h-3 w-3 animate-spin" /> : <FlaskConical className="h-3 w-3" />}
-              Use demo image
-            </button>
-          )}
-          <button
-            type="button"
-            disabled={busy}
-            onClick={() => inputRef.current?.click()}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:border-neutral-400 disabled:opacity-50"
-          >
-            {busy ? <Loader2 className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />}
-            Choose file
-          </button>
+          </div>
         </div>
-      </div>
+      )}
 
       <input
         ref={inputRef}
@@ -315,34 +376,8 @@ function FileBlock({
         }}
       />
 
-      {/* Image preview + follicle result for ultrasound */}
-      {kind === 'ultrasound' && imagePreview && (
-        <div className="mt-3 flex gap-3 items-start">
-          <div className="relative shrink-0">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={imagePreview}
-              alt="Ultrasound scan"
-              className="h-24 w-24 rounded-lg object-cover border border-neutral-200"
-            />
-            {busy && (
-              <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-neutral-900/40">
-                <Loader2 className="h-5 w-5 animate-spin text-white" />
-              </div>
-            )}
-          </div>
-          {outcome?.status === 'completed' && isDemo && (
-            <div className="flex flex-col gap-1.5 pt-1">
-              <p className="text-sm font-semibold text-neutral-900">12 follicles detected</p>
-              <span className="inline-flex w-fit items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-xs text-amber-700">
-                Awaiting clinician review
-              </span>
-            </div>
-          )}
-        </div>
-      )}
-
-      {outcome && (
+      {/* Outcome card for non-ultrasound only */}
+      {!isUltrasound && outcome && (
         <div className="mt-3 rounded-lg bg-neutral-50 p-3">
           <p className="flex items-center gap-1.5 text-sm font-medium text-neutral-800">
             {outcome.status === 'completed' ? (

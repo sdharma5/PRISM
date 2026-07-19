@@ -166,21 +166,27 @@ async def upload_document(
 
         if events:
             store = _event_store(request)
-            # Re-uploading a document supersedes its own previous extraction.
-            # The ledger is append-only, so the earlier events stay readable;
-            # they are just no longer current. Without this, uploading the same
-            # report twice leaves two live copies of every value, and the
-            # analysis would read them as independent observations.
-            previous = {
-                e.canonical_variable_code: e
+            # A new upload supersedes prior document-extracted values for the same
+            # variable, whichever file they came from. The ledger is append-only,
+            # so the earlier events stay readable; they are just no longer current.
+            # Matching only on the file hash meant a *different* report restating
+            # the same labs left two live copies of every value, and the analysis
+            # would read them as independent observations. Scoped to
+            # source_dataset="document_upload" so a hand-entered or spoken value is
+            # never silently replaced by a document.
+            new_codes = {e.canonical_variable_code for e in events}
+            replacement = {e.canonical_variable_code: e for e in events}
+            previous = [
+                e
                 for e in store.current(patient_id)
-                if e.source_file_id == parsed.document_id
-            }
+                if e.source_dataset == "document_upload"
+                and e.canonical_variable_code in new_codes
+            ]
             store.extend(events)
-            for event in events:
-                stale = previous.get(event.canonical_variable_code)
-                if stale is not None:
-                    store.mark_superseded(str(stale.event_id), replaced_by=str(event.event_id))
+            for stale in previous:
+                winner = replacement.get(stale.canonical_variable_code)
+                if winner is not None:
+                    store.mark_superseded(str(stale.event_id), replaced_by=str(winner.event_id))
             logger.info(
                 "document upload: extracted %d events from %s for patient %s",
                 len(events),

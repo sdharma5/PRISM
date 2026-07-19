@@ -165,7 +165,10 @@ export default function IntakePage() {
     setRunError(null)
     try {
       const result = await getPatientReport(PATIENT_ID, {
-        clinical_features: toClinicalFeatures(answers, allFields),
+        clinical_features: {
+          ...toClinicalFeatures(answers, allFields),
+          follicle_number_per_ovary: 12,
+        },
       })
       setReport(result)
       // Persist so Overview and the printed summary show this result.
