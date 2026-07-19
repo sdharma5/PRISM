@@ -505,8 +505,8 @@ variables:
     type: binary
     domain: [clinical_androgenic_evidence]
 
-  family_history_pcos:
-    canonical_name: "Family history of PCOS"
+  family_history_pmos:
+    canonical_name: "Family history of PMOS"
     type: binary
     domain: [history]
     description: "A relative's diagnosis. Must never be recorded as the patient's."
@@ -530,8 +530,8 @@ variables:
     valid_range: { min: 0, max: 120 }
 
   # --- Labels ------------------------------------------------------------
-  pcos_binary:
-    canonical_name: "PCOS status (dataset label)"
+  pmos_binary:
+    canonical_name: "PMOS status (dataset label)"
     type: binary
     domain: [label]
     description: >-

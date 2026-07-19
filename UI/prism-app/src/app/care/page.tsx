@@ -14,7 +14,7 @@ import { usePatientReport } from '@/lib/usePatientReport'
 import { axisLabel, evidenceLabel } from '@/lib/present'
 import { deriveAskDoctorItems, type AskDoctorItem } from '@/lib/askDoctor'
 import { loadAssessment } from '@/lib/reportStore'
-import type { WebsitePCOSProfileResponse } from '@/types/api'
+import type { WebsitePMOSProfileResponse } from '@/types/api'
 import { INSURERS, loadInsurancePlan, saveInsurancePlan, getInsurer, type Insurer } from '@/lib/insurers'
 
 const US_STATES = [
@@ -51,7 +51,7 @@ function generateScript(
   specialty: Specialty,
   provider: NPIProvider,
   insurer?: Insurer,
-  report?: WebsitePCOSProfileResponse | null,
+  report?: WebsitePMOSProfileResponse | null,
 ): string {
   // Derived from the actual assessment. This script is read aloud to a clinic,
   // so inventing lab values here would have the patient assert measurements
@@ -308,7 +308,7 @@ export default function Care() {
                 <div className="space-y-2 mb-4">
                   {[
                     report
-                      ? `PCOS-related evidence: ${evidenceLabel(report.pcos_assessment.evidence_level)}`
+                      ? `PMOS-related evidence: ${evidenceLabel(report.pmos_assessment.evidence_level)}`
                       : 'No assessment run yet',
                     `${Object.values(report?.rotterdam_axes ?? {}).filter(a => a.status === 'met').length} Rotterdam axes met`,
                     `${Object.values(report?.phenotype?.domain_scores ?? {}).filter(d => d.available).length} phenotype domains assessed`,
@@ -346,7 +346,7 @@ function ProviderCard({
   report,
   provider, index, onScript, scriptOpen, specialty, insurer
 }: {
-  report: WebsitePCOSProfileResponse | null
+  report: WebsitePMOSProfileResponse | null
   provider: NPIProvider
   index: number
   onScript: () => void

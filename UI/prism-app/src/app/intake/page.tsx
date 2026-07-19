@@ -29,7 +29,7 @@ import { getIntakeSchema, getPatientReport, getEvents, type IntakeField, type In
 import { ApiError } from '@/lib/apiClient'
 import { loadAssessment, saveAssessment } from '@/lib/reportStore'
 import { humanizeCode } from '@/lib/present'
-import type { WebsitePCOSProfileResponse } from '@/types/api'
+import type { WebsitePMOSProfileResponse } from '@/types/api'
 import { EASE_OUT } from '@/lib/utils'
 
 type Stage = 'form' | 'review' | 'running' | 'result'
@@ -80,7 +80,7 @@ export default function IntakePage() {
     if (stored?.answers) setAnswers(stored.answers)
   }, [])
   const [stage, setStage] = useState<Stage>('form')
-  const [report, setReport] = useState<WebsitePCOSProfileResponse | null>(null)
+  const [report, setReport] = useState<WebsitePMOSProfileResponse | null>(null)
   const [runError, setRunError] = useState<ApiError | null>(null)
   const [eventCount, setEventCount] = useState(0)
 
@@ -144,7 +144,7 @@ export default function IntakePage() {
         <div className="mx-auto max-w-3xl space-y-6">
           <header>
             <h1 className="text-2xl font-semibold tracking-tight text-neutral-900">
-              {stage === 'result' ? 'Your PCOS evidence profile' : 'Tell PRISM about yourself'}
+              {stage === 'result' ? 'Your PMOS evidence profile' : 'Tell PRISM about yourself'}
             </h1>
             <p className="mt-1 text-sm text-neutral-500">
               {stage === 'result'

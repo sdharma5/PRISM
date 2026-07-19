@@ -76,7 +76,7 @@ class DomainEvidence(BaseModel):
 
 
 class CoordinatedEvidence(BaseModel):
-    """What the PCOS adapter consumes: tokens plus coordinated domain evidence.
+    """What the PMOS adapter consumes: tokens plus coordinated domain evidence.
 
     The adapter never sees raw audio, PDFs or pixels -- only encoder output. That
     boundary is what keeps the adapter condition-specific but modality-agnostic.
@@ -121,8 +121,8 @@ class PatientEvidenceReport(BaseModel):
     tokens: dict[str, ModalityToken] = Field(default_factory=dict)
     domain_summary: dict[str, DomainEvidence] = Field(default_factory=dict)
 
-    #: Populated by the PCOS adapter. Absent when only coordination has run.
-    pcos_profile: dict = Field(default_factory=dict)
+    #: Populated by the PMOS adapter. Absent when only coordination has run.
+    pmos_profile: dict = Field(default_factory=dict)
 
     combination_mode: CombinationMode = "rule_based"
     #: Components whose parameters were fit to labelled data.

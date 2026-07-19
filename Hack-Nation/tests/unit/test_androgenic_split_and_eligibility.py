@@ -20,14 +20,14 @@ from evaluation.calibration import (
     equal_frequency_bins,
 )
 from features.phenotype_domains import PhenotypeDomainScorer
-from models.adapters.pcos.profile_output import PCOSProfileOutput
-from models.adapters.pcos.prototype_similarity import (
+from models.adapters.pmos.profile_output import PMOSProfileOutput
+from models.adapters.pmos.prototype_similarity import (
     MIXED_MIN_ASSESSABLE_DOMAINS,
     PrototypeSimilarityModel,
     androgenic_evidence_source,
     summarize,
 )
-from models.adapters.pcos.stability import PhenotypeStabilityEngine
+from models.adapters.pmos.stability import PhenotypeStabilityEngine
 from tests.fixtures.synthetic_tabular import make_synthetic_cohort
 
 ALL_DOMAINS = (
@@ -134,13 +134,13 @@ def test_androgenic_leaning_is_eligible_on_clinical_evidence_alone() -> None:
 def test_the_output_schema_refuses_the_unsupported_label() -> None:
     """Belt and braces: even a hand-built output cannot carry the claim."""
     with pytest.raises(ValidationError, match="never assessed"):
-        PCOSProfileOutput(
+        PMOSProfileOutput(
             patient_id="p1",
             dominant_profile="androgenic_leaning",
             assignment_is_stable=True,
             indeterminate=False,
             androgenic_evidence_source="unavailable",
-            rule_based_components_used=["pcos_adapter.prototype_similarity"],
+            rule_based_components_used=["pmos_adapter.prototype_similarity"],
         )
 
 
@@ -199,11 +199,11 @@ def test_ineligible_profiles_are_absent_rather_than_scored_zero() -> None:
 
 def test_the_output_schema_refuses_a_score_on_an_unassessable_domain() -> None:
     with pytest.raises(ValidationError, match="unassessable but carries a score"):
-        PCOSProfileOutput(
+        PMOSProfileOutput(
             patient_id="p1",
             phenotype_domain_scores={"biochemical_androgenic_evidence": 0.0},
             domain_assessability={"biochemical_androgenic_evidence": False},
-            rule_based_components_used=["pcos_adapter.prototype_similarity"],
+            rule_based_components_used=["pmos_adapter.prototype_similarity"],
         )
 
 
@@ -252,12 +252,12 @@ def test_a_stable_assignment_may_publish_its_profile() -> None:
 
 def test_the_output_schema_refuses_a_profile_without_a_stability_verdict() -> None:
     with pytest.raises(ValidationError, match="assignment_is_stable=True"):
-        PCOSProfileOutput(
+        PMOSProfileOutput(
             patient_id="p1",
             dominant_profile="metabolic_leaning",
             indeterminate=False,
             assignment_is_stable=None,
-            rule_based_components_used=["pcos_adapter.prototype_similarity"],
+            rule_based_components_used=["pmos_adapter.prototype_similarity"],
         )
 
 

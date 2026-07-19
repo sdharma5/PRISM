@@ -1,4 +1,4 @@
-"""PCOS tabular adapter tests against a tiny, obviously fake fixture."""
+"""PMOS tabular adapter tests against a tiny, obviously fake fixture."""
 
 from __future__ import annotations
 
@@ -9,28 +9,28 @@ from pathlib import Path
 import pytest
 
 from ingestion.base import file_checksum
-from ingestion.tabular_pcos.cleaning import clean_value, coerce_bool, coerce_numeric
-from ingestion.tabular_pcos.loader import PcosTabularAdapter
-from ingestion.tabular_pcos.mapping import (
+from ingestion.tabular_pmos.cleaning import clean_value, coerce_bool, coerce_numeric
+from ingestion.tabular_pmos.loader import PmosTabularAdapter
+from ingestion.tabular_pmos.mapping import (
     EXCLUDED_COLUMNS,
     SOURCE_COLUMN_MAP,
     canonical_code_for,
     modality_for,
     normalize_column,
 )
-from ingestion.tabular_pcos.validation import unaccounted_columns, validate_columns
+from ingestion.tabular_pmos.validation import unaccounted_columns, validate_columns
 from registry.loader import load_variable_registry
 
-FIXTURE = Path(__file__).resolve().parents[1] / "fixtures" / "pcos_tabular_tiny.csv"
+FIXTURE = Path(__file__).resolve().parents[1] / "fixtures" / "pmos_tabular_tiny.csv"
 
 
 @pytest.fixture
-def adapter() -> PcosTabularAdapter:
-    return PcosTabularAdapter(dataset_version="tiny-fixture-v0")
+def adapter() -> PmosTabularAdapter:
+    return PmosTabularAdapter(dataset_version="tiny-fixture-v0")
 
 
 @pytest.fixture
-def events(adapter: PcosTabularAdapter):
+def events(adapter: PmosTabularAdapter):
     return adapter.run(FIXTURE)
 
 
@@ -47,7 +47,7 @@ def test_column_lookup_is_case_and_whitespace_insensitive():
     assert canonical_code_for("cycle length(days)") == "menses_duration"
     assert canonical_code_for("FSH(mIU/mL)") == "follicle_stimulating_hormone"
     assert canonical_code_for("hair growth(Y/N)") == "hair_growth_face"
-    assert canonical_code_for("PCOS (Y/N)") == "pcos_binary"
+    assert canonical_code_for("PMOS (Y/N)") == "pmos_binary"
 
 
 def test_unmapped_column_returns_none():
@@ -99,7 +99,7 @@ def test_missing_id_column_is_a_validation_error():
     assert any("Missing patient id column" in e for e in errors)
 
 
-def test_fixture_validates_cleanly(adapter: PcosTabularAdapter):
+def test_fixture_validates_cleanly(adapter: PmosTabularAdapter):
     raw = adapter.load_raw(FIXTURE)
     assert adapter.validate_raw(raw) == []
 
@@ -157,13 +157,13 @@ def test_cycle_regularity_maps_onto_registry_categories():
 # -- Transform -------------------------------------------------------------
 
 
-def test_twelve_fake_patients_are_ingested(adapter: PcosTabularAdapter, events):
+def test_twelve_fake_patients_are_ingested(adapter: PmosTabularAdapter, events):
     assert adapter.n_source_records == 12
     assert len({e.patient_id for e in events}) == 12
 
 
 def test_patient_ids_are_namespaced_by_dataset(events):
-    assert all(e.patient_id.startswith("pcos_tabular_public:") for e in events)
+    assert all(e.patient_id.startswith("pmos_tabular_public:") for e in events)
 
 
 def test_every_event_is_dataset_provided_and_not_required(events):
@@ -260,7 +260,7 @@ def test_excluded_columns_produce_no_events(events):
 
 def test_registry_refuses_a_prohibited_use():
     with pytest.raises(PermissionError):
-        PcosTabularAdapter(use="prospective_clinical_deployment")
+        PmosTabularAdapter(use="prospective_clinical_deployment")
 
 
 # -- Manifest --------------------------------------------------------------
@@ -268,9 +268,9 @@ def test_registry_refuses_a_prohibited_use():
 
 def test_manifest_records_checksums_and_counts(adapter, events):
     manifest = adapter.build_manifest()
-    assert manifest.dataset_id == "pcos_tabular_public"
+    assert manifest.dataset_id == "pmos_tabular_public"
     assert manifest.dataset_version == "tiny-fixture-v0"
-    assert manifest.file_checksums["pcos_tabular_tiny.csv"] == file_checksum(FIXTURE)
+    assert manifest.file_checksums["pmos_tabular_tiny.csv"] == file_checksum(FIXTURE)
     assert manifest.n_source_records == 12
     assert manifest.n_events_emitted == len(events)
     assert manifest.n_dropped >= 2
@@ -298,7 +298,7 @@ def test_write_manifest_artifacts_writes_every_expected_file(adapter, events, tm
     assert all(path.exists() for path in written.values())
 
     checksums = json.loads(written["file_checksums.json"].read_text())
-    assert checksums["pcos_tabular_tiny.csv"] == file_checksum(FIXTURE)
+    assert checksums["pmos_tabular_tiny.csv"] == file_checksum(FIXTURE)
 
     with written["dropped_records.csv"].open() as fh:
         rows = list(csv.reader(fh))

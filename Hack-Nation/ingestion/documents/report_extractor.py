@@ -9,7 +9,7 @@ attach them to the wrong side.
 Why impressions are extracted as text, not as a diagnosis: "appearances are
 consistent with polycystic ovarian morphology" is a radiologist's impression
 about an image, and PRISM records it as ``ovarian_morphology_evidence`` evidence
-awaiting clinician confirmation. Turning it into a PCOS diagnosis would be the
+awaiting clinician confirmation. Turning it into a PMOS diagnosis would be the
 model asserting something no human in the loop asserted.
 """
 

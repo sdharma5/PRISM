@@ -1,8 +1,8 @@
 # NHANES 2021-2023 data configuration.
 #
 # Public CDC download, not committed to this repository. NHANES is used here as a
-# POPULATION REFERENCE and a unit-harmonization stress test — never as a PCOS
-# cohort. It carries no PCOS ascertainment, so any prevalence or case/control
+# POPULATION REFERENCE and a unit-harmonization stress test — never as a PMOS
+# cohort. It carries no PMOS ascertainment, so any prevalence or case/control
 # claim built on it would be inventing a label the survey does not contain. The
 # registry enforces this: the adapter fails closed on a prohibited use.
 dataset_id: nhanes_2021_2023

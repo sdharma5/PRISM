@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-"""Pivot ingested PCOS tabular events into the wide cohort table the models read.
+"""Pivot ingested PMOS tabular events into the wide cohort table the models read.
 
-    python scripts/build_cohort_table.py --config configs/data/pcos_tabular.yaml
+    python scripts/build_cohort_table.py --config configs/data/pmos_tabular.yaml
 
 Why this exists
 ---------------
-``prepare_pcos_tabular.py`` validates the source, maps it onto registry variable
+``prepare_pmos_tabular.py`` validates the source, maps it onto registry variable
 codes, normalizes units, and writes an audit trail — but it writes *manifests
 only*. The canonical events it builds are discarded. Meanwhile
 ``train_static_baselines.py`` reads a **wide** CSV keyed by ``patient_id`` whose
@@ -40,7 +40,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from ingestion.tabular_pcos.loader import PcosTabularAdapter  # noqa: E402
+from ingestion.tabular_pmos.loader import PmosTabularAdapter  # noqa: E402
 from scripts._cli import (  # noqa: E402
     DATA_ROOT_ENV,
     add_standard_arguments,
@@ -48,7 +48,7 @@ from scripts._cli import (  # noqa: E402
 )
 from scripts._experiment_io import resolve_data_path  # noqa: E402
 
-DEFAULT_CONFIG = REPO_ROOT / "configs" / "data" / "pcos_tabular.yaml"
+DEFAULT_CONFIG = REPO_ROOT / "configs" / "data" / "pmos_tabular.yaml"
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -105,13 +105,13 @@ def main(argv: list[str] | None = None) -> int:
 
     if source is None or not source.exists() or source.is_dir():
         print(
-            f"ERROR: PCOS tabular dataset not found at: {source or '(nothing configured)'}\n"
+            f"ERROR: PMOS tabular dataset not found at: {source or '(nothing configured)'}\n"
             f"Set {DATA_ROOT_ENV}, pass --data-root, or set `data.path` in {args.config}.",
             file=sys.stderr,
         )
         return 1
 
-    adapter = PcosTabularAdapter(
+    adapter = PmosTabularAdapter(
         dataset_version=str(config.get("dataset_version", "unversioned")),
         id_column=str(data_cfg.get("id_column", "Patient File No.")),
         use=str((config.get("allowed_uses") or ["binary_baseline"])[0]),
@@ -130,10 +130,10 @@ def main(argv: list[str] | None = None) -> int:
     print(f"  {len(wide)} patients x {wide.shape[1]} columns (from {len(events)} events)")
     observed = wide.notna().mean().sort_values()
     print(f"  sparsest columns: {dict(observed.head(3).round(3))}")
-    if "pcos_binary" in wide.columns:
-        print(f"  pcos_binary counts: {wide['pcos_binary'].value_counts().to_dict()}")
+    if "pmos_binary" in wide.columns:
+        print(f"  pmos_binary counts: {wide['pmos_binary'].value_counts().to_dict()}")
     elif label:
-        print(f"  NOTE: source label '{label}' did not survive as `pcos_binary`.")
+        print(f"  NOTE: source label '{label}' did not survive as `pmos_binary`.")
     return 0
 
 

@@ -26,9 +26,9 @@ TINY_BASELINES_CONFIG: dict = {
     "experiment_id": "smoke_static_baselines",
     "data": {
         "path": None,
-        "dataset_id": "pcos_tabular_public",
+        "dataset_id": "pmos_tabular_public",
         "id_column": "patient_id",
-        "label_column": "pcos_binary",
+        "label_column": "pmos_binary",
         "synthetic": {"n": 80, "seed": 1, "missing_rate": 0.2},
     },
     "features": {"add_missingness_indicators": True, "min_observed_fraction": 0.1},
@@ -86,7 +86,7 @@ def test_metrics_json_parses_as_the_experiment_contract(baselines_run):
         json.loads((baselines_run / "metrics.json").read_text())
     )
     assert result.model == "static_logistic"
-    assert result.target == "pcos_binary"
+    assert result.target == "pmos_binary"
     assert len(result.fold_metrics) == 3
     assert 0.0 <= result.aggregate_metrics["auroc"] <= 1.0
     assert result.limitations
@@ -152,9 +152,9 @@ def test_autoencoder_script_runs_end_to_end(tmp_path):
         "experiment_id": "smoke_autoencoder",
         "data": {
             "path": None,
-            "dataset_id": "pcos_tabular_public",
+            "dataset_id": "pmos_tabular_public",
             "id_column": "patient_id",
-            "label_column": "pcos_binary",
+            "label_column": "pmos_binary",
             "synthetic": {"n": 80, "seed": 2, "missing_rate": 0.2},
         },
         "features": {"min_observed_fraction": 0.1},

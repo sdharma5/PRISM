@@ -28,7 +28,7 @@ Expected layout under `PRISM_DATA_ROOT`:
 
 ```text
 $PRISM_DATA_ROOT/
-├── pcos_tabular/pcos_data.csv
+├── pmos_tabular/pmos_data.csv
 ├── mcphases/                     # credentialed PhysioNet access + DUA
 ├── nhanes_2021_2023/
 ├── usova3d/                      # 3D volumes + ovary/follicle masks

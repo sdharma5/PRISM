@@ -38,7 +38,7 @@ FORBIDDEN_DIAGNOSTIC_WORDS = (
     "cyst",
     "corpus luteum",
     "endometrioma",
-    "pcos",
+    "pmos",
     "polycystic",
     "malignan",
     "tumor",

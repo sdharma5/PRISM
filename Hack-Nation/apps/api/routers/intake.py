@@ -90,7 +90,7 @@ _FIELDS: tuple[_Field, ...] = (
     ),
     _Field("weight_gain", "symptoms", prompt="Unexplained weight gain"),
     _Field("fatigue", "symptoms"),
-    _Field("family_history_pcos", "history", prompt="PCOS in a close relative"),
+    _Field("family_history_pmos", "history", prompt="PMOS in a close relative"),
     _Field("family_history_diabetes", "history", prompt="Type 2 diabetes in a close relative"),
     _Field("waist_circumference", "measurements"),
     _Field("hip_circumference", "measurements"),

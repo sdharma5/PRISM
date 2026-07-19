@@ -1,4 +1,4 @@
-"""Map coordinated modality evidence into PCOS-specific variables.
+"""Map coordinated modality evidence into PMOS-specific variables.
 
 The adapter reasons over canonical variable codes (``cycle_length``,
 ``follicle_number_per_ovary``, ``total_testosterone``, ...), while encoders emit
@@ -20,15 +20,15 @@ from dataclasses import dataclass, field
 from inference.report_schema import CoordinatedEvidence, DomainEvidence
 from schemas.evidence import EvidenceConflict
 
-__all__ = ["MappedPcosFeatures", "PcosFeatureMapper"]
+__all__ = ["MappedPmosFeatures", "PmosFeatureMapper"]
 
-#: Which token field maps to which PCOS variable. Mirrors PCOS_FEATURE_MAP in
+#: Which token field maps to which PMOS variable. Mirrors PMOS_FEATURE_MAP in
 #: prompt_4; kept as data so it can be audited without reading code.
 #:
 #: Only codes the diagnostic axes actually consume appear here. A token field
 #: with no entry is carried through unchanged under its own name, so a new
 #: encoder output is never silently discarded.
-PCOS_FEATURE_MAP: dict[str, str] = {
+PMOS_FEATURE_MAP: dict[str, str] = {
     "cycle_regularity": "cycle_irregularity",
     "average_cycle_length": "cycle_length",
     "estimated_follicle_number_per_ovary": "follicle_number_per_ovary",
@@ -41,8 +41,8 @@ _ASSAY_DEPENDENT = {"total_testosterone", "free_testosterone", "dheas", "shbg"}
 
 
 @dataclass
-class MappedPcosFeatures:
-    """Canonical PCOS variables assembled from all available tokens."""
+class MappedPmosFeatures:
+    """Canonical PMOS variables assembled from all available tokens."""
 
     patient_id: str
     #: code -> value, ready for ``assess_all_axes``.
@@ -62,11 +62,11 @@ class MappedPcosFeatures:
         return sorted(code for code, value in self.values.items() if value is not None)
 
 
-class PcosFeatureMapper:
-    """Flatten :class:`CoordinatedEvidence` into PCOS variables."""
+class PmosFeatureMapper:
+    """Flatten :class:`CoordinatedEvidence` into PMOS variables."""
 
-    def transform(self, evidence: CoordinatedEvidence) -> MappedPcosFeatures:
-        """Assemble one patient's PCOS variables.
+    def transform(self, evidence: CoordinatedEvidence) -> MappedPmosFeatures:
+        """Assemble one patient's PMOS variables.
 
         Args:
             evidence: Coordinated output of the evidence coordinator.
@@ -74,7 +74,7 @@ class PcosFeatureMapper:
         Returns:
             Canonical variables with per-code provenance and any conflicts.
         """
-        mapped = MappedPcosFeatures(
+        mapped = MappedPmosFeatures(
             patient_id=evidence.patient_id,
             domain_evidence=dict(evidence.domain_evidence),
             available_modalities=list(evidence.available_modalities),
@@ -84,7 +84,7 @@ class PcosFeatureMapper:
 
         for modality, token in evidence.tokens().items():
             for raw_code, raw_value in token.structured_features.items():
-                code = PCOS_FEATURE_MAP.get(raw_code, raw_code)
+                code = PMOS_FEATURE_MAP.get(raw_code, raw_code)
                 if raw_value is None:
                     continue
                 # Only scalar clinical variables participate in axis assessment.

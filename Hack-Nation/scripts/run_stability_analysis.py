@@ -31,8 +31,8 @@ from _experiment_io import (  # noqa: E402
 )
 from discover_phenotypes import build_adapter_config  # noqa: E402
 
-from models.adapters.pcos.adapter import PcosAdapter  # noqa: E402
-from models.adapters.pcos.output_schema import NON_DIAGNOSTIC_STATEMENT  # noqa: E402
+from models.adapters.pmos.adapter import PmosAdapter  # noqa: E402
+from models.adapters.pmos.output_schema import NON_DIAGNOSTIC_STATEMENT  # noqa: E402
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -62,7 +62,7 @@ def main(argv: list[str] | None = None) -> int:
     cohort = load_cohort(config, args.data_root)
     representations = build_representations(cohort, config)
 
-    adapter = PcosAdapter(build_adapter_config(config)).fit(representations, cohort.subset_ids)
+    adapter = PmosAdapter(build_adapter_config(config)).fit(representations, cohort.subset_ids)
     d = adapter.discovery
     assert d is not None
 

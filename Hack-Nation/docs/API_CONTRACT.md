@@ -28,7 +28,7 @@ lifespan handler, from `configs/models/inference_encoders.yaml`. Encoders are
 never reloaded per request.
 
 Startup **fails** if the static clinical branch cannot be loaded. That branch is
-the only component entitled to issue a whole-patient PCOS score, so a service
+the only component entitled to issue a whole-patient PMOS score, so a service
 without it cannot do the job it exists for. Every other branch is optional and
 reports its own absence.
 
@@ -51,7 +51,7 @@ similarity found" rather than "similarity was never computed".
 | `GET` | `/api/v1/models/status` | Per-branch availability. **The frontend must key off this rather than hardcoding availability.** |
 | `POST` | `/api/v1/patients/infer` | Main route. Runs whichever branches have input. |
 | `POST` | `/api/v1/patients/infer/static` | Static branch only. |
-| `POST` | `/api/v1/patients/infer/temporal` | Longitudinal branch only. Never yields a PCOS score. |
+| `POST` | `/api/v1/patients/infer/temporal` | Longitudinal branch only. Never yields a PMOS score. |
 | `POST` | `/api/v1/patients/infer/ultrasound` | Gated off; returns `503` with a reason. |
 | `POST` | `/api/v1/events` | Append events to the ledger. |
 | `GET` | `/api/v1/events/{patient_id}` | Read a patient's events. Unknown patient returns `[]`, not `404`. |
@@ -123,7 +123,7 @@ These are easy to confuse and mean different things:
 | Field | Meaning |
 |:--|:--|
 | `modality_coverage` | Fraction of branches (static/temporal/ultrasound) that contributed. The "data coverage" of the profile header. |
-| `pcos_assessment.feature_coverage` | Fraction of the *static model's own* inputs that were observed rather than imputed from training medians. |
+| `pmos_assessment.feature_coverage` | Fraction of the *static model's own* inputs that were observed rather than imputed from training medians. |
 | `phenotype.domain_scores[].coverage` | Weight-weighted fraction of one domain's variables that were observed. |
 
 A score resting on 16% observed features is far weaker than the same number
@@ -132,7 +132,7 @@ resting on 90%, and only `feature_coverage` shows that.
 ## How internal output becomes a response
 
 `inference/presentation/website_mapper.py` maps `PatientEvidenceReport` onto
-`WebsitePCOSProfileResponse`. The internal `PCOSProfileOutput` is **never**
+`WebsitePMOSProfileResponse`. The internal `PMOSProfileOutput` is **never**
 returned directly: it changes shape as models change, and it carries fields that
 are misleading without their thresholds.
 
@@ -177,8 +177,8 @@ null`.
 | `>= 0.75` | `high` |
 | `None` | `not_available` |
 
-A score of `0.696` displays as **“PCOS-related evidence: Elevated / Model score:
-0.70”**, never as “69.6% chance of PCOS”. `not_available` is not `low` — "low
+A score of `0.696` displays as **“PMOS-related evidence: Elevated / Model score:
+0.70”**, never as “69.6% chance of PMOS”. `not_available` is not `low` — "low
 evidence" is a finding, "not available" is the absence of one.
 
 The band is computed from the calibrated score when present, so the band and the
@@ -209,7 +209,7 @@ branch that did run, and `missing_modalities` names the rest.
 
 | Situation | Behaviour |
 |:--|:--|
-| Static branch absent | `pcos_assessment.available = false` with `unavailable_reason`. |
+| Static branch absent | `pmos_assessment.available = false` with `unavailable_reason`. |
 | Temporal absent | `current_state.available = false` with a reason. |
 | Ultrasound requested | `503` naming the gate. |
 | One encoder throws | Report returns; the failure appears in `warnings`. |
@@ -234,8 +234,8 @@ frontend change is required — availability is data, not code.
 
 Asserted in `tests/unit/test_api_inference.py` against real loaded encoders:
 
-- Temporal input alone never produces a PCOS model score.
-- Ultrasound alone never produces a PCOS model score.
+- Temporal input alone never produces a PMOS model score.
+- Ultrasound alone never produces a PMOS model score.
 - An indeterminate or unstable phenotype never names a dominant profile — while
   still returning the similarities behind the withheld label.
 - A symptoms-only androgenic result always carries its qualifier and states that

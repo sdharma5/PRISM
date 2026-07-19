@@ -1,18 +1,18 @@
-"""The PCOS adapter: the single entry point that ties Step 5 together.
+"""The PMOS adapter: the single entry point that ties Step 5 together.
 
 Scientific WHY
 --------------
 Everything above this file is condition-agnostic — it clusters matrices, resamples
-them, and reports how much survived. All PCOS-specific knowledge (which feature
+them, and reports how much survived. All PMOS-specific knowledge (which feature
 axes exist, which thresholds apply, which named research profiles to compare
 discovered clusters against) lives in this package and nowhere else. That
 separation is what makes the pipeline reusable for another hormonal condition
-without rewriting the statistics, and it is what stops PCOS assumptions leaking
+without rewriting the statistics, and it is what stops PMOS assumptions leaking
 silently into the discovery step.
 
 The order of operations is deliberate:
 
-1. Discover groups on an **explicit PCOS-positive training subset** only.
+1. Discover groups on an **explicit PMOS-positive training subset** only.
 2. Choose K on measured evidence, never on the literature's favourite number.
 3. Quantify how fragile the result is (bootstrap, ablation, perturbation).
 4. Calibrate membership probabilities against measured bootstrap agreement.
@@ -29,21 +29,21 @@ from typing import Any
 
 import numpy as np
 
-from models.adapters.pcos.diagnostic_features import AxisAssessment, assess_all_axes
-from models.adapters.pcos.output_schema import (
+from models.adapters.pmos.diagnostic_features import AxisAssessment, assess_all_axes
+from models.adapters.pmos.output_schema import (
     AbstentionReport,
     MissingEvidence,
     ModelOrganizedPhenotype,
     ObservedEvidence,
-    PcosResearchOutput,
+    PmosResearchOutput,
     UncertaintyReport,
 )
-from models.adapters.pcos.phenotype_heads import (
+from models.adapters.pmos.phenotype_heads import (
     build_phenotype_profile,
     compute_domain_scores,
     defining_feature_coverage,
 )
-from models.adapters.pcos.prototype_rules import PrototypeMatch, name_clusters
+from models.adapters.pmos.prototype_rules import PrototypeMatch, name_clusters
 from models.phenotype.clustering import (
     ClusteringInput,
     FittedClustering,
@@ -74,7 +74,7 @@ from models.stability.calibration import (
 from models.stability.perturbation import PerturbationResult, run_perturbations
 from schemas.phenotype import INDETERMINATE, PhenotypeProfile, StabilityReport
 
-__all__ = ["PcosAdapter", "PcosAdapterConfig"]
+__all__ = ["PmosAdapter", "PmosAdapterConfig"]
 
 LIMITATIONS = [
     "Groups were discovered by unsupervised clustering in a single research cohort "
@@ -91,7 +91,7 @@ LIMITATIONS = [
 
 
 @dataclass
-class PcosAdapterConfig:
+class PmosAdapterConfig:
     """Every analyst choice, in one inspectable object."""
 
     algorithms: tuple[str, ...] = ("kmeans", "gaussian_mixture", "agglomerative", "consensus")
@@ -109,8 +109,8 @@ class PcosAdapterConfig:
 
 
 @dataclass
-class PcosDiscovery:
-    """The fitted state produced by :meth:`PcosAdapter.fit`."""
+class PmosDiscovery:
+    """The fitted state produced by :meth:`PmosAdapter.fit`."""
 
     data: ClusteringInput
     selection: KSelection
@@ -127,28 +127,28 @@ class PcosDiscovery:
     alternative_assignments: dict[str, list[str]] = field(default_factory=dict)
 
 
-class PcosAdapter:
-    """Discover exploratory PCOS-related profiles and describe one participant.
+class PmosAdapter:
+    """Discover exploratory PMOS-related profiles and describe one participant.
 
     Usage is two-phase: :meth:`fit` on a cohort, then :meth:`profile` per
     participant. ``profile`` returns the triple
-    ``(PhenotypeProfile, StabilityReport, PcosResearchOutput)``.
+    ``(PhenotypeProfile, StabilityReport, PmosResearchOutput)``.
     """
 
-    def __init__(self, config: PcosAdapterConfig | None = None) -> None:
-        self.config = config or PcosAdapterConfig()
-        self.discovery: PcosDiscovery | None = None
+    def __init__(self, config: PmosAdapterConfig | None = None) -> None:
+        self.config = config or PmosAdapterConfig()
+        self.discovery: PmosDiscovery | None = None
 
     # ---------------------------------------------------------------- fitting
 
     def fit(
         self,
         representations: Sequence[ClusteringInput],
-        pcos_positive_training_ids: Sequence[str],
-    ) -> PcosAdapter:
+        pmos_positive_training_ids: Sequence[str],
+    ) -> PmosAdapter:
         """Run the full discovery + stability pipeline on an explicit subset.
 
-        ``pcos_positive_training_ids`` is required and is passed straight through
+        ``pmos_positive_training_ids`` is required and is passed straight through
         to :func:`run_clustering_benchmark`, which refuses an empty subset. The
         subset must be *training* participants only: selecting K on data that will
         later be used to evaluate the grouping is circular.
@@ -156,7 +156,7 @@ class PcosAdapter:
         cfg = self.config
         benchmarks = run_clustering_benchmark(
             representations,
-            cluster_subset_ids=pcos_positive_training_ids,
+            cluster_subset_ids=pmos_positive_training_ids,
             algorithms=cfg.algorithms,
             k_values=cfg.k_values,
             seeds=cfg.seeds,
@@ -166,7 +166,7 @@ class PcosAdapter:
         selection = select_k(benchmarks)
 
         chosen = next(r for r in representations if r.label == selection.representation)
-        data = chosen.subset(pcos_positive_training_ids)
+        data = chosen.subset(pmos_positive_training_ids)
         fitted = fit_clustering(
             data,
             selection.algorithm,
@@ -223,7 +223,7 @@ class PcosAdapter:
 
         profile_names = [f"profile_{label}" for label in sorted(np.unique(fitted.labels))]
 
-        self.discovery = PcosDiscovery(
+        self.discovery = PmosDiscovery(
             data=data,
             selection=selection,
             fitted=fitted,
@@ -237,7 +237,7 @@ class PcosAdapter:
             membership=membership,
             profile_names=profile_names,
             alternative_assignments=self._alternative_assignments(
-                representations, pcos_positive_training_ids, selection, fitted
+                representations, pmos_positive_training_ids, selection, fitted
             ),
         )
         return self
@@ -290,7 +290,7 @@ class PcosAdapter:
         patient_id: str,
         raw_values: Mapping[str, float | bool | None] | None = None,
         standardized_values: Mapping[str, float | None] | None = None,
-    ) -> tuple[PhenotypeProfile, StabilityReport, PcosResearchOutput]:
+    ) -> tuple[PhenotypeProfile, StabilityReport, PmosResearchOutput]:
         """Describe one participant of the fitted cohort. The single entry point.
 
         ``raw_values`` are canonical-unit measurements used for the feature-axis
@@ -299,7 +299,7 @@ class PcosAdapter:
         reports "not assessable" rather than guessing.
         """
         if self.discovery is None:
-            raise RuntimeError("PcosAdapter.profile() called before fit().")
+            raise RuntimeError("PmosAdapter.profile() called before fit().")
         d = self.discovery
         if patient_id not in d.data.participant_ids:
             raise KeyError(
@@ -456,7 +456,7 @@ class PcosAdapter:
         flip_rate: float,
         raw_values: Mapping[str, float | bool | None],
         dominant_name: str,
-    ) -> PcosResearchOutput:
+    ) -> PmosResearchOutput:
         d = self.discovery
         assert d is not None
 
@@ -532,7 +532,7 @@ class PcosAdapter:
         for axis in axes.values():
             warnings.extend(axis.warnings)
 
-        return PcosResearchOutput(
+        return PmosResearchOutput(
             patient_id=patient_id,
             adapter_version=self.config.model_version,
             source_dataset=self.config.source_dataset,

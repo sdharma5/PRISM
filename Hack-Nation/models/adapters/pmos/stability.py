@@ -17,7 +17,7 @@ Four perturbations, each probing a different fragility:
   the deployment-realistic case: a patient without labs is not a patient with
   noisy labs.
 * **Threshold / temperature** — delegated to
-  :class:`~models.adapters.pcos.prototype_similarity.PrototypeSimilarityModel`,
+  :class:`~models.adapters.pmos.prototype_similarity.PrototypeSimilarityModel`,
   since those cut-points are declared rather than measured.
 
 An unstable assignment is not an error to be smoothed away. It is the correct

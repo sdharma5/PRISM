@@ -15,7 +15,7 @@ from ingestion.speech.extraction import RuleBasedExtractor
 from ingestion.speech.transcription import ScriptedTranscriptionAdapter
 from schemas.evidence import ConfirmationBatch
 
-UTTERANCE = "I have acne and my periods are irregular. My mom has PCOS."
+UTTERANCE = "I have acne and my periods are irregular. My mom has PMOS."
 
 
 @pytest.fixture()
@@ -130,7 +130,7 @@ def test_family_history_survives_confirmation_as_family_history(session):
         e for e in session.to_events() if e.canonical_variable_code.startswith("family_history_")
     ]
     assert family, "fixture includes a relative's diagnosis"
-    assert all(e.canonical_variable_code != "pcos_binary" for e in session.to_events())
+    assert all(e.canonical_variable_code != "pmos_binary" for e in session.to_events())
 
 
 def test_negated_and_uncertain_cannot_be_auto_confirmed():

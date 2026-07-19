@@ -8,7 +8,7 @@
 experiment_id: exp_usova3d_3d_unet
 description: >-
   Dual-head 3D U-Net predicting ovary and follicle masks from USOVA3D volumes.
-  An ovarian morphology model, not a PCOS diagnostic model.
+  An ovarian morphology model, not a PMOS diagnostic model.
 
 data:
   dataset_id: usova3d

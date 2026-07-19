@@ -3,7 +3,7 @@
 
     python scripts/discover_phenotypes.py --config configs/experiments/exp_subtype_stability.yaml
 
-Runs the (representation x algorithm x K) sweep on the configured PCOS-positive
+Runs the (representation x algorithm x K) sweep on the configured PMOS-positive
 training subset, selects K on measured evidence, characterizes the resulting
 groups in hedged language, and writes every artifact needed to audit the choice —
 including the full benchmark table, so a reader can see the configurations that
@@ -30,15 +30,15 @@ from _experiment_io import (  # noqa: E402
     write_json,
 )
 
-from models.adapters.pcos.adapter import PcosAdapter, PcosAdapterConfig  # noqa: E402
-from models.adapters.pcos.output_schema import NON_DIAGNOSTIC_STATEMENT  # noqa: E402
+from models.adapters.pmos.adapter import PmosAdapter, PmosAdapterConfig  # noqa: E402
+from models.adapters.pmos.output_schema import NON_DIAGNOSTIC_STATEMENT  # noqa: E402
 
 
-def build_adapter_config(config: dict) -> PcosAdapterConfig:
+def build_adapter_config(config: dict) -> PmosAdapterConfig:
     """Translate the YAML into the adapter's inspectable config object."""
     clustering = config.get("clustering", {})
     stability = config.get("stability", {})
-    return PcosAdapterConfig(
+    return PmosAdapterConfig(
         algorithms=tuple(clustering.get("algorithms", ("kmeans", "gaussian_mixture"))),
         k_values=tuple(int(k) for k in clustering.get("k_values", (2, 3, 4, 5, 6))),
         seeds=tuple(int(s) for s in clustering.get("seeds", (0, 1, 2))),
@@ -77,7 +77,7 @@ def main(argv: list[str] | None = None) -> int:
     cohort = load_cohort(config, args.data_root)
     representations = build_representations(cohort, config)
 
-    adapter = PcosAdapter(build_adapter_config(config)).fit(representations, cohort.subset_ids)
+    adapter = PmosAdapter(build_adapter_config(config)).fit(representations, cohort.subset_ids)
     discovery = adapter.discovery
     assert discovery is not None
 

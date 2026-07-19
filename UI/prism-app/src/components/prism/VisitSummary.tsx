@@ -19,7 +19,7 @@ import {
   phenotypeVerdict,
 } from '@/lib/present'
 import { type AskDoctorItem, formatAnswersForSummary } from '@/lib/askDoctor'
-import type { WebsitePCOSProfileResponse } from '@/types/api'
+import type { WebsitePMOSProfileResponse } from '@/types/api'
 
 const PAGE: React.CSSProperties = {
   fontFamily: 'Georgia, serif',
@@ -44,7 +44,7 @@ export default function VisitSummary({
   answers,
   askDoctorItems,
 }: {
-  report: WebsitePCOSProfileResponse | null
+  report: WebsitePMOSProfileResponse | null
   answers?: Record<string, string | boolean | undefined>
   askDoctorItems?: AskDoctorItem[]
 }) {
@@ -70,7 +70,7 @@ export default function VisitSummary({
     )
   }
 
-  const assessment = report.pcos_assessment
+  const assessment = report.pmos_assessment
   const verdict = phenotypeVerdict(report)
   const axes = Object.entries(report.rotterdam_axes ?? {})
   const domains = orderedDomains(report.phenotype?.domain_scores)
@@ -150,7 +150,7 @@ export default function VisitSummary({
         </Section>
       )}
 
-      <Section title="PCOS-related evidence">
+      <Section title="PMOS-related evidence">
         {assessment.available ? (
           <>
             <Row label="Evidence level" value={evidenceLabel(assessment.evidence_level)} />
@@ -168,7 +168,7 @@ export default function VisitSummary({
             />
             <Row label="Data sources contributing" value={formatCoverage(report.modality_coverage)} />
             <p style={{ fontSize: '11px', color: '#555', marginTop: '8px' }}>
-              This is not a probability that the patient has PCOS. It is a score from a model
+              This is not a probability that the patient has PMOS. It is a score from a model
               fitted on a single-site cross-sectional cohort.
             </p>
           </>

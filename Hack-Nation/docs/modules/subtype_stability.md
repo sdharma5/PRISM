@@ -5,7 +5,7 @@ a rigid subtype. Language rules: [ADR-003](../decisions/ADR-003-subtype-language
 
 ## Population
 
-Clustering runs only on participants with a positive PCOS label in the
+Clustering runs only on participants with a positive PMOS label in the
 **training** data. The function requires an explicit subset — it will not
 silently cluster everyone.
 

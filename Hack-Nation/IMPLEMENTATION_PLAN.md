@@ -16,9 +16,9 @@ scripts · CI · documentation skeleton · synthetic fixtures.
 
 **Done when:** `make ci` passes.
 
-## Milestone 2 — Static PCOS baseline
+## Milestone 2 — Static PMOS baseline
 
-PCOS tabular loader · canonical mappings · split manifests · logistic regression
+PMOS tabular loader · canonical mappings · split manifests · logistic regression
 · XGBoost · metrics · calibration plots · baseline model card.
 
 **Done when:** reproducible held-out metrics and saved predictions exist.

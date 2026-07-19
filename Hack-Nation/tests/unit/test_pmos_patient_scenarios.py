@@ -1,4 +1,4 @@
-"""End-to-end PCOS profile behaviour across the modality combinations a real patient may present with.
+"""End-to-end PMOS profile behaviour across the modality combinations a real patient may present with.
 
 Each scenario asserts a *claim boundary* rather than a specific number. The
 numbers depend on models that will be retrained; the boundaries -- what the
@@ -10,8 +10,8 @@ from __future__ import annotations
 import pytest
 
 from inference import coordinate_only
-from models.adapters.pcos.evidence_adapter import PcosEvidenceAdapter
-from models.adapters.pcos.prototype_similarity import PrototypeSimilarityModel
+from models.adapters.pmos.evidence_adapter import PmosEvidenceAdapter
+from models.adapters.pmos.prototype_similarity import PrototypeSimilarityModel
 from schemas.modality_token import ModalityToken
 
 
@@ -70,8 +70,8 @@ def temporal_token(irregularity: float = 0.7) -> ModalityToken:
     )
 
 
-def adapter(*, with_head: bool = True) -> PcosEvidenceAdapter:
-    return PcosEvidenceAdapter(
+def adapter(*, with_head: bool = True) -> PmosEvidenceAdapter:
+    return PmosEvidenceAdapter(
         static_model=FakeStaticHead() if with_head else None,
         prototype_model=PrototypeSimilarityModel(),
     )
@@ -87,7 +87,7 @@ def profile_for(tokens, *, with_head: bool = True):
 def test_static_only_produces_a_probability_and_a_profile() -> None:
     out = profile_for([static_token()])
     assert out.abstain is False
-    assert out.pcos_evidence_probability == pytest.approx(0.78)
+    assert out.pmos_evidence_probability == pytest.approx(0.78)
     assert "ovarian_ultrasound" in out.missing_modalities
     assert out.phenotype_affinities
 
@@ -95,13 +95,13 @@ def test_static_only_produces_a_probability_and_a_profile() -> None:
 def test_static_plus_ultrasound_meets_morphology_axis() -> None:
     out = profile_for([static_token(), ultrasound_token(count=23)])
     assert out.diagnostic_feature_evidence["polycystic_ovarian_morphology"].axis_status == "met"
-    assert out.pcos_evidence_probability is not None
+    assert out.pmos_evidence_probability is not None
 
 
 def test_static_plus_temporal_reports_current_state() -> None:
     out = profile_for([static_token(), temporal_token()])
     assert "longitudinal_hormonal_state" in out.available_modalities
-    assert out.pcos_evidence_probability is not None
+    assert out.pmos_evidence_probability is not None
 
 
 def test_all_three_branches_available() -> None:
@@ -117,16 +117,16 @@ def test_all_three_branches_available() -> None:
 # -- the abstention boundary (spec item 13) --------------------------------
 
 
-def test_ultrasound_only_abstains_from_pcos_probability() -> None:
+def test_ultrasound_only_abstains_from_pmos_probability() -> None:
     out = profile_for([ultrasound_token()], with_head=False)
     assert out.abstain is True
-    assert out.pcos_evidence_probability is None
+    assert out.pmos_evidence_probability is None
 
 
-def test_temporal_only_abstains_from_pcos_probability() -> None:
+def test_temporal_only_abstains_from_pmos_probability() -> None:
     out = profile_for([temporal_token()], with_head=False)
     assert out.abstain is True
-    assert out.pcos_evidence_probability is None
+    assert out.pmos_evidence_probability is None
 
 
 def test_ultrasound_only_still_reports_morphology_evidence() -> None:
@@ -192,7 +192,7 @@ def test_conflicting_static_and_temporal_reproductive_evidence_is_preserved() ->
 
 def test_profile_always_declares_learned_versus_rule_based() -> None:
     out = profile_for([static_token(), ultrasound_token()])
-    assert "static_clinical.pcos_head" in out.learned_components_used
+    assert "static_clinical.pmos_head" in out.learned_components_used
     assert any("guideline" in c for c in out.rule_based_components_used)
 
 
@@ -223,4 +223,4 @@ def test_explanation_attributes_the_probability_to_the_static_head() -> None:
     out = profile_for([static_token(), ultrasound_token()])
     learned = out.explanation["learned_static_prediction"]
     assert learned["available"] is True
-    assert "static_clinical.pcos_head" in learned["provenance"]
+    assert "static_clinical.pmos_head" in learned["provenance"]

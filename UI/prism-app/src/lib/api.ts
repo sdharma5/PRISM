@@ -28,10 +28,10 @@ import type {
 import { ApiError, apiBaseUrl, apiFetch, apiMode, apiPost, DEFAULT_DEMO_PATIENT } from './apiClient'
 import type {
   ModelStatusResponse,
-  WebsitePCOSProfileResponse,
+  WebsitePMOSProfileResponse,
 } from '@/types/api'
 
-export type { WebsitePCOSProfileResponse } from '@/types/api'
+export type { WebsitePMOSProfileResponse } from '@/types/api'
 
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? ''
@@ -128,7 +128,7 @@ function eventToSnake(e: HormonalHealthEvent): Record<string, unknown> {
 export const getPatientReport = (
   patientId: string = DEFAULT_DEMO_PATIENT,
   body: Record<string, unknown> = {},
-): Promise<WebsitePCOSProfileResponse> => {
+): Promise<WebsitePMOSProfileResponse> => {
   const payload = { patient_id: patientId, ...body }
   if (Array.isArray(payload.confirmed_events)) {
     payload.confirmed_events = (payload.confirmed_events as HormonalHealthEvent[]).map(eventToSnake)
@@ -285,9 +285,9 @@ export const MOCK_RECOMMENDATIONS: RecommendationReport = {
       category: 'lifestyle',
       title: 'Aim for 150 min aerobic exercise per week',
       body:
-        'Moderate aerobic exercise (brisk walking, cycling, swimming) for at least 150 minutes per week is recommended by the 2023 International PCOS Guideline to improve insulin sensitivity and menstrual regularity. Discuss a safe starting point with your clinician.',
+        'Moderate aerobic exercise (brisk walking, cycling, swimming) for at least 150 minutes per week is recommended by the 2023 International PMOS Guideline to improve insulin sensitivity and menstrual regularity. Discuss a safe starting point with your clinician.',
       evidence_level: 'guideline-backed',
-      sources: ['https://www.monash.edu/medicine/sphpm/mchri/pcos/guideline'],
+      sources: ['https://www.monash.edu/medicine/sphpm/mchri/pmos/guideline'],
       caveats: [],
     },
     {
@@ -319,9 +319,9 @@ export const MOCK_RECOMMENDATIONS: RecommendationReport = {
     },
   ],
   search_queries_used: [
-    'PCOS evidence-based self-management guidelines 2024',
-    'PCOS ovulatory dysfunction lifestyle intervention evidence 2024',
-    'PCOS elevated androgens testosterone management diet exercise',
+    'PMOS evidence-based self-management guidelines 2024',
+    'PMOS ovulatory dysfunction lifestyle intervention evidence 2024',
+    'PMOS elevated androgens testosterone management diet exercise',
   ],
   warnings: [],
 }

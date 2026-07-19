@@ -15,7 +15,7 @@ PRISM models two different things and refuses to conflate them: what is
 | Data | Cross-sectional clinical + labs + morphology | Longitudinal hormones, wearables, CGM, symptoms |
 | Module | Steps 3–5 (static, domains, profiles) | Step 9 (temporal GRU) |
 | Output | `PhenotypeProfile`, `StabilityReport` | `TemporalStateOutput` |
-| Dataset | Public PCOS cohort | mcPHASES |
+| Dataset | Public PMOS cohort | mcPHASES |
 
 ## Why the separation is load-bearing
 
@@ -47,8 +47,8 @@ interpretation: str = (
 It travels with every serialized token. The temporal module predicts current
 cycle phase, reconstructs hormone levels, and forecasts next-day symptoms. It
 does **not** emit a subtype, a diagnosis, or a risk score, and it is trained on
-a dataset whose registry entry explicitly prohibits `pcos_subtype_validation`
-and `pcos_diagnosis` — so an attempt to use it that way fails at
+a dataset whose registry entry explicitly prohibits `pmos_subtype_validation`
+and `pmos_diagnosis` — so an attempt to use it that way fails at
 `DatasetRegistry.require()`, not in review.
 
 ## Where they would eventually meet

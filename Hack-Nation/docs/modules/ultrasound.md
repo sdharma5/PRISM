@@ -1,12 +1,12 @@
 # Ultrasound pipeline (Step 8)
 
-Produces semantic ovary and follicle measurements. The target is **not** a PCOS
+Produces semantic ovary and follicle measurements. The target is **not** a PMOS
 diagnosis — it is segmentation, counting, morphology, and knowing when not to
 measure.
 
 ## 2D is the primary pathway
 
-Routine clinical PCOS ovarian assessment is **2D transvaginal imaging**. The
+Routine clinical PMOS ovarian assessment is **2D transvaginal imaging**. The
 sonographer sweeps the probe through the ovary and reads follicles off individual
 B-mode frames. A dedicated 3D volume acquisition is an optional extra that most
 clinics do not perform.

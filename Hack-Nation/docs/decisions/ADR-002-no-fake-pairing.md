@@ -11,7 +11,7 @@ people:
 
 | Modality | Dataset | Population |
 |:--|:--|:--|
-| Static clinical | Public PCOS tabular cohort | One clinic, cross-sectional |
+| Static clinical | Public PMOS tabular cohort | One clinic, cross-sectional |
 | Longitudinal state | mcPHASES | Credentialed cohort, densely sampled |
 | Population reference | NHANES 2021–2023 | US survey sample |
 | Ultrasound | USOVA3D | Imaging cohort with annotator masks |

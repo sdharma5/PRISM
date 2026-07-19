@@ -6,7 +6,7 @@ Run with::
 
 Startup loads every configured encoder once and holds it for the process
 lifetime. If the static clinical branch cannot be loaded, startup fails: it is
-the only branch entitled to issue a whole-patient PCOS score, so a service
+the only branch entitled to issue a whole-patient PMOS score, so a service
 without it cannot do the job it exists for, and starting anyway would mean every
 request returned a silently degraded result.
 """
@@ -70,7 +70,7 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title="PRISM inference API",
         version="0.1.0",
-        summary="Research-prototype PCOS evidence profiling. Not a diagnostic device.",
+        summary="Research-prototype PMOS evidence profiling. Not a diagnostic device.",
         lifespan=lifespan,
     )
 

@@ -11,7 +11,7 @@ import { useState } from 'react'
 
 import { Card, SectionHeading, StatusPill, ZScoreBar } from './Primitives'
 import { formatCoverage, formatZScore, humanizeCode, orderedDomains, Z_SCORE_NOTE } from '@/lib/present'
-import type { DomainScoreView, WebsitePCOSProfileResponse } from '@/types/api'
+import type { DomainScoreView, WebsitePMOSProfileResponse } from '@/types/api'
 
 const EVIDENCE_TONE = {
   symptoms: 'info',
@@ -97,7 +97,7 @@ function DomainRow({ domainKey, domain }: { domainKey: string; domain: DomainSco
 export default function PhenotypeDomains({
   report,
 }: {
-  report: WebsitePCOSProfileResponse
+  report: WebsitePMOSProfileResponse
 }) {
   const domains = orderedDomains(report.phenotype?.domain_scores)
   const assessed = domains.filter(([, d]) => d.available).length

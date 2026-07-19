@@ -5,7 +5,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from models.adapters.pcos.prototype_rules import (
+from models.adapters.pmos.prototype_rules import (
     PROTOTYPE_PROFILES,
     match_prototype,
     name_clusters,

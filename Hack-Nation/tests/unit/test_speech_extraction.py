@@ -130,16 +130,16 @@ def test_uncertainty_lowers_extraction_confidence(transcriber, extractor):
 
 
 def test_relatives_diagnosis_becomes_family_history(transcriber, extractor):
-    result = extract(transcriber, extractor, "My mom has PCOS but I don't have diabetes.")
-    event = find(result, "family_history_pcos")
+    result = extract(transcriber, extractor, "My mom has PMOS but I don't have diabetes.")
+    event = find(result, "family_history_pmos")
     assert event.attribution == "family_member"
     assert event.relation == "mother"
 
 
 def test_family_history_never_becomes_a_patient_diagnosis(transcriber, extractor):
     """The single most damaging failure mode in this pipeline."""
-    result = extract(transcriber, extractor, "My mom has PCOS but I don't have diabetes.")
-    assert "pcos_binary" not in codes(result)
+    result = extract(transcriber, extractor, "My mom has PMOS but I don't have diabetes.")
+    assert "pmos_binary" not in codes(result)
     for event in result.events:
         if event.canonical_code.startswith("family_history_"):
             assert event.attribution == "family_member"
@@ -148,8 +148,8 @@ def test_family_history_never_becomes_a_patient_diagnosis(transcriber, extractor
 
 
 def test_patient_symptom_is_not_captured_by_a_nearby_relative(transcriber, extractor):
-    result = extract(transcriber, extractor, "My mother has PCOS but I have acne myself.")
-    assert find(result, "family_history_pcos").attribution == "family_member"
+    result = extract(transcriber, extractor, "My mother has PMOS but I have acne myself.")
+    assert find(result, "family_history_pmos").attribution == "family_member"
     assert find(result, "acne").attribution == "patient"
 
 
@@ -160,11 +160,11 @@ def test_family_history_code_rejects_patient_attribution():
             extraction_id="X1",
             recording_id="R1",
             patient_id="P1",
-            canonical_code="family_history_pcos",
-            variable_name="Family history of PCOS",
-            surface_form="pcos",
+            canonical_code="family_history_pmos",
+            variable_name="Family history of PMOS",
+            surface_form="pmos",
             attribution="patient",
-            evidence=EvidenceSpan(text="pcos", char_start=0, char_end=4),
+            evidence=EvidenceSpan(text="pmos", char_start=0, char_end=4),
             extraction_confidence=0.9,
         )
 
@@ -184,11 +184,11 @@ def test_patient_variable_rejects_family_attribution():
         )
 
 
-def test_self_reported_pcos_is_unmapped_not_a_label(transcriber, extractor):
+def test_self_reported_pmos_is_unmapped_not_a_label(transcriber, extractor):
     """A self-reported diagnosis must not be written into the dataset label."""
-    result = extract(transcriber, extractor, "I have PCOS.")
-    assert "pcos_binary" not in codes(result)
-    assert any("pcos" in m.surface_form.lower() for m in result.unmapped)
+    result = extract(transcriber, extractor, "I have PMOS.")
+    assert "pmos_binary" not in codes(result)
+    assert any("pmos" in m.surface_form.lower() for m in result.unmapped)
 
 
 # -- Questions and speaker attribution --------------------------------------
@@ -295,7 +295,7 @@ def test_spans_are_verified_against_the_transcript(transcriber, extractor):
 
 
 def test_extraction_output_is_json_serializable(transcriber, extractor):
-    result = extract(transcriber, extractor, "My mom has PCOS and I have acne.")
+    result = extract(transcriber, extractor, "My mom has PMOS and I have acne.")
     payload = result.model_dump(mode="json")
     assert isinstance(payload["events"], list)
     import json

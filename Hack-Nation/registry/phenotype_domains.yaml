@@ -186,7 +186,7 @@ domains:
       evidence_class: imaging
   lh_amh_pattern:
     label: LH-AMH reproductive pattern
-    description: 'The reproductive-axis signature reported in phenotype-based PCOS subtyping: elevated
+    description: 'The reproductive-axis signature reported in phenotype-based PMOS subtyping: elevated
       LH, elevated LH/FSH ratio and elevated AMH with comparatively unremarkable adiposity. Scored as
       a DOMAIN so it can be reported continuously; it is a described pattern, not a validated clinical
       subtype.'

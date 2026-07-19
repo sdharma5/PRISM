@@ -342,14 +342,14 @@ class TemporalStateEncoder:
             patient_id: Patient identifier.
 
         Returns:
-            A current-state token. It never carries a PCOS probability or
+            A current-state token. It never carries a PMOS probability or
             subtype -- the temporal branch reports physiological state, and any
             diagnostic reading of it happens in the adapter under explicit rules.
         """
         artifact = self._require()
         rows = _coerce_rows(payload, patient_id)
 
-        warnings: list[str] = ["Current-state estimate; not a PCOS diagnosis"]
+        warnings: list[str] = ["Current-state estimate; not a PMOS diagnosis"]
         missing: list[str] = []
 
         if not rows:

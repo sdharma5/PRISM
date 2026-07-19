@@ -2,7 +2,7 @@
 #
 # Every value here is an analyst choice that changes the result, which is why
 # none of them are hard-coded in the modules. K in particular is a *range to be
-# searched*, never an assumption: the fact that the PCOS literature commonly
+# searched*, never an assumption: the fact that the PMOS literature commonly
 # reports four subtypes is a hypothesis for this sweep to test, not a prior.
 
 version: "1.0.0"

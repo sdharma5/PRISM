@@ -13,7 +13,7 @@ import { Database, ChevronDown, ChevronRight, FlaskConical, Watch, Image as Imag
 
 import { Card, SectionHeading, StatusPill } from './Primitives'
 import { formatCoverage, humanizeCode } from '@/lib/present'
-import type { ModelStatusResponse, WebsitePCOSProfileResponse } from '@/types/api'
+import type { ModelStatusResponse, WebsitePMOSProfileResponse } from '@/types/api'
 
 const BRANCH_META = {
   static_clinical: { label: 'Clinical & laboratory', Icon: FlaskConical },
@@ -27,7 +27,7 @@ export default function SourceData({
   report,
   status,
 }: {
-  report: WebsitePCOSProfileResponse
+  report: WebsitePMOSProfileResponse
   status: ModelStatusResponse | null
 }) {
   const [open, setOpen] = useState(false)

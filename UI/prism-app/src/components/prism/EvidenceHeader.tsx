@@ -14,14 +14,14 @@ import {
   formatCoverage,
   formatScore,
 } from '@/lib/present'
-import type { WebsitePCOSProfileResponse } from '@/types/api'
+import type { WebsitePMOSProfileResponse } from '@/types/api'
 
 export default function EvidenceHeader({
   report,
 }: {
-  report: WebsitePCOSProfileResponse
+  report: WebsitePMOSProfileResponse
 }) {
-  const assessment = report.pcos_assessment
+  const assessment = report.pmos_assessment
   const available = assessment.available
   const score = assessment.calibrated_model_score ?? assessment.raw_model_score
 
@@ -30,7 +30,7 @@ export default function EvidenceHeader({
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
-            PCOS-related evidence
+            PMOS-related evidence
           </p>
           <div className="mt-2 flex items-baseline gap-3">
             <span className="text-3xl font-semibold tracking-tight text-neutral-900">

@@ -14,12 +14,12 @@
 #   value:       the value asserted by a non-negated mention (default true).
 #   phrases:     surface forms, matched as whole-token sequences (case-insensitive).
 #
-# WHY code IS NULL FOR pcos AND diabetes: `pcos_binary` is a *dataset-provided
+# WHY code IS NULL FOR pmos AND diabetes: `pmos_binary` is a *dataset-provided
 # label*, not a patient self-report, and there is no patient diabetes-diagnosis
-# variable in the registry. Mapping "I have PCOS" onto the label column would
+# variable in the registry. Mapping "I have PMOS" onto the label column would
 # contaminate every evaluation that uses that label as ground truth. So the
-# mention is surfaced as unmapped, while "my mother has PCOS" maps cleanly onto
-# family_history_pcos.
+# mention is surfaced as unmapped, while "my mother has PMOS" maps cleanly onto
+# family_history_pmos.
 
 version: "1.0.0"
 
@@ -42,7 +42,7 @@ config:
 # SOURCE OF THE NUMBERS: the FIGO / Fraser et al. normal-menstrual-cycle
 # definition — cycle length 24-38 days with intercycle variability of 9 days or
 # less. The older and still widely used research cutoff for oligomenorrhoea is
-# >35 days (Rotterdam / NIH PCOS criteria); 38 is the more conservative modern
+# >35 days (Rotterdam / NIH PMOS criteria); 38 is the more conservative modern
 # bound and is chosen deliberately so that borderline cycles are NOT flagged as
 # irregular on the machine's own authority.
 #
@@ -398,14 +398,14 @@ concepts:
   # event, which is exactly the guarantee that family history never becomes the
   # patient's diagnosis.
   - code: null
-    family_code: family_history_pcos
+    family_code: family_history_pmos
     value: true
     category: diagnosis
     unmapped_reason: >-
-      pcos_binary is a dataset-provided label, not a patient self-report; a
-      self-reported PCOS diagnosis has no canonical patient variable.
+      pmos_binary is a dataset-provided label, not a patient self-report; a
+      self-reported PMOS diagnosis has no canonical patient variable.
     phrases:
-      - "pcos"
+      - "pmos"
       - "polycystic ovary syndrome"
       - "polycystic ovaries syndrome"
 

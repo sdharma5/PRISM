@@ -109,7 +109,7 @@ def test_survey_design_columns_may_not_be_mapped_as_variables(components):
 
 def test_nhanes_refuses_a_prohibited_use():
     with pytest.raises(PermissionError):
-        NhanesAdapter(use="pcos_diagnosis")
+        NhanesAdapter(use="pmos_diagnosis")
     with pytest.raises(PermissionError):
         NhanesAdapter(use="longitudinal_state_modeling")
 
@@ -372,7 +372,7 @@ def test_mcphases_refuses_a_prohibited_use():
     with pytest.raises(PermissionError):
         McPhasesAdapter(use="binary_baseline")
     with pytest.raises(PermissionError):
-        McPhasesAdapter(use="pcos_diagnosis")
+        McPhasesAdapter(use="pmos_diagnosis")
 
 
 def test_mcphases_builds_participant_days(stream):

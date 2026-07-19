@@ -1,4 +1,4 @@
-"""The PCOS adapter's output contract.
+"""The PMOS adapter's output contract.
 
 ``learned_components_used`` and ``rule_based_components_used`` are the two most
 important fields in this schema. Everything else describes *what* the system
@@ -6,7 +6,7 @@ concluded; those two describe *how*, and without them a reader cannot tell a
 probability fit against 541 labelled patients from a score produced by weights
 someone chose. Both appear in every output, always populated.
 
-``pcos_evidence_probability`` is None whenever the adapter abstains, enforced by
+``pmos_evidence_probability`` is None whenever the adapter abstains, enforced by
 a validator rather than by convention -- a caller must not be able to read a
 number the adapter declined to stand behind.
 """
@@ -19,7 +19,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field, model_validator
 
-__all__ = ["AxisEvidenceOutput", "PCOSProfileOutput"]
+__all__ = ["AxisEvidenceOutput", "PMOSProfileOutput"]
 
 
 class PhenotypeDomainDetail(BaseModel):
@@ -61,14 +61,14 @@ class AxisEvidenceOutput(BaseModel):
     notes: list[str] = Field(default_factory=list)
 
 
-class PCOSProfileOutput(BaseModel):
-    """PCOS-specific interpretation of coordinated multimodal evidence."""
+class PMOSProfileOutput(BaseModel):
+    """PMOS-specific interpretation of coordinated multimodal evidence."""
 
     patient_id: str
 
     #: From the learned static clinical head only. None when it did not run or
     #: when the adapter abstained.
-    pcos_evidence_probability: float | None = Field(default=None, ge=0.0, le=1.0)
+    pmos_evidence_probability: float | None = Field(default=None, ge=0.0, le=1.0)
 
     diagnostic_feature_evidence: dict[str, AxisEvidenceOutput] = Field(default_factory=dict)
 
@@ -156,16 +156,16 @@ class PCOSProfileOutput(BaseModel):
     warnings: list[str] = Field(default_factory=list)
 
     @model_validator(mode="after")
-    def _abstention_withholds_the_probability(self) -> PCOSProfileOutput:
-        if self.abstain and self.pcos_evidence_probability is not None:
+    def _abstention_withholds_the_probability(self) -> PMOSProfileOutput:
+        if self.abstain and self.pmos_evidence_probability is not None:
             raise ValueError(
-                "abstain=True requires pcos_evidence_probability=None; otherwise a caller "
+                "abstain=True requires pmos_evidence_probability=None; otherwise a caller "
                 "can read the number the adapter refused to stand behind."
             )
         return self
 
     @model_validator(mode="after")
-    def _method_is_always_declared(self) -> PCOSProfileOutput:
+    def _method_is_always_declared(self) -> PMOSProfileOutput:
         """Every output must say how it was constructed."""
         if not self.learned_components_used and not self.rule_based_components_used:
             raise ValueError(
@@ -175,20 +175,20 @@ class PCOSProfileOutput(BaseModel):
         return self
 
     @model_validator(mode="after")
-    def _probability_requires_the_learned_head(self) -> PCOSProfileOutput:
-        """Only the learned static head may back a PCOS probability."""
-        if self.pcos_evidence_probability is not None and not any(
+    def _probability_requires_the_learned_head(self) -> PMOSProfileOutput:
+        """Only the learned static head may back a PMOS probability."""
+        if self.pmos_evidence_probability is not None and not any(
             "static" in component for component in self.learned_components_used
         ):
             raise ValueError(
-                "pcos_evidence_probability was set without the learned static clinical "
+                "pmos_evidence_probability was set without the learned static clinical "
                 "head in learned_components_used. No rule-based component is entitled "
-                "to issue a whole-patient PCOS probability."
+                "to issue a whole-patient PMOS probability."
             )
         return self
 
     @model_validator(mode="after")
-    def _dominant_profile_requires_stability(self) -> PCOSProfileOutput:
+    def _dominant_profile_requires_stability(self) -> PMOSProfileOutput:
         """A profile label is published only when it survived the stability checks.
 
         Enforced in the schema rather than in the caller: an assignment that a
@@ -216,7 +216,7 @@ class PCOSProfileOutput(BaseModel):
         return self
 
     @model_validator(mode="after")
-    def _androgenic_leaning_requires_androgenic_evidence(self) -> PCOSProfileOutput:
+    def _androgenic_leaning_requires_androgenic_evidence(self) -> PMOSProfileOutput:
         """The specific claim this whole split exists to make impossible."""
         if self.dominant_profile == "androgenic_leaning" and (
             self.androgenic_evidence_source == "unavailable"
@@ -229,7 +229,7 @@ class PCOSProfileOutput(BaseModel):
         return self
 
     @model_validator(mode="after")
-    def _unassessed_domains_are_not_zero_filled(self) -> PCOSProfileOutput:
+    def _unassessed_domains_are_not_zero_filled(self) -> PMOSProfileOutput:
         """A domain marked unassessable must carry None, never a number."""
         for domain, assessable in self.domain_assessability.items():
             if not assessable and self.phenotype_domain_scores.get(domain) is not None:
@@ -240,7 +240,7 @@ class PCOSProfileOutput(BaseModel):
         return self
 
     @model_validator(mode="after")
-    def _calibrated_score_requires_a_raw_score(self) -> PCOSProfileOutput:
+    def _calibrated_score_requires_a_raw_score(self) -> PMOSProfileOutput:
         if self.calibrated_model_score is not None and self.raw_model_score is None:
             raise ValueError(
                 "calibrated_model_score was set without raw_model_score. Both are kept so a "

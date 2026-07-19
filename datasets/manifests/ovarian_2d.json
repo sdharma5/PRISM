@@ -1,12 +1,12 @@
 {
-  "dataset": "PCOSGen 2D Ovarian Ultrasound",
-  "description": "2D ovarian ultrasound images from Auto-PCOS classification challenge with normal/abnormal and PCO-morphology visible/not-visible labels",
+  "dataset": "PMOSGen 2D Ovarian Ultrasound",
+  "description": "2D ovarian ultrasound images from Auto-PMOS classification challenge with normal/abnormal and PCO-morphology visible/not-visible labels",
   "source": {
     "train": "https://zenodo.org/records/14592001",
     "test": "https://zenodo.org/records/14591782",
-    "challenge": "Auto-PCOS Classification Challenge"
+    "challenge": "Auto-PMOS Classification Challenge"
   },
-  "original_paper": "Automatic Polycystic Ovary Syndrome Detection via Ovarian Ultrasound (arXiv:2207.06799 related, Auto-PCOS challenge)",
+  "original_paper": "Automatic Polycystic Ovary Syndrome Detection via Ovarian Ultrasound (arXiv:2207.06799 related, Auto-PMOS challenge)",
   "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
   "license_url": "https://creativecommons.org/licenses/by/4.0/",
   "access_type": "public",
@@ -14,24 +14,24 @@
   "local_path": "/weka/scratch/uchitra1/users/a_s/mit_hackathon/datasets/ovarian_2d/raw",
   "files": {
     "train_archive": {
-      "filename": "pcosgen_train.zip",
+      "filename": "pmosgen_train.zip",
       "zenodo_doi": "10.5281/zenodo.14592001",
       "sha256": "d694effe7eab128114ac000a47633f7fe659ba14a16448eb7e664126f98bde48",
       "size_bytes": 72271729
     },
     "test_archive": {
-      "filename": "pcosgen_test.zip",
+      "filename": "pmosgen_test.zip",
       "zenodo_doi": "10.5281/zenodo.14591782",
       "sha256": "83a7a55632a30402e181b209cf71db19509cd6bb6f7029afd0772ba0816455fb",
       "size_bytes": 20570299
     },
-    "train_labels": "pcosgen_train/class_label.xlsx",
-    "test_labels": "pcosgen_test/class label.csv"
+    "train_labels": "pmosgen_train/class_label.xlsx",
+    "test_labels": "pmosgen_test/class label.csv"
   },
   "label_definitions": {
     "general_classification": "Whether ultrasound image appears 'Appears normal' or 'Appears abnormal' in general context",
     "specific_classification": "For abnormal images, whether polycystic ovary is 'Visible' or 'Not-visible'",
-    "note": "Labels describe polycystic OVARIAN MORPHOLOGY (follicle count pattern), not necessarily diagnosed PCOS"
+    "note": "Labels describe polycystic OVARIAN MORPHOLOGY (follicle count pattern), not necessarily diagnosed PMOS"
   },
   "statistics": {
     "train": {
@@ -69,24 +69,24 @@
   },
   "duplicate_samples": [
     {
-      "file": "pcosgen_train/images/image0445.jpg",
-      "duplicate_of": "pcosgen_train/images/image3147.jpg"
+      "file": "pmosgen_train/images/image0445.jpg",
+      "duplicate_of": "pmosgen_train/images/image3147.jpg"
     },
     {
-      "file": "pcosgen_train/images/image0922.jpg",
-      "duplicate_of": "pcosgen_train/images/image3625.jpg"
+      "file": "pmosgen_train/images/image0922.jpg",
+      "duplicate_of": "pmosgen_train/images/image3625.jpg"
     },
     {
-      "file": "pcosgen_train/images/image0612.jpg",
-      "duplicate_of": "pcosgen_train/images/image3314.jpg"
+      "file": "pmosgen_train/images/image0612.jpg",
+      "duplicate_of": "pmosgen_train/images/image3314.jpg"
     },
     {
-      "file": "pcosgen_train/images/image1883.jpg",
-      "duplicate_of": "pcosgen_train/images/image2664.jpg"
+      "file": "pmosgen_train/images/image1883.jpg",
+      "duplicate_of": "pmosgen_train/images/image2664.jpg"
     },
     {
-      "file": "pcosgen_train/images/image1868.jpg",
-      "duplicate_of": "pcosgen_train/images/image2649.jpg"
+      "file": "pmosgen_train/images/image1868.jpg",
+      "duplicate_of": "pmosgen_train/images/image2649.jpg"
     }
   ],
   "limitations": [
@@ -94,6 +94,6 @@
     "Class imbalance: abnormal >> normal; not-visible >> visible",
     "Image resolution inconsistent",
     "99 duplicate images exist between train and test sets",
-    "Labels describe PCO morphology visibility, not confirmed PCOS diagnosis"
+    "Labels describe PCO morphology visibility, not confirmed PMOS diagnosis"
   ]
 }

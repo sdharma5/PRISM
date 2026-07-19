@@ -17,9 +17,9 @@ narration, laboratory and clinical documents, ovarian ultrasound, and longitudin
 hormone/wearable/CGM streams — into standardized, traceable evidence, and then trains
 *separate*, reusable representations for stable clinical phenotype, time-varying
 hormonal state, ovarian morphology, confirmed symptom events, and parsed document
-events. PCOS is the first condition-specific use case, but the data contracts and
-encoders are deliberately not PCOS-shaped; condition-specific logic is confined to
-`models/adapters/pcos/`.
+events. PMOS is the first condition-specific use case, but the data contracts and
+encoders are deliberately not PMOS-shaped; condition-specific logic is confined to
+`models/adapters/pmos/`.
 
 ## ⚠️ Non-diagnostic safety statement
 
@@ -37,7 +37,7 @@ reviews it. Nothing here is validated for clinical deployment.
 
 > **Do not pretend that unrelated datasets belong to the same patients.**
 
-The static PCOS cohort, mcPHASES, NHANES, the ultrasound data, and the speech
+The static PMOS cohort, mcPHASES, NHANES, the ultrasound data, and the speech
 evaluation set describe **different people**. They may train separate modules. They are
 never randomly combined into artificial multimodal patients for training or validation.
 This is enforced in code, not just in prose — see
@@ -78,7 +78,7 @@ This is enforced in code, not just in prose — see
     static · symptom · document · ultrasound · temporal state
                               │
                               ▼
-                   PCOS PHENOTYPE ADAPTER
+                   PMOS PHENOTYPE ADAPTER
           domain profiles · soft subtype similarity
           indeterminate output · confidence · stability
                               │
@@ -100,7 +100,7 @@ Implemented in this repository (Steps 1–9):
 |:--|:--|:--|
 | 1 | Repository, schemas, contracts | Typed contracts at every module boundary |
 | 2 | Dataset registry and ingestion | Universal events + reproducible manifests |
-| 3 | Static PCOS baseline | Calibrated, leakage-free held-out metrics |
+| 3 | Static PMOS baseline | Calibrated, leakage-free held-out metrics |
 | 4 | Continuous phenotype domains | Coverage-aware domain scores + learned embedding |
 | 5 | Subtype and stability engine | Soft profiles, stability, abstention |
 | 6 | Speech pipeline | Confirmed symptom events with evidence spans |
@@ -174,7 +174,7 @@ registry prohibits.
 
 | Dataset | Access | Longitudinal | Primary use here |
 |:--|:--|:--|:--|
-| Public PCOS tabular cohort | External download | No | Static baseline, domains, clustering |
+| Public PMOS tabular cohort | External download | No | Static baseline, domains, clustering |
 | mcPHASES | Restricted (PhysioNet) | Yes | Temporal hormonal-state model |
 | NHANES 2021–2023 | Public (CDC) | No | Population reference, unit harmonization |
 | USOVA3D | External download | No | Ovary/follicle segmentation and morphology |
@@ -190,7 +190,7 @@ ingestion/    one adapter per modality: load -> validate -> transform -> manifes
 event_store/  append-only patient evidence store, conflicts preserved not resolved
 features/     static features, missingness, transparent domain scores, manifests
 models/       tabular · phenotype · stability · temporal · ultrasound · speech · documents
-              adapters/pcos/  <- the ONLY place PCOS-specific logic lives
+              adapters/pmos/  <- the ONLY place PMOS-specific logic lives
 training/     splits, seeding, fold engine, checkpoints, experiment tracking
 evaluation/   classification, calibration, clustering, stability, per-modality metrics
 scripts/      config-driven entry points, one per experiment

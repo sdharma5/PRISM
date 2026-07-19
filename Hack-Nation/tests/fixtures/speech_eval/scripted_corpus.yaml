@@ -52,9 +52,9 @@ utterances:
     category: family_history
     worked_example: 2
     speaker_role: patient
-    text: "My mom has PCOS but I don't have diabetes."
+    text: "My mom has PMOS but I don't have diabetes."
     events:
-      - code: family_history_pcos
+      - code: family_history_pmos
         attribution: family_member
         relation: mother
         speaker_role: patient
@@ -306,9 +306,9 @@ utterances:
   - id: U035
     category: family_history
     speaker_role: patient
-    text: "My sister has PCOS."
+    text: "My sister has PMOS."
     events:
-      - { code: family_history_pcos, attribution: family_member, relation: sister, speaker_role: patient }
+      - { code: family_history_pmos, attribution: family_member, relation: sister, speaker_role: patient }
 
   - id: U036
     category: family_history
@@ -329,7 +329,7 @@ utterances:
     speaker_role: patient
     text: "My aunt has polycystic ovary syndrome."
     events:
-      - { code: family_history_pcos, attribution: family_member, relation: aunt, speaker_role: patient }
+      - { code: family_history_pmos, attribution: family_member, relation: aunt, speaker_role: patient }
 
   - id: U039
     category: family_history
@@ -341,18 +341,18 @@ utterances:
   - id: U040
     category: family_history_contrast
     speaker_role: patient
-    text: "My mother has PCOS but I have acne myself."
+    text: "My mother has PMOS but I have acne myself."
     events:
-      - { code: family_history_pcos, attribution: family_member, relation: mother, speaker_role: patient }
+      - { code: family_history_pmos, attribution: family_member, relation: mother, speaker_role: patient }
       - { code: acne, attribution: patient, speaker_role: patient }
     notes: "The critical case: the relative's diagnosis must never attach to the patient."
 
   - id: U041
     category: family_history
     speaker_role: patient
-    text: "My cousin has PCOS and my mom has diabetes."
+    text: "My cousin has PMOS and my mom has diabetes."
     events:
-      - { code: family_history_pcos, attribution: family_member, relation: cousin, speaker_role: patient }
+      - { code: family_history_pmos, attribution: family_member, relation: cousin, speaker_role: patient }
       - { code: family_history_diabetes, attribution: family_member, relation: mother, speaker_role: patient }
 
   # ------------------------------------------------------------ medication
@@ -509,7 +509,7 @@ utterances:
   - id: U063
     category: clinician_question
     speaker_role: clinician
-    text: "Any family history of PCOS or diabetes?"
+    text: "Any family history of PMOS or diabetes?"
     events: []
 
   - id: U064
@@ -537,9 +537,9 @@ utterances:
   - id: U067
     category: speaker_confusion
     speaker_role: clinician
-    text: "Her mother has PCOS; she has acne."
+    text: "Her mother has PMOS; she has acne."
     events:
-      - { code: family_history_pcos, attribution: family_member, relation: mother, speaker_role: clinician }
+      - { code: family_history_pmos, attribution: family_member, relation: mother, speaker_role: clinician }
       - { code: acne, attribution: patient, speaker_role: clinician }
 
   - id: U068
@@ -617,9 +617,9 @@ utterances:
   - id: U075
     category: family_history
     speaker_role: patient
-    text: "My sister has PCOS."
+    text: "My sister has PMOS."
     events:
-      - { code: family_history_pcos, attribution: family_member, relation: sister, current: false, speaker_role: patient }
+      - { code: family_history_pmos, attribution: family_member, relation: sister, current: false, speaker_role: patient }
     notes: >-
       Blueprint worked example 3. Must never be converted into a patient
       diagnosis.

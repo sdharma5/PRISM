@@ -15,7 +15,7 @@ Protocol:
 
 The held-out metrics are the honest ones. They are computed on one clinic's
 cross-sectional cohort and describe how well the model reproduces that clinic's
-recorded PCOS label -- not how well it diagnoses PCOS.
+recorded PMOS label -- not how well it diagnoses PMOS.
 
 Usage::
 
@@ -49,7 +49,7 @@ from evaluation.calibration import (  # noqa: E402
 )
 from models.tabular.encoder import StaticClinicalEncoder  # noqa: E402
 
-DEFAULT_COHORT = Path("../datasets/pcos_tabular/cohort_wide.csv")
+DEFAULT_COHORT = Path("../datasets/pmos_tabular/cohort_wide.csv")
 DEFAULT_OUTPUT = Path("artifacts/encoders/static_clinical")
 
 
@@ -73,7 +73,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--cohort", type=Path, default=DEFAULT_COHORT)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
-    parser.add_argument("--target", default="pcos_binary")
+    parser.add_argument("--target", default="pmos_binary")
     parser.add_argument("--test-size", type=float, default=0.2)
     parser.add_argument("--folds", type=int, default=5)
     parser.add_argument("--seed", type=int, default=0)
@@ -199,7 +199,7 @@ def main(argv: list[str] | None = None) -> int:
                     "labels. Both raw_model_score and calibrated_model_score are retained."
                 ),
                 "caveat": (
-                    "Metrics describe reproduction of one clinic's recorded PCOS label on a "
+                    "Metrics describe reproduction of one clinic's recorded PMOS label on a "
                     "cross-sectional cohort. They are not diagnostic accuracy, and they do "
                     "not transfer to the multimodal report, whose cross-modal combination "
                     "is rule-based and carries no validated accuracy."

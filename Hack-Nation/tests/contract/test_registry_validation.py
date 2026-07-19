@@ -129,19 +129,19 @@ def test_overlapping_allowed_and_prohibited_is_rejected():
         DatasetSpec(
             name="Bad",
             modality=["tabular"],
-            allowed_uses=["pcos_diagnosis"],
-            prohibited_claims=["pcos_diagnosis"],
+            allowed_uses=["pmos_diagnosis"],
+            prohibited_claims=["pmos_diagnosis"],
         )
 
 
 def test_require_returns_the_spec_for_a_permitted_use():
-    spec = load_dataset_registry().require("pcos_tabular_public", "binary_baseline")
-    assert spec.name.startswith("Public PCOS")
+    spec = load_dataset_registry().require("pmos_tabular_public", "binary_baseline")
+    assert spec.name.startswith("Public PMOS")
 
 
 def test_require_refuses_a_prohibited_use():
     with pytest.raises(PermissionError, match="does not allow use"):
-        load_dataset_registry().require("pcos_tabular_public", "prospective_clinical_deployment")
+        load_dataset_registry().require("pmos_tabular_public", "prospective_clinical_deployment")
 
 
 def test_require_refuses_an_unlisted_use():
@@ -156,12 +156,12 @@ def test_require_raises_for_an_unknown_dataset():
 
 
 def test_nhanes_may_not_be_used_for_longitudinal_or_diagnostic_claims():
-    for prohibited in ("longitudinal_state_modeling", "pcos_diagnosis"):
+    for prohibited in ("longitudinal_state_modeling", "pmos_diagnosis"):
         with pytest.raises(PermissionError):
             load_dataset_registry().require("nhanes_2021_2023", prohibited)
 
 
-def test_mcphases_may_not_be_used_as_a_pcos_baseline():
+def test_mcphases_may_not_be_used_as_a_pmos_baseline():
     with pytest.raises(PermissionError):
         load_dataset_registry().require("mcphases", "binary_baseline")
 

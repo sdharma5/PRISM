@@ -7,7 +7,7 @@ particular checkpoint, or on any encoder being trained at all.
 
 Missing modalities are the normal case, not an error path. A patient with only a
 questionnaire gets a static-only report; a patient with only an ultrasound gets
-morphology evidence and no whole-patient PCOS statement. Both are legitimate
+morphology evidence and no whole-patient PMOS statement. Both are legitimate
 outputs, which is why every branch is guarded rather than required.
 
 An encoder that raises is recorded as a warning and its branch is dropped. One
@@ -52,13 +52,13 @@ class PatientInferenceOrchestrator:
         """
         Args:
             static_encoder: Consumes clinical events. The only branch whose head
-                is trained on labelled PCOS data.
+                is trained on labelled PMOS data.
             ultrasound_encoder: Consumes :class:`UltrasoundInput`.
             temporal_encoder: Consumes :class:`TemporalInput`.
             event_extractors: Speech/document extractors converting raw input to
                 clinical events. They are ingestion, never their own branch.
             coordinator: Evidence coordinator; constructed by default.
-            adapter: Optional PCOS adapter run on the coordinated evidence.
+            adapter: Optional PMOS adapter run on the coordinated evidence.
         """
         self.static_encoder = static_encoder
         self.ultrasound_encoder = ultrasound_encoder
@@ -128,7 +128,7 @@ class PatientInferenceOrchestrator:
         if events:
             _run(self.static_encoder, events, "static_clinical")
             if any(token.modality == "static_clinical" for token in tokens):
-                learned.append("static_clinical.pcos_head")
+                learned.append("static_clinical.pmos_head")
         elif bundle.has_static_input():
             warnings.append(
                 "Speech/document input was supplied but produced no clinical events; "
@@ -149,16 +149,16 @@ class PatientInferenceOrchestrator:
         evidence = self.coordinator.combine(tokens, patient_id=bundle.patient_id, mode=mode)
         warnings.extend(evidence.warnings)
 
-        pcos_profile: dict[str, Any] = {}
+        pmos_profile: dict[str, Any] = {}
         if self.adapter is not None and tokens:
             try:
                 profile = self.adapter.predict(evidence)
-                pcos_profile = (
+                pmos_profile = (
                     profile.model_dump(mode="json") if hasattr(profile, "model_dump") else profile
                 )
-                rule_based.append("pcos_adapter.guideline_axes")
+                rule_based.append("pmos_adapter.guideline_axes")
             except Exception as exc:  # noqa: BLE001
-                warnings.append(f"PCOS adapter failed and was skipped: {exc}")
+                warnings.append(f"PMOS adapter failed and was skipped: {exc}")
 
         agreements = [
             f"{name}: {domain.agreement}"
@@ -174,7 +174,7 @@ class PatientInferenceOrchestrator:
             coverage=evidence.coverage,
             tokens={token.modality: token for token in tokens},
             domain_summary=evidence.domain_evidence,
-            pcos_profile=pcos_profile,
+            pmos_profile=pmos_profile,
             combination_mode=evidence.combination_mode,
             learned_components_used=learned,
             rule_based_components_used=rule_based,

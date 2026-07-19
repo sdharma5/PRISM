@@ -90,7 +90,7 @@ class EvidenceCoordinator:
                 ``"calibrated"`` is unavailable and raises.
 
         Returns:
-            Coordinated evidence ready for the PCOS adapter.
+            Coordinated evidence ready for the PMOS adapter.
 
         Raises:
             ValueError: If tokens disagree on patient identity, or ``mode`` is

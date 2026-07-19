@@ -98,7 +98,7 @@ def main(argv: list[str] | None = None) -> Path:
     df, dataset_version = load_cohort(config, args.data_root)
     data_cfg = config.get("data", {})
     id_column = data_cfg.get("id_column", "patient_id")
-    label_column = data_cfg.get("label_column", "pcos_binary")
+    label_column = data_cfg.get("label_column", "pmos_binary")
 
     feature_cfg = config.get("features", {})
     matrix = build_static_features(

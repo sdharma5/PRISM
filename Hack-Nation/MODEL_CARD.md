@@ -19,9 +19,9 @@ patients who have all five modalities — and no such dataset is in use here.
 
 | Module | Trained on | Produces |
 |:--|:--|:--|
-| Static baselines | Public PCOS tabular cohort | Calibrated binary probability |
-| Phenotype domains | Public PCOS tabular cohort | Coverage-aware domain scores + embedding |
-| Subtype/stability | Public PCOS tabular cohort (label-positive subset) | Exploratory soft profiles + stability + abstention |
+| Static baselines | Public PMOS tabular cohort | Calibrated binary probability |
+| Phenotype domains | Public PMOS tabular cohort | Coverage-aware domain scores + embedding |
+| Subtype/stability | Public PMOS tabular cohort (label-positive subset) | Exploratory soft profiles + stability + abstention |
 | Speech | Synthetic scripted corpus | Structured symptom events |
 | Documents | Synthetic report corpus | Grounded lab events |
 | Ultrasound | USOVA3D | Segmentation + morphology |
@@ -37,7 +37,7 @@ stable data-driven phenotype groupings actually are.
 
 Every clinical use, without exception. Specifically:
 
-- Diagnosing PCOS or any other condition
+- Diagnosing PMOS or any other condition
 - Screening, triage, or risk stratification of real patients
 - Guiding, ordering, or withholding any test or treatment
 - Fertility counselling or family planning decisions
@@ -104,7 +104,7 @@ validation of any kind.
 
 ## Ethical considerations
 
-PCOS is already routinely under- and mis-diagnosed, with long delays to
+PMOS is already routinely under- and mis-diagnosed, with long delays to
 diagnosis. That creates a specific hazard here: a tool that appears to offer
 resolution can be trusted past its evidence, by patients and clinicians alike.
 PRISM's design responses are structural rather than advisory — abstention as a

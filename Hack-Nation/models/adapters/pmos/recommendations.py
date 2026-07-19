@@ -1,7 +1,7 @@
 """Personalised recommendation layer — Tavily search + LLM synthesis.
 
-Pipeline position: runs AFTER PcosEvidenceAdapter.predict() and receives the
-completed PCOSProfileOutput.  It is the only component allowed to produce
+Pipeline position: runs AFTER PmosEvidenceAdapter.predict() and receives the
+completed PMOSProfileOutput.  It is the only component allowed to produce
 patient-facing natural-language text.
 
 Architecture
@@ -28,7 +28,7 @@ LLM backend is OpenAI-compatible, defaulting to Groq (free tier, no billing).
 
 Safety contract
 ---------------
-* No statement may use "diagnose", "diagnosis", or claim PCOS is confirmed.
+* No statement may use "diagnose", "diagnosis", or claim PMOS is confirmed.
   The system prompt enforces this; the validator below checks it before the
   caller ever sees the text.
 * Every recommendation carries the Tavily URL(s) that grounded it.
@@ -36,10 +36,10 @@ Safety contract
 
 Quickstart
 ----------
-    from models.adapters.pcos.recommendations import PersonalisedRecommender, RecommendationRequest
+    from models.adapters.pmos.recommendations import PersonalisedRecommender, RecommendationRequest
 
     recommender = PersonalisedRecommender()   # reads TAVILY_API_KEY, LLM_API_KEY from env
-    report = recommender.recommend(RecommendationRequest(profile=pcos_profile_output))
+    report = recommender.recommend(RecommendationRequest(profile=pmos_profile_output))
     for rec in report.recommendations:
         print(rec.title, rec.body, rec.sources)
 """
@@ -54,7 +54,7 @@ from typing import Any
 
 import httpx
 
-from models.adapters.pcos.profile_output import PCOSProfileOutput
+from models.adapters.pmos.profile_output import PMOSProfileOutput
 
 __all__ = [
     "PersonalisedRecommender",
@@ -74,24 +74,24 @@ _DEFAULT_LLM_MODEL = "llama-3.3-70b-versatile"
 
 # Diagnostic axes whose "met" status triggers a dedicated Tavily query.
 _AXIS_QUERIES: dict[str, str] = {
-    "ovulatory_dysfunction": ("PCOS ovulatory dysfunction lifestyle intervention evidence 2024"),
+    "ovulatory_dysfunction": ("PMOS ovulatory dysfunction lifestyle intervention evidence 2024"),
     "hyperandrogenism_clinical": (
-        "PCOS clinical hyperandrogenism hirsutism acne evidence-based treatment"
+        "PMOS clinical hyperandrogenism hirsutism acne evidence-based treatment"
     ),
     "hyperandrogenism_biochemical": (
-        "PCOS elevated androgens testosterone management diet exercise"
+        "PMOS elevated androgens testosterone management diet exercise"
     ),
     "polycystic_ovarian_morphology": (
-        "PCOS polycystic ovarian morphology monitoring ultrasound guidelines"
+        "PMOS polycystic ovarian morphology monitoring ultrasound guidelines"
     ),
 }
 
 # Phenotype domains whose elevated z-score triggers an additional query.
 _DOMAIN_QUERIES: dict[str, str] = {
-    "metabolic": "PCOS insulin resistance metabolic syndrome lifestyle intervention 2024",
-    "androgenic": "PCOS hyperandrogenism evidence-based treatment 2023 guidelines",
-    "reproductive": "PCOS menstrual cycle regulation evidence-based interventions",
-    "ovarian_morphology": "PCOS follicle count ovarian morphology monitoring guidelines",
+    "metabolic": "PMOS insulin resistance metabolic syndrome lifestyle intervention 2024",
+    "androgenic": "PMOS hyperandrogenism evidence-based treatment 2023 guidelines",
+    "reproductive": "PMOS menstrual cycle regulation evidence-based interventions",
+    "ovarian_morphology": "PMOS follicle count ovarian morphology monitoring guidelines",
 }
 
 # Half a SD above the cohort mean is considered "elevated" for query selection.
@@ -130,7 +130,7 @@ class RecommendationReport:
 class RecommendationRequest:
     """What the caller provides."""
 
-    profile: PCOSProfileOutput
+    profile: PMOSProfileOutput
     #: Optional free-text patient context, e.g. "I want to conceive this year."
     patient_context: str = ""
 
@@ -140,9 +140,9 @@ class RecommendationRequest:
 # ---------------------------------------------------------------------------
 
 
-def _build_queries(profile: PCOSProfileOutput) -> list[str]:
+def _build_queries(profile: PMOSProfileOutput) -> list[str]:
     """Return 2–4 targeted search strings based on this patient's findings."""
-    queries: list[str] = ["PCOS evidence-based self-management guidelines 2024"]
+    queries: list[str] = ["PMOS evidence-based self-management guidelines 2024"]
 
     for axis, query in _AXIS_QUERIES.items():
         ev = profile.diagnostic_feature_evidence.get(axis)
@@ -228,7 +228,7 @@ You help patients understand evidence-based actions to discuss with their clinic
 You are NOT a clinician and are NOT providing a medical opinion.
 
 Hard rules — violation means the output will be discarded:
-1. Never use the words "diagnose", "diagnosis", or state that the patient has PCOS.
+1. Never use the words "diagnose", "diagnosis", or state that the patient has PMOS.
 2. Every recommendation must include "discuss with your clinician" or "ask your doctor".
 3. Never invent numerical thresholds not present in the provided search excerpts.
 4. If a search result does not support a recommendation, do not cite it.
@@ -252,14 +252,14 @@ Produce 3-5 recommendations. Prefer guideline-backed where the evidence exists.
 """
 
 
-def _build_clinical_summary(profile: PCOSProfileOutput) -> str:
+def _build_clinical_summary(profile: PMOSProfileOutput) -> str:
     lines: list[str] = []
 
-    prob = profile.pcos_evidence_probability
+    prob = profile.pmos_evidence_probability
     lines.append(
-        f"PCOS evidence probability (trained model): {prob:.2f}"
+        f"PMOS evidence probability (trained model): {prob:.2f}"
         if prob is not None
-        else "PCOS evidence probability: not computed (model abstained or inputs absent)"
+        else "PMOS evidence probability: not computed (model abstained or inputs absent)"
     )
 
     axes = profile.diagnostic_feature_evidence.items()
@@ -309,7 +309,7 @@ def _build_search_context(results: list[dict[str, Any]]) -> str:
 # Internal: LLM call
 # ---------------------------------------------------------------------------
 
-_FORBIDDEN_PHRASES = ("diagnos", "you have pcos", "confirmed pcos")
+_FORBIDDEN_PHRASES = ("diagnos", "you have pmos", "confirmed pmos")
 
 
 def _synthesize(
@@ -415,7 +415,7 @@ def _synthesize(
 
 
 class PersonalisedRecommender:
-    """Tavily + LLM recommendation engine for PCOS profile outputs.
+    """Tavily + LLM recommendation engine for PMOS profile outputs.
 
     Free setup
     ----------
@@ -433,7 +433,7 @@ class PersonalisedRecommender:
 
         recommender = PersonalisedRecommender()
         report = recommender.recommend(
-            RecommendationRequest(profile=pcos_output, patient_context="I want to conceive.")
+            RecommendationRequest(profile=pmos_output, patient_context="I want to conceive.")
         )
         for rec in report.recommendations:
             print(f"[{rec.category}] {rec.title}")

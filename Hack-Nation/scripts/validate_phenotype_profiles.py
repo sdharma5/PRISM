@@ -11,7 +11,7 @@ the indeterminacy cut-points. Agreement statistics (ARI / NMI) are computed
 between the assignment under perturbation and the unperturbed assignment --
 self-consistency, explicitly not accuracy.
 
-**The learned PCOS probability does have ground truth** and is genuinely
+**The learned PMOS probability does have ground truth** and is genuinely
 calibratable. It gets Brier score, expected calibration error and a reliability
 table on held-out patients.
 
@@ -47,7 +47,7 @@ from evaluation.calibration import (  # noqa: E402
     simplified_calibration_report,
 )
 from features.phenotype_domains import PhenotypeDomainScorer  # noqa: E402
-from models.adapters.pcos.prototype_similarity import (  # noqa: E402
+from models.adapters.pmos.prototype_similarity import (  # noqa: E402
     DOMAIN_PROTOTYPES,
     MIXED_MIN_ASSESSABLE_DOMAINS,
     PROFILE_DEFINING_DOMAINS,
@@ -55,12 +55,12 @@ from models.adapters.pcos.prototype_similarity import (  # noqa: E402
     androgenic_evidence_source,
     summarize,
 )
-from models.adapters.pcos.stability import PhenotypeStabilityEngine  # noqa: E402
+from models.adapters.pmos.stability import PhenotypeStabilityEngine  # noqa: E402
 from models.phenotype.indeterminate import INDETERMINATE  # noqa: E402
 from models.tabular.encoder import StaticClinicalEncoder  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_COHORT = Path("../datasets/pcos_tabular/cohort_wide.csv")
+DEFAULT_COHORT = Path("../datasets/pmos_tabular/cohort_wide.csv")
 DEFAULT_OUTPUT = Path("artifacts/experiments/exp_phenotype_validation")
 DOMAINS = (
     "reproductive",
@@ -425,7 +425,7 @@ def defining_domain_support(
 def calibration_report(
     y_true: np.ndarray, probabilities: np.ndarray, n_bins: int = 10
 ) -> dict[str, Any]:
-    """Calibration of the LEARNED PCOS probability. This one has ground truth."""
+    """Calibration of the LEARNED PMOS probability. This one has ground truth."""
     bins = np.linspace(0.0, 1.0, n_bins + 1)
     index = np.clip(np.digitize(probabilities, bins) - 1, 0, n_bins - 1)
 
@@ -454,7 +454,7 @@ def calibration_report(
         "auroc": float(roc_auc_score(y_true, probabilities)),
         "reliability_table": table,
         "note": (
-            "The learned PCOS probability IS a probability and is calibrated here "
+            "The learned PMOS probability IS a probability and is calibrated here "
             "against held-out outcomes. Phenotype affinities are NOT and are not "
             "calibrated anywhere."
         ),
@@ -502,8 +502,8 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     frame = pd.read_csv(cohort_path)
-    frame = frame[frame["pcos_binary"].notna()].reset_index(drop=True)
-    y = frame["pcos_binary"].astype(float).to_numpy()
+    frame = frame[frame["pmos_binary"].notna()].reset_index(drop=True)
+    y = frame["pmos_binary"].astype(float).to_numpy()
     print(f"cohort: {len(frame)} patients ({y.mean():.1%} positive)\n")
 
     train_frame, test_frame = train_test_split(
@@ -594,15 +594,15 @@ def main(argv: list[str] | None = None) -> int:
         drift = entry["mean_centroid_drift_z"]
         print(f"  {name:22s} drift {'n/a' if drift is None else format(drift, '.4f')} z")
 
-    print("\n=== learned PCOS probability calibration (held-out) ===")
+    print("\n=== learned PMOS probability calibration (held-out) ===")
     encoder = StaticClinicalEncoder(random_state=args.seed).fit(train_frame)
     probabilities = encoder.predict_proba(test_frame)
-    y_test = test_frame["pcos_binary"].astype(float).to_numpy()
+    y_test = test_frame["pmos_binary"].astype(float).to_numpy()
 
     # The calibrator is fitted on out-of-fold predictions for the TRAINING
     # patients only, then applied once, frozen, to the held-out set. Fitting it
     # on `probabilities` would make the held-out Brier score a training number.
-    y_train = train_frame["pcos_binary"].astype(float).to_numpy()
+    y_train = train_frame["pmos_binary"].astype(float).to_numpy()
     oof = out_of_fold_predictions(train_frame, y_train, seed=args.seed)
     calibrator: PlattCalibrator | None = PlattCalibrator()
     try:
@@ -777,7 +777,7 @@ def main(argv: list[str] | None = None) -> int:
                     "ground truth. ARI/NMI here measure self-consistency under perturbation.",
                     "Prototype centroids are declared from the literature, not fitted, so "
                     "centroid drift measures membership churn rather than centroid learning.",
-                    "Only the learned PCOS probability is calibrated against outcomes.",
+                    "Only the learned PMOS probability is calibrated against outcomes.",
                     "Single cohort, one clinic, cross-sectional. No external validation.",
                     "This cohort contains NO androgen assay, so "
                     "`biochemical_androgenic_evidence` is unavailable for every patient and "

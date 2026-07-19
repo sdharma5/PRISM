@@ -10,12 +10,12 @@ explicit, anchored to a published threshold where one exists, and reported in
 ``DomainEvidence.supporting_evidence`` so a reader sees what produced a number.
 
 Scale convention: every domain score is in [0, 1] and means *strength of
-evidence for the abnormal / PCOS-consistent direction*. 0.5 is "uninformative",
+evidence for the abnormal / PMOS-consistent direction*. 0.5 is "uninformative",
 not "normal" -- a genuinely normal finding scores below 0.5.
 
 **These are not calibrated probabilities.** A reproductive score of 0.8 does not
 mean an 80% chance of ovulatory dysfunction; it means the evidence sits high on
-a documented ramp. Only the learned static PCOS head emits a real probability,
+a documented ramp. Only the learned static PMOS head emits a real probability,
 and it is kept separate for exactly that reason.
 """
 
@@ -34,9 +34,9 @@ __all__ = [
     "squash_z",
 ]
 
-#: Shared domains. ``current_state`` is deliberately not a PCOS domain -- it
+#: Shared domains. ``current_state`` is deliberately not a PMOS domain -- it
 #: describes where in the cycle a patient is right now, which is a different
-#: kind of statement from "how much evidence of PCOS is there".
+#: kind of statement from "how much evidence of PMOS is there".
 DOMAINS: tuple[str, ...] = (
     "reproductive",
     "androgenic",
@@ -46,7 +46,7 @@ DOMAINS: tuple[str, ...] = (
 )
 
 #: Declarative record of which token field feeds which domain. Mirrors the
-#: PCOS_FEATURE_MAP in prompt_4 section 5; kept as data so the mapping can be
+#: PMOS_FEATURE_MAP in prompt_4 section 5; kept as data so the mapping can be
 #: audited and tested without reading the functions below.
 DOMAIN_MAP: dict[str, str] = {
     "static_clinical.reproductive": "reproductive",
@@ -225,7 +225,7 @@ def _temporal_domains(token: ModalityToken) -> tuple[dict[str, float], list[str]
         evidence.append(f"temporal cycle irregularity = {float(irregularity):.2f}")
 
     # Phase entropy is a statement about how confidently the current state is
-    # known, which is `current_state` evidence -- NOT evidence about PCOS.
+    # known, which is `current_state` evidence -- NOT evidence about PMOS.
     entropy = features.get("cycle_phase_entropy")
     phase = features.get("predicted_cycle_phase")
     if isinstance(entropy, int | float):

@@ -1,9 +1,9 @@
 """The static clinical encoder: train, persist, and encode a new patient.
 
-This is the only branch in PRISM whose predictive head is fit against a PCOS
+This is the only branch in PRISM whose predictive head is fit against a PMOS
 label, and it is legitimate precisely because the tabular cohort's symptoms,
 history, labs and derived measurements all belong to the *same* person. It is
-therefore the only component entitled to issue a whole-patient PCOS probability.
+therefore the only component entitled to issue a whole-patient PMOS probability.
 
 Why this module exists at all: ``scripts/train_static_baselines.py`` already
 fits and evaluates models honestly, but with ``save_checkpoints`` defaulting to
@@ -49,7 +49,7 @@ _ARTIFACT_NAME = "static_clinical_encoder.joblib"
 _METADATA_NAME = "static_clinical_encoder.json"
 
 #: Columns that are identifiers or targets, never model inputs.
-_NON_FEATURE = {"patient_id", "pcos_binary"}
+_NON_FEATURE = {"patient_id", "pmos_binary"}
 
 #: ``source_dataset -> {artifact feature slot: canonical code that fills it}``.
 #:
@@ -121,14 +121,14 @@ class StaticClinicalEncoder:
         self,
         frame: pd.DataFrame,
         *,
-        target_column: str = "pcos_binary",
+        target_column: str = "pmos_binary",
         source_dataset: str | None = None,
     ) -> StaticClinicalEncoder:
         """Fit the head and the preprocessing on training rows only.
 
         Args:
             frame: Training cohort. Must already exclude any held-out rows.
-            target_column: Binary PCOS label column.
+            target_column: Binary PMOS label column.
             source_dataset: Dataset identifier stamped on every token.
 
         Returns:
@@ -213,13 +213,13 @@ class StaticClinicalEncoder:
         return pd.DataFrame([row], columns=artifact.feature_names)
 
     def predict_proba_from_features(self, values: dict[str, Any]) -> float:
-        """P(PCOS) for one patient's canonical clinical variables."""
+        """P(PMOS) for one patient's canonical clinical variables."""
         artifact = self._require()
         frame = self._row_from_values(values)
         return float(artifact.pipeline.predict_proba(frame)[0, 1])
 
     def predict_proba(self, frame: pd.DataFrame) -> np.ndarray:
-        """P(PCOS) for a frame of patients.
+        """P(PMOS) for a frame of patients.
 
         Resolves :data:`LEGACY_FEATURE_ALIASES` exactly as the single-patient
         path does. Without this, a cohort re-ingested under corrected canonical
@@ -336,7 +336,7 @@ class StaticClinicalEncoder:
             if isinstance(val, int | float | bool) and code in _registry_variable_codes():
                 structured[code] = val
 
-        structured["pcos_evidence_probability"] = probability
+        structured["pmos_evidence_probability"] = probability
 
         n_features = max(len(artifact.feature_names), 1)
         observed_fraction = 1.0 - (len(missing_features) / n_features)

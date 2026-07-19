@@ -54,8 +54,8 @@ Total canonical variables: **69**
 | cgm | 3 | `cgm_glucose_sd`, `cgm_mean_glucose`, `cgm_time_in_range` |
 | clinical_androgenic_evidence | 5 | `acne`, `androgenic_alopecia`, `ferriman_gallwey_score`, `hair_growth_face`, `hirsutism` |
 | demographic | 1 | `age` |
-| history | 2 | `family_history_diabetes`, `family_history_pcos` |
-| label | 1 | `pcos_binary` |
+| history | 2 | `family_history_diabetes`, `family_history_pmos` |
+| label | 1 | `pmos_binary` |
 | longitudinal | 5 | `cycle_phase`, `e3g`, `menstrual_flow`, `pdg`, `urinary_lh` |
 | medication | 1 | `medication_current` |
 | metabolic | 17 | `bmi`, `cgm_glucose_sd`, `cgm_mean_glucose`, `cgm_time_in_range`, `diastolic_blood_pressure`, `fasting_glucose`, `fasting_insulin`, `hdl_cholesterol`, `hip_circumference`, `homa_ir`, `ldl_cholesterol`, `skin_darkening`, `systolic_blood_pressure`, `triglycerides`, `waist_circumference`, `waist_hip_ratio`, `weight_gain` |
@@ -92,7 +92,7 @@ testosterone, DHEAS, SHBG). One domain mixing the two put the weight of
 un-drawn assays into the coverage denominator, so a patient with observed
 cutaneous signs and no androgen panel fell under the coverage floor and the
 whole androgenic axis abstained. Split, each is scored on its own denominator:
-in the PCOS tabular cohort clinical coverage is 1.5/3.5 = 0.43 and is
+in the PMOS tabular cohort clinical coverage is 1.5/3.5 = 0.43 and is
 **assessable for all 541 patients**, while biochemical coverage is 0/4.5 and is
 **unavailable for all 541** — that cohort carries no androgen assay.
 

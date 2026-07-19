@@ -1,8 +1,8 @@
-"""The recognized PCOS feature axes, their inputs, and their documented thresholds.
+"""The recognized PMOS feature axes, their inputs, and their documented thresholds.
 
 Scientific WHY
 --------------
-PCOS has no single confirmatory test. Consensus frameworks describe it through a
+PMOS has no single confirmatory test. Consensus frameworks describe it through a
 small number of *feature axes* — ovulatory dysfunction, biochemical
 hyperandrogenism, clinical hyperandrogenism, polycystic ovarian morphology — each
 of which is assessed separately and each of which has real threshold controversy.
@@ -83,7 +83,7 @@ class ThresholdRule:
 
 @dataclass(frozen=True)
 class AxisSpec:
-    """A recognized PCOS feature axis: its rules and how they combine."""
+    """A recognized PMOS feature axis: its rules and how they combine."""
 
     name: str
     label: str
@@ -116,7 +116,7 @@ FEATURE_AXES: dict[str, AxisSpec] = {
                 threshold=35.0,
                 source=(
                     "2023 International Evidence-based Guideline for the Assessment and "
-                    "Management of PCOS: cycles >35 days in adults are irregular."
+                    "Management of PMOS: cycles >35 days in adults are irregular."
                 ),
             ),
             ThresholdRule(
@@ -421,7 +421,7 @@ def assess_all_axes(
     values: Mapping[str, float | bool | None],
     threshold_overrides: Mapping[str, Mapping[str, float]] | None = None,
 ) -> dict[str, AxisAssessment]:
-    """Assess every recognized PCOS feature axis for one participant."""
+    """Assess every recognized PMOS feature axis for one participant."""
     overrides = dict(threshold_overrides or {})
     return {
         name: assess_axis(spec, values, overrides.get(name)) for name, spec in FEATURE_AXES.items()

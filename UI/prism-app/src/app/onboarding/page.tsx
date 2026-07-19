@@ -8,7 +8,7 @@ import PrototypeBadge from '@/components/PrototypeBadge'
 
 const GOALS = [
   'Understand irregular cycles',
-  'Organize PCOS-related evidence',
+  'Organize PMOS-related evidence',
   'Track symptoms across modalities',
   'Share organized data with a clinician',
   'Participate in hormonal health research',
@@ -245,7 +245,7 @@ export default function OnboardingPage() {
               </div>
               <h1 className="text-2xl font-semibold text-neutral-900 mb-3">Ready to build your profile</h1>
               <p className="text-sm text-neutral-500">
-                Add your data using the intake form to generate your PCOS evidence profile.
+                Add your data using the intake form to generate your PMOS evidence profile.
               </p>
             </motion.div>
           )}

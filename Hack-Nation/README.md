@@ -19,7 +19,7 @@ Challenge track: *Building the AI Infrastructure for the Next Generation of Wome
 
 ## The problem
 
-Women represent more than half of the global population, yet female physiology remains one of the least studied domains in AI and biomedical research. Conditions like PCOS, endometriosis, and menopause-related disease take years to diagnose on average. Hormonal health data — wearables, labs, ultrasound, patient voice, clinical documents — exists but is scattered, unstandardized, and rarely combined. There is no shared benchmark, no universal event schema, and no open multimodal infrastructure for researchers to build on.
+Women represent more than half of the global population, yet female physiology remains one of the least studied domains in AI and biomedical research. Conditions like PMOS, endometriosis, and menopause-related disease take years to diagnose on average. Hormonal health data — wearables, labs, ultrasound, patient voice, clinical documents — exists but is scattered, unstandardized, and rarely combined. There is no shared benchmark, no universal event schema, and no open multimodal infrastructure for researchers to build on.
 
 PRISM contributes all three layers the hackathon calls for: a data and benchmark layer, a model layer, and a patient-facing application — all under Apache 2.0.
 
@@ -29,7 +29,7 @@ PRISM contributes all three layers the hackathon calls for: a data and benchmark
 
 PRISM takes multiple forms of patient input — a clinical questionnaire, lab reports, wearable streams, spoken symptom narration, and ovarian ultrasound — and converts each one into a standardized, traceable evidence event. Seven independently trained model branches then process those events into a structured phenotype profile, a current hormonal state estimate, and a gap analysis of what evidence is missing and why it matters.
 
-The first condition-specific adapter targets PCOS, implementing the 2023 International Evidence-based Guideline's Rotterdam criteria in transparent, auditable rules. The data contracts, event store, and model encoders are deliberately not PCOS-shaped; adding endometriosis or menopause tracking requires writing a new adapter in `models/adapters/`, not rewriting the pipeline.
+The first condition-specific adapter targets PMOS, implementing the 2023 International Evidence-based Guideline's Rotterdam criteria in transparent, auditable rules. The data contracts, event store, and model encoders are deliberately not PMOS-shaped; adding endometriosis or menopause tracking requires writing a new adapter in `models/adapters/`, not rewriting the pipeline.
 
 ---
 
@@ -43,7 +43,7 @@ The first condition-specific adapter targets PCOS, implementing the 2023 Interna
 
 > Do not pretend that unrelated datasets describe the same patients.
 
-The static PCOS cohort, mcPHASES longitudinal data, NHANES population reference, the USOVA3D ultrasound volumes, and the synthetic evaluation corpora describe different people. They train separate modules. They are never randomly combined into artificial multimodal patients for training or evaluation. This is enforced in code, not only in prose — `inference/orchestrator.py` hard-codes `joint_model_used=False`, and requesting `combination_mode="calibrated"` raises a `ValueError`. See [ADR-002](docs/decisions/ADR-002-no-fake-pairing.md).
+The static PMOS cohort, mcPHASES longitudinal data, NHANES population reference, the USOVA3D ultrasound volumes, and the synthetic evaluation corpora describe different people. They train separate modules. They are never randomly combined into artificial multimodal patients for training or evaluation. This is enforced in code, not only in prose — `inference/orchestrator.py` hard-codes `joint_model_used=False`, and requesting `combination_mode="calibrated"` raises a `ValueError`. See [ADR-002](docs/decisions/ADR-002-no-fake-pairing.md).
 
 ---
 
@@ -82,7 +82,7 @@ The static PCOS cohort, mcPHASES longitudinal data, NHANES population reference,
       static · symptom · document · ultrasound · temporal-state
                              │
                              ▼
-                  PCOS PHENOTYPE ADAPTER
+                  PMOS PHENOTYPE ADAPTER
          Rotterdam axes · domain profiles · soft subtype
          indeterminate output · stability · abstention
                              │
@@ -118,7 +118,7 @@ Hack-Nation/
 │   ├── documents/     Rule-based lab event grounding from PDF reports
 │   ├── ultrasound/    DualHeadUNet 3D segmentation and follicle counting
 │   ├── temporal/      GRU current-state representation from longitudinal streams
-│   └── adapters/pcos/ The only place PCOS-specific logic lives
+│   └── adapters/pmos/ The only place PMOS-specific logic lives
 ├── training/          Splits, seeding, fold engine, checkpoints, experiment tracking
 ├── evaluation/        Classification, calibration, clustering, stability, per-modality
 ├── inference/         Orchestrator, evidence coordinator, presentation layer
@@ -139,7 +139,7 @@ No clinical data is committed to this repository. The registry at [`registry/dat
 
 | Dataset | Source | License | Type | Primary use in PRISM |
 |:--|:--|:--|:--|:--|
-| Public PCOS tabular cohort (Kottarathil 2020) | Kaggle / UCI | CC0 public domain | Real, cross-sectional | Static baseline, domain scores, clustering |
+| Public PMOS tabular cohort (Kottarathil 2020) | Kaggle / UCI | CC0 public domain | Real, cross-sectional | Static baseline, domain scores, clustering |
 | mcPHASES | PhysioNet (credentialed + DUA) | PhysioNet Restricted | Real, longitudinal | Temporal hormonal-state model |
 | NHANES 2021–2023 | CDC | US Government (public domain) | Real, cross-sectional | Population reference, unit harmonization |
 | USOVA3D | External download | See dataset page | Real, imaging | Ovary and follicle segmentation, morphology |
@@ -148,7 +148,7 @@ No clinical data is committed to this repository. The registry at [`registry/dat
 
 ### Dataset notes
 
-**PCOS tabular cohort (Kottarathil 2020):** 541 patients from 10 hospitals in Kerala, India; 177 PCOS-positive, 364 negative. CC0 — no access restrictions. One column labeled "Cycle length(days)" was confirmed to measure bleeding duration, not cycle length. PRISM corrects this in `ingestion/pcos_tabular/adapter.py` via `LEGACY_FEATURE_ALIASES` and documents it in `registry/variables.yaml`. This is not silently corrected — the adapter logs a warning on every run.
+**PMOS tabular cohort (Kottarathil 2020):** 541 patients from 10 hospitals in Kerala, India; 177 PMOS-positive, 364 negative. CC0 — no access restrictions. One column labeled "Cycle length(days)" was confirmed to measure bleeding duration, not cycle length. PRISM corrects this in `ingestion/pmos_tabular/adapter.py` via `LEGACY_FEATURE_ALIASES` and documents it in `registry/variables.yaml`. This is not silently corrected — the adapter logs a warning on every run.
 
 **mcPHASES:** 42 participants with daily urinary hormone measurements (LH, E3G, PDG), Fitbit wearable data, continuous glucose monitoring, menstrual cycle tracking, sleep, and symptoms. Credentialed PhysioNet access and a signed data-use agreement are required. The three longitudinal variables available for modeling are `urinary_lh`, `e3g`, and `pdg`.
 
@@ -175,7 +175,7 @@ PRISM tracks 69 canonical variables organized into clinical domains. Every varia
 | Wearable | resting\_heart\_rate, hrv\_rmssd, sleep\_duration\_hours, activity\_steps, skin\_temperature |
 | CGM | cgm\_mean\_glucose, cgm\_glucose\_sd, cgm\_time\_in\_range |
 | Symptom | fatigue, weight\_gain, mood\_change, pelvic\_pain |
-| History | family\_history\_pcos, family\_history\_diabetes |
+| History | family\_history\_pmos, family\_history\_diabetes |
 
 Missing is never zero. PRISM enforces six distinct missingness states at the schema level: `observed`, `not_collected`, `collected_below_detection`, `not_applicable`, `derived`, and `imputed`. Imputed values are always labeled as such in outputs.
 
@@ -201,13 +201,13 @@ The model computes a standardized domain score for each of the seven domains bel
 
 ### Static clinical branch
 
-Logistic regression trained on the public PCOS cohort with stratified cross-validation. Calibrated by Platt scaling. Produces a PCOS-related model score (not a diagnosis probability), calibration metadata, feature coverage percentage, and imputation flag. This is the only branch permitted to issue a whole-patient PCOS score — the temporal and ultrasound branches are never aggregated into a single score.
+Logistic regression trained on the public PMOS cohort with stratified cross-validation. Calibrated by Platt scaling. Produces a PMOS-related model score (not a diagnosis probability), calibration metadata, feature coverage percentage, and imputation flag. This is the only branch permitted to issue a whole-patient PMOS score — the temporal and ultrasound branches are never aggregated into a single score.
 
 Preprocessing is fitted inside the training fold. No information leaks across the train/test boundary. Both properties have regression tests that fail if violated.
 
 ### Tabular masked autoencoder
 
-Trained on the same PCOS cohort with random feature masking. Produces a continuous embedding of clinical phenotype and per-domain coverage-aware scores. Reconstruction error against mean imputation baselines is reported in `artifacts/experiments/exp_phenotype_domains/metrics.json`.
+Trained on the same PMOS cohort with random feature masking. Produces a continuous embedding of clinical phenotype and per-domain coverage-aware scores. Reconstruction error against mean imputation baselines is reported in `artifacts/experiments/exp_phenotype_domains/metrics.json`.
 
 ### Subtype and stability engine
 
@@ -235,13 +235,13 @@ Rule-based lab event encoder. Zero learned parameters. Parses PDF laboratory rep
 
 ### Temporal hormonal state branch
 
-GRU-based encoder trained on mcPHASES longitudinal hormone streams (urinary LH, E3G, PDG). Produces a current-state representation and cycle-phase estimate from a sequence of daily measurements. Evaluated on held-out participants with grouped participant-level splits. This branch never yields a PCOS score — it contributes a state estimate that informs cycle-phase context.
+GRU-based encoder trained on mcPHASES longitudinal hormone streams (urinary LH, E3G, PDG). Produces a current-state representation and cycle-phase estimate from a sequence of daily measurements. Evaluated on held-out participants with grouped participant-level splits. This branch never yields a PMOS score — it contributes a state estimate that informs cycle-phase context.
 
 ---
 
 ## Rotterdam criteria implementation
 
-PRISM implements the 2023 International Evidence-based Guideline for the Assessment and Management of PCOS. The Rotterdam criteria require two of three axes:
+PRISM implements the 2023 International Evidence-based Guideline for the Assessment and Management of PMOS. The Rotterdam criteria require two of three axes:
 
 | Axis | Evidence sources | PRISM behavior |
 |:--|:--|:--|
@@ -262,7 +262,7 @@ FastAPI application. Start with:
 python3 -m uvicorn apps.api.main:app --reload --port 8000
 ```
 
-Startup loads all configured model encoders once and holds them for the process lifetime. If the static branch cannot load, startup fails — a service without it cannot issue a PCOS score, and starting anyway would mean every request returned a silently degraded result.
+Startup loads all configured model encoders once and holds them for the process lifetime. If the static branch cannot load, startup fails — a service without it cannot issue a PMOS score, and starting anyway would mean every request returned a silently degraded result.
 
 ### Endpoints
 
@@ -285,8 +285,8 @@ Full request and response schemas are in [`docs/API_CONTRACT.md`](docs/API_CONTR
 
 ### Inference invariants enforced in code
 
-- Temporal input alone never produces a PCOS score
-- Ultrasound input alone never produces a PCOS score
+- Temporal input alone never produces a PMOS score
+- Ultrasound input alone never produces a PMOS score
 - An indeterminate phenotype assignment never names a dominant profile
 - A symptoms-only androgenic result always carries its qualifier
 - `joint_model_used` is always `false`; requesting `combination_mode="calibrated"` raises `ValueError`
@@ -312,7 +312,7 @@ Next.js 14 / React 18 / TypeScript patient-facing application. Source at `UI/pri
 | Route | Description |
 |:--|:--|
 | `/intake` | Structured clinical questionnaire — all fields sourced from the variable registry with units and valid ranges |
-| `/overview` | PCOS evidence profile: model score, Rotterdam axes, domain scores, phenotype profile, stability, missing evidence |
+| `/overview` | PMOS evidence profile: model score, Rotterdam axes, domain scores, phenotype profile, stability, missing evidence |
 | `/timeline` | Chronological evidence ledger with per-event confirmation, provenance, extraction confidence, and conflict flags |
 | `/care` | Specialist finder, insurance plan context, derived question list for the next clinical appointment, printable visit summary |
 | `/recommendations` | Domain-weighted lifestyle and clinical priority list |
@@ -457,7 +457,7 @@ All preprocessing fitted inside the training fold. All longitudinal splits group
 |:--|:--|:--|:--|
 | 1 | Schemas and registries | Complete | Contract tests |
 | 2 | Ingestion and event store | Complete | Unit tests on synthetic fixtures |
-| 3 | Static PCOS baseline | Complete | Cross-validated on the public cohort |
+| 3 | Static PMOS baseline | Complete | Cross-validated on the public cohort |
 | 4 | Phenotype domain scores | Complete | Reconstruction vs mean-imputation baseline |
 | 5 | Subtype and stability engine | Complete | Stability metrics; no external validation |
 | 6 | Speech pipeline | Complete | Synthetic 88-utterance scripted corpus |
@@ -583,7 +583,7 @@ mkdocs serve
 
 Apache 2.0. See [`LICENSE`](LICENSE).
 
-Datasets have their own licenses. The public PCOS cohort is CC0. NHANES is US Government public domain. mcPHASES requires a PhysioNet data-use agreement. USOVA3D terms are on the dataset page. Nothing in this repository redistributes restricted data.
+Datasets have their own licenses. The public PMOS cohort is CC0. NHANES is US Government public domain. mcPHASES requires a PhysioNet data-use agreement. USOVA3D terms are on the dataset page. Nothing in this repository redistributes restricted data.
 
 ---
 

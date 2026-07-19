@@ -8,7 +8,7 @@
 
 import { Card, Meter, NotAssessed, SectionHeading, StatusPill } from './Primitives'
 import { formatCoverage, humanizeCode } from '@/lib/present'
-import type { WebsitePCOSProfileResponse } from '@/types/api'
+import type { WebsitePMOSProfileResponse } from '@/types/api'
 
 const PHASE_LABEL: Record<string, string> = {
   menstrual: 'Menstrual',
@@ -18,7 +18,7 @@ const PHASE_LABEL: Record<string, string> = {
   unknown: 'Unknown',
 }
 
-export default function CurrentState({ report }: { report: WebsitePCOSProfileResponse }) {
+export default function CurrentState({ report }: { report: WebsitePMOSProfileResponse }) {
   const state = report.current_state
 
   if (!state?.available) {
@@ -39,7 +39,7 @@ export default function CurrentState({ report }: { report: WebsitePCOSProfileRes
     <Card>
       <SectionHeading
         title="Current longitudinal hormonal-state estimate"
-        subtitle="A current-state estimate from recent measurements. Not a PCOS diagnosis."
+        subtitle="A current-state estimate from recent measurements. Not a PMOS diagnosis."
         action={
           <StatusPill tone="neutral">
             {formatCoverage(state.input_coverage)} input coverage

@@ -1,14 +1,14 @@
-"""The PCOS adapter: not_assessable on missing inputs, and a hedged end-to-end run."""
+"""The PMOS adapter: not_assessable on missing inputs, and a hedged end-to-end run."""
 
 from __future__ import annotations
 
 import numpy as np
 import pytest
 
-from models.adapters.pcos.adapter import PcosAdapter, PcosAdapterConfig
-from models.adapters.pcos.diagnostic_features import FEATURE_AXES, assess_all_axes, assess_axis
-from models.adapters.pcos.output_schema import PcosResearchOutput
-from models.adapters.pcos.phenotype_heads import build_phenotype_profile, compute_domain_scores
+from models.adapters.pmos.adapter import PmosAdapter, PmosAdapterConfig
+from models.adapters.pmos.diagnostic_features import FEATURE_AXES, assess_all_axes, assess_axis
+from models.adapters.pmos.output_schema import PmosResearchOutput
+from models.adapters.pmos.phenotype_heads import build_phenotype_profile, compute_domain_scores
 from models.phenotype.clustering import ClusteringInput
 from models.phenotype.prototype_mapping import assert_hedged_language
 from schemas.phenotype import INDETERMINATE
@@ -166,7 +166,7 @@ def fitted_adapter():
         participant_ids=list(frame.index),
         feature_names=list(frame.columns),
     )
-    config = PcosAdapterConfig(
+    config = PmosAdapterConfig(
         algorithms=("kmeans", "agglomerative"),
         k_values=(2, 3, 4),
         seeds=(0, 1),
@@ -174,7 +174,7 @@ def fitted_adapter():
         consensus_resamples=8,
         n_noise_replicates=2,
     )
-    adapter = PcosAdapter(config).fit([representation], list(frame.index))
+    adapter = PmosAdapter(config).fit([representation], list(frame.index))
     return adapter, frame
 
 
@@ -193,7 +193,7 @@ def test_profile_returns_the_documented_triple_with_hedged_language(fitted_adapt
     phenotype, stability, output = adapter.profile(patient_id, raw, standardized)
 
     assert phenotype.patient_id == patient_id == stability.patient_id == output.patient_id
-    assert isinstance(output, PcosResearchOutput)
+    assert isinstance(output, PmosResearchOutput)
     assert sum(phenotype.phenotype_probabilities.values()) == pytest.approx(1.0)
     assert output.non_diagnostic_statement
     assert "does not diagnose" in output.non_diagnostic_statement
@@ -246,7 +246,7 @@ def test_abstention_moves_all_mass_to_indeterminate():
         participant_ids=list(frame.index),
         feature_names=list(frame.columns),
     )
-    config = PcosAdapterConfig(
+    config = PmosAdapterConfig(
         algorithms=("kmeans",),
         k_values=(3,),
         seeds=(0,),
@@ -254,7 +254,7 @@ def test_abstention_moves_all_mass_to_indeterminate():
         consensus_resamples=5,
         n_noise_replicates=1,
     )
-    adapter = PcosAdapter(config).fit([representation], list(frame.index))
+    adapter = PmosAdapter(config).fit([representation], list(frame.index))
     patient_id = str(frame.index[0])
     sparse = {c: None for c in frame.columns}
     sparse[str(frame.columns[0])] = 0.4
@@ -271,7 +271,7 @@ def test_abstention_moves_all_mass_to_indeterminate():
 def test_profile_before_fit_and_out_of_cohort_fail_loudly(fitted_adapter):
     adapter, _ = fitted_adapter
     with pytest.raises(RuntimeError, match="before fit"):
-        PcosAdapter().profile("nobody")
+        PmosAdapter().profile("nobody")
     with pytest.raises(KeyError, match="not in the fitted cohort"):
         adapter.profile("not_a_participant")
 
@@ -285,14 +285,14 @@ def test_fit_refuses_an_empty_training_subset():
         feature_names=list(frame.columns),
     )
     with pytest.raises(ValueError, match="cluster_subset_ids is required"):
-        PcosAdapter().fit([representation], [])
+        PmosAdapter().fit([representation], [])
 
 
 def test_output_round_trips_through_json(fitted_adapter, tmp_path):
     adapter, frame = fitted_adapter
     _, _, output = adapter.profile(str(frame.index[0]))
     path = output.write_json(tmp_path / "out.json")
-    assert PcosResearchOutput.read_json(path).patient_id == output.patient_id
+    assert PmosResearchOutput.read_json(path).patient_id == output.patient_id
 
 
 def test_non_diagnostic_statement_cannot_be_blanked(fitted_adapter):
@@ -301,7 +301,7 @@ def test_non_diagnostic_statement_cannot_be_blanked(fitted_adapter):
     payload = output.model_dump()
     payload["non_diagnostic_statement"] = "  "
     with pytest.raises(ValueError, match="mandatory"):
-        PcosResearchOutput.model_validate(payload)
+        PmosResearchOutput.model_validate(payload)
 
 
 def test_clustering_only_used_the_named_subset():
@@ -314,7 +314,7 @@ def test_clustering_only_used_the_named_subset():
         feature_names=list(frame.columns),
     )
     subset = list(frame.index[:40])
-    config = PcosAdapterConfig(
+    config = PmosAdapterConfig(
         algorithms=("kmeans",),
         k_values=(2, 3),
         seeds=(0,),
@@ -322,7 +322,7 @@ def test_clustering_only_used_the_named_subset():
         consensus_resamples=5,
         n_noise_replicates=1,
     )
-    adapter = PcosAdapter(config).fit([representation], subset)
+    adapter = PmosAdapter(config).fit([representation], subset)
     assert adapter.discovery is not None
     assert adapter.discovery.data.participant_ids == subset
     assert len(adapter.discovery.fitted.labels) == len(subset)

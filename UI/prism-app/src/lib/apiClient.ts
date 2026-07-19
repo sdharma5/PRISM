@@ -11,7 +11,7 @@
 
 import type {
   ModelStatusResponse,
-  WebsitePCOSProfileResponse,
+  WebsitePMOSProfileResponse,
 } from '@/types/api'
 
 import controlFixture from './demo/control.json'
@@ -60,7 +60,7 @@ export interface DemoFixture {
   summary: string
   exercises: string[]
   notes: string[]
-  response: WebsitePCOSProfileResponse
+  response: WebsitePMOSProfileResponse
 }
 
 // Via `unknown`: TS widens imported JSON to `string` where the contract has a
@@ -151,7 +151,7 @@ function mockResponse(path: string, init?: RequestInit): unknown {
       // service.
       return {
         ...fixture.response,
-        pcos_assessment: {
+        pmos_assessment: {
           available: false,
           evidence_level: 'not_available',
           raw_model_score: null,
@@ -159,7 +159,7 @@ function mockResponse(path: string, init?: RequestInit): unknown {
           calibrated: false,
           unavailable_reason:
             'The learned static clinical head did not run, so no whole-patient ' +
-            'PCOS evidence score is available.',
+            'PMOS evidence score is available.',
         },
       }
     }

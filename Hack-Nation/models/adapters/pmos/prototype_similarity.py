@@ -2,7 +2,7 @@
 
 **These are not validated clinical subtypes.** No subtype label exists anywhere
 in this repository and no external validation has been performed, so nothing here
-may be described as diagnosing or assigning a PCOS subtype. The output is a
+may be described as diagnosing or assigning a PMOS subtype. The output is a
 *similarity profile*: how much a patient's domain pattern resembles each of
 several named research patterns from the literature. The language is enforced,
 not merely recommended -- :mod:`models.phenotype.prototype_mapping` raises
@@ -470,7 +470,7 @@ def summarize(similarity: PhenotypeSimilarity, *, is_stable: bool | None = None)
 
     Args:
         similarity: The prediction to serialize.
-        is_stable: Verdict from :class:`~models.adapters.pcos.stability.
+        is_stable: Verdict from :class:`~models.adapters.pmos.stability.
             PhenotypeStabilityEngine`. When it is ``False`` the dominant profile
             is withheld and the record is marked indeterminate: an assignment
             that a single dropped domain or a different softmax temperature

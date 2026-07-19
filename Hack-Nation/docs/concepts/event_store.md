@@ -82,6 +82,6 @@ reviewable — but they cannot reach a model until a human confirms them.
 
 ## Condition-agnostic by construction
 
-The store knows about *canonical variables*, not about PCOS. Supporting another
+The store knows about *canonical variables*, not about PMOS. Supporting another
 hormonal condition means adding registry entries and an adapter under
 `models/adapters/` — the substrate does not change.

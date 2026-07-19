@@ -14,7 +14,7 @@
 #   * changing a weight changes the report and requires no retraining, which is
 #     precisely the property that makes this layer auditable rather than opaque.
 #
-# The one genuinely learned component is the static clinical PCOS head, trained
+# The one genuinely learned component is the static clinical PMOS head, trained
 # on the matched tabular cohort. The coordinator marks it as such in
 # `learned_components_used` so a reader can tell the two apart.
 
@@ -83,10 +83,10 @@ agreement:
 abstention:
   # A domain needs this much combined quality*confidence mass to be reported.
   min_domain_evidence_mass: 0.20
-  # A whole-patient PCOS evidence statement requires the learned static head;
+  # A whole-patient PMOS evidence statement requires the learned static head;
   # ultrasound or temporal evidence alone cannot support one.
-  pcos_statement_requires_static: true
+  pmos_statement_requires_static: true
   # Fraction of the three branches present, below which the report is marked
   # low-coverage. Not an abstention on its own -- a single-modality report is
-  # legitimate, it just may not claim a whole-patient PCOS statement.
+  # legitimate, it just may not claim a whole-patient PMOS statement.
   low_coverage_threshold: 0.34

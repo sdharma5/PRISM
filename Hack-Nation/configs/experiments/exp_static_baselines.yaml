@@ -12,12 +12,12 @@ description: >-
   research phenotype profile. Not a diagnostic evaluation.
 
 data:
-  dataset_id: pcos_tabular_public
+  dataset_id: pmos_tabular_public
   dataset_version: kottarathil-2020
   # Wide canonical cohort built by scripts/build_cohort_table.py from the
   # ingested events. Relative to the resolved data root ($PRISM_DATA_ROOT).
   # Remove this key to fall back to the synthetic fixture cohort.
-  path: pcos_tabular/cohort_wide.csv
+  path: pmos_tabular/cohort_wide.csv
   synthetic:
     n: 300
     seed: 0

@@ -14,7 +14,7 @@ falsify it? -->
 - [ ] event store
 - [ ] features
 - [ ] models — tabular / phenotype / stability / speech / documents / ultrasound / temporal
-- [ ] PCOS adapter
+- [ ] PMOS adapter
 - [ ] training / evaluation
 - [ ] docs / CI
 

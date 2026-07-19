@@ -9,7 +9,7 @@
 
 ## 0. The one-paragraph summary
 
-PRISM estimates evidence for polycystic ovary syndrome (PCOS) from up to five unrelated data channels — tabular clinical variables, menstrual-cycle time series, ovarian ultrasound, speech transcripts, and lab documents. **It is not one model.** It is seven independently trained modules whose outputs are wrapped in a shared envelope and combined by a deterministic weighted average with hand-chosen weights. There is no learned fusion model, and by design there cannot be one: the five datasets describe five disjoint populations, so no patient has more than one modality. In production only one branch is a learned classifier that emits a whole-patient probability (the tabular branch, a logistic regression), one branch is a learned forecaster (temporal), and one is trained but switched off (ultrasound). Speech and document "models" are deterministic rule-based encoders with zero learned parameters.
+PRISM estimates evidence for polycystic ovary syndrome (PMOS) from up to five unrelated data channels — tabular clinical variables, menstrual-cycle time series, ovarian ultrasound, speech transcripts, and lab documents. **It is not one model.** It is seven independently trained modules whose outputs are wrapped in a shared envelope and combined by a deterministic weighted average with hand-chosen weights. There is no learned fusion model, and by design there cannot be one: the five datasets describe five disjoint populations, so no patient has more than one modality. In production only one branch is a learned classifier that emits a whole-patient probability (the tabular branch, a logistic regression), one branch is a learned forecaster (temporal), and one is trained but switched off (ultrasound). Speech and document "models" are deterministic rule-based encoders with zero learned parameters.
 
 ---
 
@@ -44,11 +44,11 @@ PRISM estimates evidence for polycystic ovary syndrome (PCOS) from up to five un
                     5 domain scores + abstention + agreement
                                       │
                                       ▼
-                    PCOS adapter (Rotterdam axis rules, the ONLY
-                     PCOS-specific code in the repository)
+                    PMOS adapter (Rotterdam axis rules, the ONLY
+                     PMOS-specific code in the repository)
                                       │
                                       ▼
-                    WebsitePCOSProfileResponse
+                    WebsitePMOSProfileResponse
 ```
 
 **Five architectural layers** (`ARCHITECTURE.md:18-21`): `ingestion → event store → features → models → tokens`.
@@ -84,13 +84,13 @@ Enforcement is mechanical: `joint_model_used=False` is hard-coded (`inference/or
 
 | id | Real/synthetic | License | n | Notes |
 |---|---|---|---|---|
-| `pcos_tabular_public` | **Real** patient records, 10 hospitals, Kerala India (Kottarathil 2020) | CC0 public domain | 541 (177 pos / 364 neg) | The only labeled PCOS cohort |
+| `pmos_tabular_public` | **Real** patient records, 10 hospitals, Kerala India (Kottarathil 2020) | CC0 public domain | 541 (177 pos / 364 neg) | The only labeled PMOS cohort |
 | `nhanes_2021_2023` | Real survey | US Gov public domain | — | Reference ranges only; must use survey weights |
 | `mcphases` | Real, **credentialed** PhysioNet + DUA | Restricted | 42 participants | Must live outside repo tree; currently checked in — a compliance violation |
 | `usova3d` | Real ultrasound volumes | — | 16 volumes | 12 train / 2 val / 2 test |
 | `prism_document_eval_synthetic`, `prism_speech_eval_synthetic` | **Synthetic** | — | 25 docs / 88 utterances | Evaluation fixtures only |
 
-Restrictions are **executable**, not documentary: adapters call `DatasetRegistry.require(dataset_id, use)`, which raises `PermissionError` on a prohibited use. E.g. `pcos_tabular_public` prohibits `validated_four_subtype_classification` and `prospective_clinical_deployment`.
+Restrictions are **executable**, not documentary: adapters call `DatasetRegistry.require(dataset_id, use)`, which raises `PermissionError` on a prohibited use. E.g. `pmos_tabular_public` prohibits `validated_four_subtype_classification` and `prospective_clinical_deployment`.
 
 ---
 
@@ -109,12 +109,12 @@ ModalityToken:
 
 ---
 
-## 4. MODULE 1 — Static / tabular branch (the only deployed PCOS classifier)
+## 4. MODULE 1 — Static / tabular branch (the only deployed PMOS classifier)
 
 **File:** `models/tabular/encoder.py:98` — `StaticClinicalEncoder`
 **Artifact:** `artifacts/encoders/static_clinical/static_clinical_encoder.joblib` (9,548 bytes)
 
-This is the only branch entitled to emit a whole-patient P(PCOS). Three independent code paths enforce that (`configs`: `pcos_statement_requires_static: true`; `models/adapters/pcos/abstention.py:108-117`; `inference/presentation/website_mapper.py:188`).
+This is the only branch entitled to emit a whole-patient P(PMOS). Three independent code paths enforce that (`configs`: `pmos_statement_requires_static: true`; `models/adapters/pmos/abstention.py:108-117`; `inference/presentation/website_mapper.py:188`).
 
 ### 4.1 Architecture — a three-step sklearn Pipeline
 
@@ -159,7 +159,7 @@ Column order is frozen alphabetically so it never depends on CSV column order. F
 | 18 | waist_hip_ratio | 0.8947 | 0.8926 | 0.0463 | 0.1481 |
 | 19 | weight | 60.0000 | 59.8977 | 10.9679 | 0.5382 |
 
-**Intercept −0.5338.** The two follicle-count features dominate the model (coefs 0.91 and 1.33, roughly 2–3× the next largest). This is worth internalizing: **the deployed PCOS classifier is largely an antral-follicle-count model.**
+**Intercept −0.5338.** The two follicle-count features dominate the model (coefs 0.91 and 1.33, roughly 2–3× the next largest). This is worth internalizing: **the deployed PMOS classifier is largely an antral-follicle-count model.**
 
 ### 4.3 ⚠ THE NAMED BUG — feature slot 4 is mislabeled
 
@@ -183,7 +183,7 @@ LEGACY_FEATURE_ALIASES = {"kottarathil-2020": {"cycle_length": "menses_duration"
 
 `export_token` (`encoder.py:252`) emits:
 - `embedding = []` — **empty**. This encoder emits structured features, not a vector.
-- `structured_features`: `{domain}_score`, `{domain}_coverage`, raw canonical variables, `pcos_evidence_probability`
+- `structured_features`: `{domain}_score`, `{domain}_coverage`, raw canonical variables, `pmos_evidence_probability`
 - `quality_score` = observed feature fraction
 - `confidence_score = abs(p − 0.5) * 2` — **distance from the decision boundary, not a probability**
 
@@ -451,13 +451,13 @@ Algorithms: kmeans, gaussian_mixture, agglomerative, spectral (off by default �
 
 **Selected configuration** (`artifacts/experiments/exp_subtype_stability/discovery_summary.json`): 177 label-positive participants, **K=2**, representation `domain_scores`, algorithm `kmeans`, from 60 scored configurations. Silhouette **0.3054**, bootstrap Jaccard **0.9040**, cross-seed ARI **0.9689**.
 
-Note K=2, not 4. ADR-003 states **"Four is never a default"** — a direct guard against reproducing the four-subtype PCOS literature by assumption.
+Note K=2, not 4. ADR-003 states **"Four is never a default"** — a direct guard against reproducing the four-subtype PMOS literature by assumption.
 
 ### 8.2 Hedged language is mechanically enforced (ADR-003)
 
 Post-hoc enrichment labels may use only *resembles / most similar to / has overlap with*. A banned-phrase list is enforced in `models/phenotype/prototype_mapping.py`. Stability travels with every assignment.
 
-`PrototypeSimilarityModel` (`models/adapters/pcos/prototype_similarity.py:190`): cosine similarity to **literature-declared centroids** (not fitted), softmax at temperature 0.25. `affinities` is documented as **normalized affinity scores, NOT calibrated probabilities**. Ineligible profiles are removed and renormalized over, never zero-filled.
+`PrototypeSimilarityModel` (`models/adapters/pmos/prototype_similarity.py:190`): cosine similarity to **literature-declared centroids** (not fitted), softmax at temperature 0.25. `affinities` is documented as **normalized affinity scores, NOT calibrated probabilities**. Ineligible profiles are removed and renormalized over, never zero-filled.
 
 ### 8.3 Temperature-scaled membership calibration
 
@@ -503,7 +503,7 @@ If `mass < min_domain_evidence_mass` (0.20), the domain returns `level="insuffic
 
 ### 9.3 Agreement, not voting
 
-`classify_agreement` bands by spread: `strong ≤0.15`, `moderate ≤0.30`, else `conflicting`. **Conflicts are surfaced as notes; the score is still computed and never averaged away silently.** `PcosFeatureMapper` records cross-modal conflicts as `EvidenceConflict` with `requires_human_review=True` and keeps the **first** value so the outcome does not depend on dict iteration order.
+`classify_agreement` bands by spread: `strong ≤0.15`, `moderate ≤0.30`, else `conflicting`. **Conflicts are surfaced as notes; the score is still computed and never averaged away silently.** `PmosFeatureMapper` records cross-modal conflicts as `EvidenceConflict` with `requires_human_review=True` and keeps the **first** value so the outcome does not depend on dict iteration order.
 
 ### 9.4 Evidence bands
 
@@ -511,9 +511,9 @@ If `mass < min_domain_evidence_mass` (0.20), the domain returns `level="insuffic
 
 ---
 
-## 10. The PCOS adapter — the only condition-specific code
+## 10. The PMOS adapter — the only condition-specific code
 
-`models/adapters/pcos/` is explicitly **"the only PCOS-specific code in the repository"** (`ARCHITECTURE.md:70-90`). The event store, encoders, and token envelope know about *variables*, not about PCOS. This is the condition-agnostic guarantee: another condition would be a new adapter, not a new pipeline.
+`models/adapters/pmos/` is explicitly **"the only PMOS-specific code in the repository"** (`ARCHITECTURE.md:70-90`). The event store, encoders, and token envelope know about *variables*, not about PMOS. This is the condition-agnostic guarantee: another condition would be a new adapter, not a new pipeline.
 
 The adapter applies **Rotterdam criteria axis rules** (`diagnostic_features.py:331-427`), each axis reporting `status ∈ {met, not_met, uncertain, not_assessable}` with `threshold_sources` citing the guideline. Domain scores are weight-weighted means of observed z-scores; when coverage falls below `min_coverage_to_report` the score is **withheld, not caveated** — *"a number on a page outlives its footnote."*
 
@@ -535,7 +535,7 @@ The adapter applies **Rotterdam criteria axis rules** (`diagnostic_features.py:3
 | 6 | Static encoder → token | `models/tabular/encoder.py:252` |
 | 7 | Temporal encoder → token | `models/temporal/state_encoder.py:336` |
 | 8 | `EvidenceCoordinator.combine` | `inference/evidence_coordinator.py:76-172` |
-| 9 | PCOS adapter → `PCOSProfileOutput` | `models/adapters/pcos/evidence_adapter.py:227-411` |
+| 9 | PMOS adapter → `PMOSProfileOutput` | `models/adapters/pmos/evidence_adapter.py:227-411` |
 | 10 | Platt calibration applied (frozen) | `evidence_adapter.py:203-207` |
 | 11 | `to_website_response` | `inference/presentation/website_mapper.py:125-162` |
 
@@ -546,7 +546,7 @@ The adapter applies **Rotterdam criteria axis rules** (`diagnostic_features.py:3
 2. In `registry/variables.yaml` → carried into `structured_features` so guideline axes can threshold variables the model never learned (`hirsutism`, `acne`, `total_testosterone`, `ferriman_gallwey_score`).
 3. Not in the registry → **dropped rather than travelling on as evidence.**
 
-`_NON_FEATURE = {"patient_id", "pcos_binary"}` is excluded so the **training label can never ride inside a token**.
+`_NON_FEATURE = {"patient_id", "pmos_binary"}` is excluded so the **training label can never ride inside a token**.
 
 **No unit conversion happens on this path** — `convert_to_canonical` is an ingestion-layer function. Values submitted via `clinical_features` are assumed canonical.
 
@@ -554,11 +554,11 @@ The adapter applies **Rotterdam criteria axis rules** (`diagnostic_features.py:3
 
 ## 12. Response object
 
-`WebsitePCOSProfileResponse` (`apps/api/schemas/responses.py:298-349`), `extra="forbid"`, `RESPONSE_SCHEMA_VERSION = "1.0.0"`.
+`WebsitePMOSProfileResponse` (`apps/api/schemas/responses.py:298-349`), `extra="forbid"`, `RESPONSE_SCHEMA_VERSION = "1.0.0"`.
 
-Key fields: `report_id` (= `rpt_<sha256(patient_id|timestamp)[:16]>`, hashed so it does not leak the patient id into logs), `modality_coverage`, `pcos_assessment`, `rotterdam_axes`, `phenotype`, `current_state`, `supporting_evidence`, `conflicting_evidence`, `missing_evidence`, `provenance`, `warnings`.
+Key fields: `report_id` (= `rpt_<sha256(patient_id|timestamp)[:16]>`, hashed so it does not leak the patient id into logs), `modality_coverage`, `pmos_assessment`, `rotterdam_axes`, `phenotype`, `current_state`, `supporting_evidence`, `conflicting_evidence`, `missing_evidence`, `provenance`, `warnings`.
 
-**The honesty ledger**, carried in the payload: `learned_components_used` (only ever `static_clinical.pcos_head`) vs `rule_based_components_used` (`evidence_coordinator.design_rule_weights`, `ultrasound.pcom_threshold_rules`, `pcos_adapter.guideline_axes`).
+**The honesty ledger**, carried in the payload: `learned_components_used` (only ever `static_clinical.pmos_head`) vs `rule_based_components_used` (`evidence_coordinator.design_rule_weights`, `ultrasound.pcom_threshold_rules`, `pmos_adapter.guideline_axes`).
 
 `is_diagnosis: Literal[False]` — not overridable. `disclaimer` is carried **in the payload** so any client, including one nobody here wrote, receives it. `clinician_review_status = "model_generated"`.
 
@@ -618,7 +618,7 @@ Engineering patterns worth noting:
 10. **The phenotype card's "Dice 0.49 / instance F1 0.05" is v1's number**; the deployed 3D model scores 0.5603 / 0.1750. The card is stale.
 11. **`no_symptoms` ablation is a no-op** — bitwise-identical to `full`.
 12. **`TRAINING.md:85` promises "≥5 seeds"** but the shipped configs use 2 seeds (static) and 1 seed (phenotype).
-13. **No held-out set exists for either PCOS experiment** — `holdout_ids` is empty in both manifests. 432+109 = 541 and 405+136 = 541, so every patient rotates through a test fold. `training/splits.py` supports the parameter; it was not used. The model card's phrase "held-out patients" means the rotating CV test fold, not an untouched partition.
+13. **No held-out set exists for either PMOS experiment** — `holdout_ids` is empty in both manifests. 432+109 = 541 and 405+136 = 541, so every patient rotates through a test fold. `training/splits.py` supports the parameter; it was not used. The model card's phrase "held-out patients" means the rotating CV test fold, not an untouched partition.
 14. **mcPHASES is checked into the repo** (`datasets/mcphases/`, including a 367 MB zip) despite the registry requiring it to live outside the tree under `PRISM_DATA_ROOT` — a DUA compliance issue.
 
 ### Previously fixed, preserved as regression context
@@ -644,4 +644,4 @@ Engineering patterns worth noting:
 | Document encoder | **No — zero parameters** | Not wired | none | F1 1.0 synthetic |
 | **Fusion** | **No — hand-set weights** | Yes | none | **no metric exists** |
 
-**The single most important sentence for a reader to carry away:** the only learned component that produces a whole-patient PCOS probability is a 19-feature logistic regression dominated by two antral-follicle-count variables, and everything above it in the stack — the domain scores, the cross-modal weights, the Rotterdam axes — is a deterministic rule system whose parameters were chosen by humans and fit to nothing.
+**The single most important sentence for a reader to carry away:** the only learned component that produces a whole-patient PMOS probability is a 19-feature logistic regression dominated by two antral-follicle-count variables, and everything above it in the stack — the domain scores, the cross-modal weights, the Rotterdam axes — is a deterministic rule system whose parameters were chosen by humans and fit to nothing.

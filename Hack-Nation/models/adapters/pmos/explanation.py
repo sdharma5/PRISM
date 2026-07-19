@@ -1,10 +1,10 @@
-"""Structured, per-section explanation of a PCOS profile.
+"""Structured, per-section explanation of a PMOS profile.
 
 The sections are kept separate rather than merged into prose for one reason: a
 reader must be able to tell *which modality* and *which method* produced each
 statement. A paragraph that blends "the learned model gives 0.78" with "the scan
 showed 22 follicles" with "the two branches disagree" reads as one coherent
-finding, when in fact only the first came from anything trained on a PCOS label.
+finding, when in fact only the first came from anything trained on a PMOS label.
 
 Every section therefore carries its own provenance, and the module never
 generates a sentence that asserts a diagnosis. The strongest statement available
@@ -49,18 +49,18 @@ def _static_prediction(probability: float | None) -> dict[str, Any]:
         return {
             "available": False,
             "reason": (
-                "The learned static clinical head did not run, so no whole-patient PCOS "
+                "The learned static clinical head did not run, so no whole-patient PMOS "
                 "evidence probability is available. Axis-level findings remain valid."
             ),
         }
     return {
         "available": True,
-        "pcos_evidence_probability": round(probability, 4),
+        "pmos_evidence_probability": round(probability, 4),
         "method": "logistic regression on the matched static clinical cohort",
-        "provenance": "static_clinical.pcos_head — the only component fit against a PCOS label",
+        "provenance": "static_clinical.pmos_head — the only component fit against a PMOS label",
         "caveat": (
-            "Reproduces one clinic's recorded PCOS label on a cross-sectional cohort. "
-            "That is not the same as diagnosing PCOS, and the figure carries no "
+            "Reproduces one clinic's recorded PMOS label on a cross-sectional cohort. "
+            "That is not the same as diagnosing PMOS, and the figure carries no "
             "external validation."
         ),
     }
@@ -150,7 +150,7 @@ def build_explanation(
     """Assemble the full structured explanation.
 
     Args:
-        mapped: Mapped PCOS features with per-code provenance.
+        mapped: Mapped PMOS features with per-code provenance.
         diagnostic: Per-axis evidence.
         similarity: Phenotype similarity result, or None.
         static_probability: Learned probability, or None.
@@ -213,7 +213,7 @@ def build_explanation(
             "partial_profile_permitted": bool(getattr(decision, "partial_profile_permitted", True)),
         },
         "method_summary": (
-            "The PCOS probability is the only learned component. Rotterdam axes are "
+            "The PMOS probability is the only learned component. Rotterdam axes are "
             "published thresholds applied as rules. Cross-modal coordination uses "
             "declared design weights. No cross-modal relationship was learned, because "
             "no cohort in this repository has matched multimodal patients."

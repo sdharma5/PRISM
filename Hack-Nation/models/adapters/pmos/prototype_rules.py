@@ -2,7 +2,7 @@
 
 Scientific WHY
 --------------
-The PCOS literature repeatedly describes a small set of recurring patterns — a
+The PMOS literature repeatedly describes a small set of recurring patterns — a
 metabolic/insulin-resistant leaning group, an LH/AMH-driven reproductive leaning
 group, a strongly androgenic group, and a lean group with preserved metabolic
 health. Those descriptions are useful vocabulary and useless as a classifier.
@@ -155,7 +155,7 @@ PROTOTYPE_PROFILES: dict[str, PrototypeProfile] = {
             "reproductive": 0.7,
         },
         literature_note=(
-            "'Lean PCOS' is widely described clinically; it is best treated as a "
+            "'Lean PMOS' is widely described clinically; it is best treated as a "
             "descriptive observation rather than a distinct mechanism."
         ),
     ),

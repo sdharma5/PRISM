@@ -1,6 +1,6 @@
 """The website-facing response schema. Treat this as a public API.
 
-A presentation contract, not a dump of the internal ``PCOSProfileOutput``. That
+A presentation contract, not a dump of the internal ``PMOSProfileOutput``. That
 object changes shape as models change, and carries fields that are misleading
 without their thresholds (raw affinities, entropy, flip rates).
 
@@ -33,11 +33,11 @@ __all__ = [
     "EvidenceStatementView",
     "HormoneEstimateView",
     "ModelStatusResponse",
-    "PcosAssessmentView",
+    "PmosAssessmentView",
     "PhenotypeView",
     "ProvenanceRecordView",
     "SpeechStatusView",
-    "WebsitePCOSProfileResponse",
+    "WebsitePMOSProfileResponse",
 ]
 
 #: Bump on anything a client could notice. Additive optional fields don't count;
@@ -78,7 +78,7 @@ class _View(BaseModel):
 # -- assessment ------------------------------------------------------------
 
 
-class PcosAssessmentView(_View):
+class PmosAssessmentView(_View):
     """The learned whole-patient score, with the conditions for reading it."""
 
     available: bool
@@ -263,7 +263,7 @@ class ProvenanceView(_View):
 # -- top level -------------------------------------------------------------
 
 
-class WebsitePCOSProfileResponse(_View):
+class WebsitePMOSProfileResponse(_View):
     """Everything one patient-facing report needs, and nothing the UI must guess."""
 
     model_config = ConfigDict(extra="forbid", protected_namespaces=())
@@ -277,10 +277,10 @@ class WebsitePCOSProfileResponse(_View):
     generated_at: str
 
     #: Fraction of branches that contributed. Distinct from
-    #: `pcos_assessment.feature_coverage`, which is about one model's inputs.
+    #: `pmos_assessment.feature_coverage`, which is about one model's inputs.
     modality_coverage: float | None = Field(default=None, ge=0.0, le=1.0)
 
-    pcos_assessment: PcosAssessmentView
+    pmos_assessment: PmosAssessmentView
     rotterdam_axes: dict[str, AxisView] = Field(default_factory=dict)
     phenotype: PhenotypeView = Field(default_factory=PhenotypeView)
     current_state: CurrentStateView = Field(default_factory=CurrentStateView)
@@ -308,7 +308,7 @@ class WebsitePCOSProfileResponse(_View):
     is_diagnosis: Literal[False] = False
     disclaimer: str = (
         "Research prototype. This is not a diagnosis and does not establish "
-        "whether you have PCOS. Discuss these results with a clinician."
+        "whether you have PMOS. Discuss these results with a clinician."
     )
 
 

@@ -1,7 +1,7 @@
 'use client'
 
 import { humanizeCode, axisLabel } from './present'
-import type { WebsitePCOSProfileResponse } from '@/types/api'
+import type { WebsitePMOSProfileResponse } from '@/types/api'
 
 export interface AskDoctorItem {
   question: string
@@ -15,11 +15,11 @@ const MISSING_TO_QUESTION: Record<string, { question: string; why: string; urgen
   dheas:                    { question: 'Order a DHEA-sulfate (DHEAS) blood test', why: 'Rules out adrenal androgen excess as an alternative diagnosis', urgency: 'high' },
   shbg:                     { question: 'Order a SHBG (sex hormone binding globulin) test', why: 'Low SHBG amplifies androgen effect and indicates insulin resistance', urgency: 'high' },
   anti_mullerian_hormone:   { question: 'Order an AMH (Anti-Müllerian Hormone) test', why: 'Elevated AMH is a strong marker of polycystic ovarian reserve', urgency: 'high' },
-  luteinizing_hormone:      { question: 'Order LH and FSH hormone levels', why: 'LH:FSH ratio > 2 supports PCOS diagnosis', urgency: 'medium' },
+  luteinizing_hormone:      { question: 'Order LH and FSH hormone levels', why: 'LH:FSH ratio > 2 supports PMOS diagnosis', urgency: 'medium' },
   follicle_stimulating_hormone: { question: 'Order FSH to pair with LH', why: 'Used to rule out premature ovarian insufficiency', urgency: 'medium' },
-  fasting_glucose:          { question: 'Order a fasting plasma glucose test', why: 'Screens for insulin resistance and pre-diabetes, common in PCOS', urgency: 'high' },
+  fasting_glucose:          { question: 'Order a fasting plasma glucose test', why: 'Screens for insulin resistance and pre-diabetes, common in PMOS', urgency: 'high' },
   fasting_insulin:          { question: 'Order a fasting insulin level', why: 'Quantifies insulin resistance when combined with glucose (HOMA-IR)', urgency: 'high' },
-  hdl_cholesterol:          { question: 'Request a full lipid panel including HDL', why: 'Metabolic syndrome risk is elevated in PCOS', urgency: 'medium' },
+  hdl_cholesterol:          { question: 'Request a full lipid panel including HDL', why: 'Metabolic syndrome risk is elevated in PMOS', urgency: 'medium' },
   triglycerides:            { question: 'Request a full lipid panel including triglycerides', why: 'Elevated triglycerides are a metabolic syndrome marker', urgency: 'medium' },
   cycle_length:             { question: 'Discuss your menstrual cycle history in detail', why: 'Cycle length and regularity are required to assess ovulatory dysfunction', urgency: 'high' },
   cycle_irregularity:       { question: 'Discuss cycle irregularity patterns', why: 'Irregular cycles are one of the three Rotterdam diagnostic criteria', urgency: 'high' },
@@ -36,7 +36,7 @@ const MODALITY_TO_QUESTION: Record<string, { question: string; why: string; urge
   },
 }
 
-export function deriveAskDoctorItems(report: WebsitePCOSProfileResponse | null): AskDoctorItem[] {
+export function deriveAskDoctorItems(report: WebsitePMOSProfileResponse | null): AskDoctorItem[] {
   if (!report) return []
 
   const items: AskDoctorItem[] = []

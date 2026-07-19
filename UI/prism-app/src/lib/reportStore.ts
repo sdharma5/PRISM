@@ -7,19 +7,19 @@
 // localStorage rather than server-side: this is identifiable clinical data and a
 // prototype shouldn't outlive the user's own browser with a copy of it.
 
-import type { WebsitePCOSProfileResponse } from '@/types/api'
+import type { WebsitePMOSProfileResponse } from '@/types/api'
 
 const KEY = 'prism.lastAssessment.v1'
 
 export interface StoredAssessment {
-  report: WebsitePCOSProfileResponse
+  report: WebsitePMOSProfileResponse
   /** The answers that produced it, so the form can be re-opened pre-filled. */
   answers: Record<string, string | boolean | undefined>
   savedAt: string
 }
 
 export function saveAssessment(
-  report: WebsitePCOSProfileResponse,
+  report: WebsitePMOSProfileResponse,
   answers: Record<string, string | boolean | undefined> = {},
 ): void {
   if (typeof window === 'undefined') return
@@ -45,7 +45,7 @@ export function loadAssessment(): StoredAssessment | null {
     const parsed = JSON.parse(raw) as StoredAssessment
     // Older contract, missing fields the UI now reads — discard rather than
     // half-render it.
-    if (!parsed?.report?.pcos_assessment || !parsed.report.report_id) return null
+    if (!parsed?.report?.pmos_assessment || !parsed.report.report_id) return null
     return parsed
   } catch {
     return null

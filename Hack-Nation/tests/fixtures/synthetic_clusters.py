@@ -1,6 +1,6 @@
 """Synthetic cohorts with *known* latent groups, for testing the subtype engine.
 
-These are not simulations of PCOS biology. They are geometry with the right
+These are not simulations of PMOS biology. They are geometry with the right
 column names: a few well-separated Gaussian blobs in a handful of canonical
 variables, plus configurable missingness, so that a test can assert "the
 clustering recovered the groups I planted" and "the abstention rules fired on the

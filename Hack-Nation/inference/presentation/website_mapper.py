@@ -9,7 +9,7 @@ The one place model output becomes something a person reads, so:
    reads as "exactly average".
 
 The evidence bands are a presentation device, not a model output: a bare 0.696
-invites "69.6% chance of PCOS".
+invites "69.6% chance of PMOS".
 """
 
 from __future__ import annotations
@@ -26,12 +26,12 @@ from apps.api.schemas.responses import (
     DomainScoreView,
     EvidenceStatementView,
     HormoneEstimateView,
-    PcosAssessmentView,
+    PmosAssessmentView,
     PhenotypeView,
     ProvenanceRecordView,
     ProvenanceView,
     StabilityView,
-    WebsitePCOSProfileResponse,
+    WebsitePMOSProfileResponse,
 )
 from inference.report_schema import PatientEvidenceReport
 from registry.loader import load_variable_registry
@@ -100,17 +100,17 @@ def to_website_response(
     *,
     generated_at: datetime | None = None,
     report_id: str | None = None,
-) -> WebsitePCOSProfileResponse:
+) -> WebsitePMOSProfileResponse:
     """Map one internal report onto the website contract."""
-    profile: dict[str, Any] = report.pcos_profile or {}
+    profile: dict[str, Any] = report.pmos_profile or {}
     stamp = generated_at or datetime.now(UTC)
 
-    return WebsitePCOSProfileResponse(
+    return WebsitePMOSProfileResponse(
         report_id=report_id or _report_id(report, stamp),
         patient_id=report.patient_id,
         generated_at=stamp.isoformat(),
         modality_coverage=_as_float(report.coverage),
-        pcos_assessment=_assessment(profile, report),
+        pmos_assessment=_assessment(profile, report),
         rotterdam_axes=_axes(profile),
         phenotype=_phenotype(profile),
         current_state=_current_state(report),
@@ -143,7 +143,7 @@ def _report_id(report: PatientEvidenceReport, stamp: datetime) -> str:
 # -- sections --------------------------------------------------------------
 
 
-def _assessment(profile: dict[str, Any], report: PatientEvidenceReport) -> PcosAssessmentView:
+def _assessment(profile: dict[str, Any], report: PatientEvidenceReport) -> PmosAssessmentView:
     """The learned score, or an explicit statement of why there isn't one."""
     raw = profile.get("raw_model_score")
     calibrated = profile.get("calibrated_model_score")
@@ -151,7 +151,7 @@ def _assessment(profile: dict[str, Any], report: PatientEvidenceReport) -> PcosA
     # Only the static branch yields a whole-patient score.
     static_ran = "static_clinical" in report.available_modalities
     if not static_ran or raw is None:
-        return PcosAssessmentView(
+        return PmosAssessmentView(
             available=False,
             evidence_level="not_available",
             unavailable_reason=(
@@ -164,7 +164,7 @@ def _assessment(profile: dict[str, Any], report: PatientEvidenceReport) -> PcosA
     # Band the calibrated score when present, or band and number disagree.
     banded = calibrated if calibrated is not None else raw
 
-    return PcosAssessmentView(
+    return PmosAssessmentView(
         available=True,
         raw_model_score=raw,
         calibrated_model_score=calibrated,
@@ -173,9 +173,9 @@ def _assessment(profile: dict[str, Any], report: PatientEvidenceReport) -> PcosA
         source="static_clinical",
         feature_coverage=_static_feature_coverage(report),
         qualifier=(
-            "PCOS-related model score from the static-clinical branch. It reflects "
+            "PMOS-related model score from the static-clinical branch. It reflects "
             "the clinical variables provided, not a diagnosis, and not a "
-            "probability that you have PCOS."
+            "probability that you have PMOS."
         ),
     )
 

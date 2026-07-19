@@ -1,9 +1,9 @@
 #!/usr/bin/env python
-"""Ingest the public PCOS tabular cohort into canonical events.
+"""Ingest the public PMOS tabular cohort into canonical events.
 
-    python scripts/prepare_pcos_tabular.py --config configs/data/pcos_tabular.yaml
+    python scripts/prepare_pmos_tabular.py --config configs/data/pmos_tabular.yaml
 
-Reads the source CSV through :class:`PcosTabularAdapter`, which validates it,
+Reads the source CSV through :class:`PmosTabularAdapter`, which validates it,
 records checksums, maps source columns onto registry variable codes, normalizes
 units, and drops what it cannot map — recording every drop with a reason rather
 than silently discarding it.
@@ -27,7 +27,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from ingestion.tabular_pcos.loader import PcosTabularAdapter  # noqa: E402
+from ingestion.tabular_pmos.loader import PmosTabularAdapter  # noqa: E402
 from scripts._cli import (  # noqa: E402
     DATA_ROOT_ENV,
     add_standard_arguments,
@@ -36,7 +36,7 @@ from scripts._cli import (  # noqa: E402
 )
 from scripts._experiment_io import resolve_data_path  # noqa: E402
 
-DEFAULT_CONFIG = REPO_ROOT / "configs" / "data" / "pcos_tabular.yaml"
+DEFAULT_CONFIG = REPO_ROOT / "configs" / "data" / "pmos_tabular.yaml"
 
 
 def load_config(path: Path) -> dict[str, Any]:
@@ -70,7 +70,7 @@ def main(argv: list[str] | None = None) -> int:
         # Name the exact file, every override, and where to get the data.
         looked_for = source if source is not None else "(nothing configured)"
         print(
-            f"ERROR: PCOS tabular dataset not found at: {looked_for}\n"
+            f"ERROR: PMOS tabular dataset not found at: {looked_for}\n"
             "\n"
             "This dataset is publicly available but is NOT committed to this repository. "
             "There is no synthetic substitute for this step.\n"
@@ -89,10 +89,10 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     output_dir = resolve_output_dir(
-        config, args.output_dir, experiment_id="pcos_tabular", config_keys=("output.dir",)
+        config, args.output_dir, experiment_id="pmos_tabular", config_keys=("output.dir",)
     )
 
-    adapter = PcosTabularAdapter(
+    adapter = PmosTabularAdapter(
         dataset_version=str(config.get("dataset_version", "unversioned")),
         id_column=str(data_cfg.get("id_column", "patient_id")),
         use=str((config.get("allowed_uses") or ["binary_baseline"])[0]),

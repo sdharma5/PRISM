@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from models.adapters.pcos.prototype_similarity import PrototypeSimilarityModel
-from models.adapters.pcos.stability import PhenotypeStabilityEngine
+from models.adapters.pmos.prototype_similarity import PrototypeSimilarityModel
+from models.adapters.pmos.stability import PhenotypeStabilityEngine
 
 CLEAR_METABOLIC = {
     "metabolic": 2.0,
@@ -116,7 +116,7 @@ def test_unstable_assignment_produces_a_warning() -> None:
 def test_adapter_withholds_dominant_profile_when_unstable() -> None:
     """An unstable label is the part a reader would quote, so it is withdrawn."""
     from inference import coordinate_only
-    from models.adapters.pcos.evidence_adapter import PcosEvidenceAdapter
+    from models.adapters.pmos.evidence_adapter import PmosEvidenceAdapter
     from schemas.modality_token import ModalityToken
 
     token = ModalityToken(
@@ -126,7 +126,7 @@ def test_adapter_withholds_dominant_profile_when_unstable() -> None:
         quality_score=0.9,
         confidence_score=0.8,
     )
-    out = PcosEvidenceAdapter(
+    out = PmosEvidenceAdapter(
         prototype_model=model(),
         stability_engine=engine(min_bootstrap_agreement=0.99),
     ).predict(coordinate_only([token]))
@@ -141,7 +141,7 @@ def test_adapter_withholds_dominant_profile_when_unstable() -> None:
 
 def test_stability_payload_records_absence_when_no_engine() -> None:
     from inference import coordinate_only
-    from models.adapters.pcos.evidence_adapter import PcosEvidenceAdapter
+    from models.adapters.pmos.evidence_adapter import PmosEvidenceAdapter
     from schemas.modality_token import ModalityToken
 
     token = ModalityToken(
@@ -151,7 +151,7 @@ def test_stability_payload_records_absence_when_no_engine() -> None:
         quality_score=0.9,
         confidence_score=0.8,
     )
-    out = PcosEvidenceAdapter(prototype_model=model()).predict(coordinate_only([token]))
+    out = PmosEvidenceAdapter(prototype_model=model()).predict(coordinate_only([token]))
     assert out.profile_stability["available"] is False
     assert "provisional" in out.profile_stability["reason"]
 

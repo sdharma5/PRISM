@@ -19,7 +19,7 @@ import {
   axisTone,
   humanizeCode,
 } from '@/lib/present'
-import type { AxisView, WebsitePCOSProfileResponse } from '@/types/api'
+import type { AxisView, WebsitePMOSProfileResponse } from '@/types/api'
 
 /** Clinical reading order; anything unlisted follows, alphabetically. */
 const AXIS_ORDER = [
@@ -115,7 +115,7 @@ function AxisRow({ axisKey, axis }: { axisKey: string; axis: AxisView }) {
   )
 }
 
-export default function RotterdamAxes({ report }: { report: WebsitePCOSProfileResponse }) {
+export default function RotterdamAxes({ report }: { report: WebsitePMOSProfileResponse }) {
   const axes = Object.entries(report.rotterdam_axes ?? {}).sort(
     ([a], [b]) => axisRank(a) - axisRank(b),
   )

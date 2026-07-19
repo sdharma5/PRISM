@@ -90,7 +90,7 @@ def test_static_inference_returns_a_scored_profile(client: TestClient) -> None:
     body = {"patient_id": "p-static", "clinical_features": SYMPTOMATIC_FEATURES}
     payload = client.post("/api/v1/patients/infer", json=body).json()
 
-    assessment = payload["pcos_assessment"]
+    assessment = payload["pmos_assessment"]
     assert assessment["available"] is True
     assert assessment["source"] == "static_clinical"
     assert 0.0 <= assessment["raw_model_score"] <= 1.0
@@ -188,11 +188,11 @@ def test_temporal_methods_are_translated(client: TestClient) -> None:
 # -- required invariants ---------------------------------------------------
 
 
-def test_invariant_temporal_alone_never_yields_a_pcos_score(client: TestClient) -> None:
+def test_invariant_temporal_alone_never_yields_a_pmos_score(client: TestClient) -> None:
     body = {"patient_id": "p-t-only", "temporal_observations": _temporal_days("p-t-only")}
     payload = client.post("/api/v1/patients/infer/temporal", json=body).json()
 
-    assessment = payload["pcos_assessment"]
+    assessment = payload["pmos_assessment"]
     assert assessment["available"] is False
     assert assessment["raw_model_score"] is None
     assert assessment["calibrated_model_score"] is None
@@ -200,13 +200,13 @@ def test_invariant_temporal_alone_never_yields_a_pcos_score(client: TestClient) 
     assert assessment["unavailable_reason"]
 
 
-def test_invariant_ultrasound_alone_never_yields_a_pcos_score(client: TestClient) -> None:
+def test_invariant_ultrasound_alone_never_yields_a_pmos_score(client: TestClient) -> None:
     """The route refuses outright, which is the strongest form of this guarantee."""
     response = client.post(
         "/api/v1/patients/infer/ultrasound", json={"patient_id": "p-u-only", "job_ids": ["j1"]}
     )
     assert response.status_code == 503
-    assert "pcos_assessment" not in response.json()
+    assert "pmos_assessment" not in response.json()
 
 
 def test_invariant_unstable_or_indeterminate_never_names_a_dominant_profile(
@@ -291,7 +291,7 @@ def test_every_declared_field_is_fillable(client: TestClient) -> None:
     payload = client.post("/api/v1/patients/infer", json=body).json()
 
     assert payload["modality_coverage"] is not None
-    assert payload["pcos_assessment"]["feature_coverage"] is not None
+    assert payload["pmos_assessment"]["feature_coverage"] is not None
 
     scored = [d for d in payload["phenotype"]["domain_scores"].values() if d["available"]]
     assert scored, "expected at least one assessable domain"
@@ -381,7 +381,7 @@ def test_feature_coverage_counts_only_model_features(client: TestClient) -> None
     body = {"patient_id": "p-coverage", "clinical_features": SYMPTOMATIC_FEATURES}
     payload = client.post("/api/v1/patients/infer", json=body).json()
 
-    coverage = payload["pcos_assessment"]["feature_coverage"]
+    coverage = payload["pmos_assessment"]["feature_coverage"]
     assert coverage is not None
     assert 0.0 < coverage <= 1.0, "a patient who supplied features cannot have 0 coverage"
 
@@ -466,12 +466,12 @@ def test_derivable_features_are_computed_not_imputed(client: TestClient) -> None
     ).json()
 
     assert (
-        with_parts["pcos_assessment"]["feature_coverage"]
-        > without["pcos_assessment"]["feature_coverage"]
+        with_parts["pmos_assessment"]["feature_coverage"]
+        > without["pmos_assessment"]["feature_coverage"]
     )
     # weight + height + the derived bmi, versus age alone.
-    assert with_parts["pcos_assessment"]["raw_model_score"] != pytest.approx(
-        without["pcos_assessment"]["raw_model_score"]
+    assert with_parts["pmos_assessment"]["raw_model_score"] != pytest.approx(
+        without["pmos_assessment"]["raw_model_score"]
     )
 
 
@@ -494,6 +494,6 @@ def test_derivation_never_overwrites_a_supplied_value(client: TestClient) -> Non
 
     # 82kg at 1.62m derives to ~31.2, so a supplied 22.0 must produce a
     # different score -- otherwise the supplied value was silently discarded.
-    assert measured["pcos_assessment"]["raw_model_score"] != pytest.approx(
-        derived["pcos_assessment"]["raw_model_score"]
+    assert measured["pmos_assessment"]["raw_model_score"] != pytest.approx(
+        derived["pmos_assessment"]["raw_model_score"]
     )

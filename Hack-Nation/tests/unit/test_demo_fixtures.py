@@ -15,7 +15,7 @@ from pathlib import Path
 import pytest
 
 from apps.api.demo_patients import DEMO_PATIENTS
-from apps.api.schemas.responses import WebsitePCOSProfileResponse
+from apps.api.schemas.responses import WebsitePMOSProfileResponse
 
 _FIXTURE_DIR = Path(__file__).resolve().parents[2].parent / "UI/prism-app/src/lib/demo"
 
@@ -33,7 +33,7 @@ def test_fixture_validates_against_the_response_contract(patient) -> None:
     fixture = _load(patient.key)
     # extra="forbid" on the schema means an obsolete field fails here rather
     # than silently rendering as undefined in the browser.
-    WebsitePCOSProfileResponse.model_validate(fixture["response"])
+    WebsitePMOSProfileResponse.model_validate(fixture["response"])
 
 
 @pytest.mark.parametrize("patient", DEMO_PATIENTS, ids=lambda p: p.key)
@@ -60,7 +60,7 @@ def test_sarah_is_the_symptoms_only_androgenic_case() -> None:
 def test_control_exercises_the_low_evidence_path() -> None:
     response = _load("control")["response"]
 
-    assert response["pcos_assessment"]["evidence_level"] == "low"
+    assert response["pmos_assessment"]["evidence_level"] == "low"
     assert response["rotterdam_axes"]["ovulatory_dysfunction"]["status"] == "not_met"
 
 

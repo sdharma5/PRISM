@@ -7,8 +7,8 @@
 # No clinical data is committed to this repository. Only descriptions live here.
 
 datasets:
-  pcos_tabular_public:
-    name: "Public PCOS clinical tabular dataset"
+  pmos_tabular_public:
+    name: "Public PMOS clinical tabular dataset"
     modality:
       - tabular
       - clinical
@@ -18,7 +18,7 @@ datasets:
     patient_level: true
     longitudinal: false
     labels:
-      - pcos_binary
+      - pmos_binary
     allowed_uses:
       - binary_baseline
       - phenotype_domain_modeling
@@ -52,8 +52,8 @@ datasets:
       - symptom_forecasting
       - missingness_analysis
     prohibited_claims:
-      - pcos_subtype_validation
-      - pcos_diagnosis
+      - pmos_subtype_validation
+      - pmos_diagnosis
       - binary_baseline
     notes: >-
       Requires credentialed access. Never committed. Participants are not the
@@ -76,8 +76,8 @@ datasets:
       - missingness_analysis
     prohibited_claims:
       - longitudinal_state_modeling
-      - validated_pcos_subtypes
-      - pcos_diagnosis
+      - validated_pmos_subtypes
+      - pmos_diagnosis
     notes: >-
       Complex survey design. Any population estimate must use survey weights;
       unweighted use is limited to reference ranges and unit harmonization.
@@ -99,8 +99,8 @@ datasets:
       - slice_extraction_for_2d_pretraining
       - optional_3d_benchmark
     prohibited_claims:
-      - pcos_diagnosis
-      - validated_pcos_subtypes
+      - pmos_diagnosis
+      - validated_pmos_subtypes
       - prospective_clinical_deployment
       - independent_2d_evaluation
     notes: >-
@@ -131,8 +131,8 @@ datasets:
       - pcom_morphology_classification
       - external_stress_testing
     prohibited_claims:
-      - pcos_diagnosis
-      - validated_pcos_subtypes
+      - pmos_diagnosis
+      - validated_pmos_subtypes
       - follicle_instance_segmentation
       - prospective_clinical_deployment
     notes: >-

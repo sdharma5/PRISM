@@ -398,7 +398,7 @@ def main(argv: list[str] | None = None) -> int:
             "The two annotators agree on the exact follicle count in only 5 of 16 "
             "volumes overall, so the r1/r2 gap is a lower bound on label uncertainty.",
             "Millimetre metrics are withheld for volumes with placeholder spacing.",
-            "This is an ovary/follicle morphology model. It is not a PCOS diagnostic "
+            "This is an ovary/follicle morphology model. It is not a PMOS diagnostic "
             "model and has learned no interaction with clinical or temporal data.",
         ],
     }

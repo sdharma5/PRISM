@@ -13,7 +13,7 @@ import { ShieldCheck, ShieldAlert, ShieldQuestion } from 'lucide-react'
 
 import { Card, Meter, SectionHeading, Stat, StatusPill } from './Primitives'
 import { formatCoverage, phenotypeVerdict, profileLabel, stabilityLabel } from '@/lib/present'
-import type { WebsitePCOSProfileResponse } from '@/types/api'
+import type { WebsitePMOSProfileResponse } from '@/types/api'
 
 const STABILITY_ICON = {
   stable: ShieldCheck,
@@ -32,7 +32,7 @@ const STABILITY_TONE = {
 export default function PhenotypeProfile({
   report,
 }: {
-  report: WebsitePCOSProfileResponse
+  report: WebsitePMOSProfileResponse
 }) {
   const phenotype = report.phenotype
   const verdict = phenotypeVerdict(report)

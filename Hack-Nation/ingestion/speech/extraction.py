@@ -7,7 +7,7 @@ every decision it makes (negated / historical / uncertain / whose symptom it is)
 traces to a named cue at a known character offset.
 
 The hardest failure mode in this domain is not a missed symptom — it is a
-*misattributed* one. "My mother has PCOS" becoming the patient's diagnosis
+*misattributed* one. "My mother has PMOS" becoming the patient's diagnosis
 corrupts every downstream label. So attribution is resolved explicitly, and a
 concept with no ``family_code`` can never emit a family event, while a concept
 with no patient-level ``code`` can never emit a patient event.
@@ -30,7 +30,7 @@ is a documented decision rather than an unnoticed gap:
   as ``onset`` and never resolved to a date: resolution needs the recording date
   plus a hemisphere/locale assumption, and a fabricated date is worse than an
   approximate phrase.
-* **Cross-sentence coreference.** "My sister has PCOS. I think I have it too."
+* **Cross-sentence coreference.** "My sister has PMOS. I think I have it too."
   The second sentence's "it" is not resolved, so it becomes an unmapped mention
   rather than a guessed diagnosis.
 * **Absolute self-reported anthropometrics.** "I weigh 200 pounds" is left alone:
@@ -194,7 +194,7 @@ class UnmappedMention(BaseModel):
     """A recognized concept with no canonical variable to put it in.
 
     Recorded rather than dropped: silent drops are how "the model never saw the
-    patient's own PCOS report" becomes an invisible bug.
+    patient's own PMOS report" becomes an invisible bug.
     """
 
     recording_id: str

@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import pytest
 
-from models.adapters.pcos.prototype_similarity import PrototypeSimilarityModel
+from models.adapters.pmos.prototype_similarity import PrototypeSimilarityModel
 from scripts.validate_phenotype_profiles import (
     defining_domain_support,
     minimum_observed_domain_rule,

@@ -1,8 +1,8 @@
 {
-  "pcos_positive": {
+  "pmos_positive": {
     "Sl. No": "357",
     "Patient File No.": "357",
-    "PCOS (Y/N)": "1",
+    "PMOS (Y/N)": "1",
     "Age (yrs)": "32",
     "Weight (Kg)": "80.4",
     "Height(Cm)": "165.0",
@@ -45,10 +45,10 @@
     "Avg. F size (R) (mm)": "15.0",
     "Endometrium (mm)": "11.0"
   },
-  "pcos_negative": {
+  "pmos_negative": {
     "Sl. No": "236",
     "Patient File No.": "236",
-    "PCOS (Y/N)": "0",
+    "PMOS (Y/N)": "0",
     "Age (yrs)": "28",
     "Weight (Kg)": "58.1",
     "Height(Cm)": "153.0",

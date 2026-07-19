@@ -55,7 +55,7 @@ _BINARY: tuple[tuple[str, float, float], ...] = (
     ("fatigue", 0.30, 0.6),
     ("mood_change", 0.30, 0.5),
     ("pelvic_pain", 0.20, 0.4),
-    ("family_history_pcos", 0.12, 0.7),
+    ("family_history_pmos", 0.12, 0.7),
     ("family_history_diabetes", 0.20, 0.4),
 )
 
@@ -72,7 +72,7 @@ def make_synthetic_cohort(
     seed: int = 0,
     missing_rate: float = 0.2,
 ) -> pd.DataFrame:
-    """Return a synthetic cohort keyed by ``patient_id`` with a ``pcos_binary`` label.
+    """Return a synthetic cohort keyed by ``patient_id`` with a ``pmos_binary`` label.
 
     Columns are canonical variable codes. Missing values are real ``NaN`` — the
     generator never encodes "unknown" as zero, because downstream code must be
@@ -106,10 +106,10 @@ def make_synthetic_cohort(
 
     # Label: latent risk plus substantial noise, so AUROC lands well below 1.0.
     label_logits = 1.7 * latent + rng.normal(scale=1.0, size=n) - 0.25
-    df["pcos_binary"] = (rng.uniform(size=n) < _sigmoid(label_logits)).astype(int)
+    df["pmos_binary"] = (rng.uniform(size=n) < _sigmoid(label_logits)).astype(int)
 
     if missing_rate > 0:
-        feature_cols = [c for c in df.columns if c not in {"patient_id", "pcos_binary"}]
+        feature_cols = [c for c in df.columns if c not in {"patient_id", "pmos_binary"}]
         for col in feature_cols:
             if col in _NEVER_COLLECTED:
                 continue

@@ -18,7 +18,7 @@ bleeding. The static encoder therefore learned that feature under one meaning
 while the registry, the mcPHASES temporal pipeline, and any patient-facing form
 used the other — a real cycle length of 52 days scored 0.003 where 5 scored
 0.985, a 300× inversion, and it would have surfaced only as "the model says low
-risk for obviously PCOS-presenting patients".
+risk for obviously PMOS-presenting patients".
 
 The trained artifact is frozen and is not refit, so the correction is made at
 the ingestion and encoder boundaries rather than in the checkpoint:
@@ -26,7 +26,7 @@ the ingestion and encoder boundaries rather than in the checkpoint:
 - **`registry/variables.yaml`** gains `menses_duration` (reproductive, days,
   range 1–14), documented as distinct from and easily confused with
   `cycle_length`.
-- **`ingestion/tabular_pcos/mapping.py`** maps `Cycle length(days)` →
+- **`ingestion/tabular_pmos/mapping.py`** maps `Cycle length(days)` →
   `menses_duration`, with its unit and `menstrual_history` modality declared, so
   the value is validated against 1–14 instead of 1–365 and does not silently
   default to the `questionnaire` modality.
@@ -67,7 +67,7 @@ accounting artifact.
   `biochemical_only`, `both`, or `unavailable`. Never omitted, never inferred.
   On this cohort it is always `symptoms_only`.
 - **Defining-domain eligibility gate** in
-  `models/adapters/pcos/prototype_similarity.py`. `metabolic_leaning` requires
+  `models/adapters/pmos/prototype_similarity.py`. `metabolic_leaning` requires
   `metabolic`; `lh_amh_leaning` requires `lh_amh_pattern`;
   `androgenic_leaning` requires clinical *or* biochemical androgenic evidence;
   `mixed` requires at least two assessable domains. Ineligible profiles are
@@ -110,7 +110,7 @@ intercept −0.649).
 ### Changed — BREAKING: ultrasound is now 2D-primary
 
 The ultrasound module was built 3D-first. That did not match clinical reality:
-routine PCOS assessment uses **2D transvaginal imaging**, and the 2023
+routine PMOS assessment uses **2D transvaginal imaging**, and the 2023
 international guideline is written around follicle number per ovary, follicle
 number per cross-section, and ovarian volume — it does not require a 3D
 acquisition. USOVA3D was driving the design purely because it is one of the few
@@ -168,7 +168,7 @@ Initial research preview covering Steps 1–9.
   domains, and a schema-version ledger.
 - **Event store** — append-only storage, conflict detection that preserves both
   sides, provenance tracing, and parameterized model-ready snapshots.
-- **Ingestion** — adapters for the public PCOS tabular cohort, NHANES, mcPHASES,
+- **Ingestion** — adapters for the public PMOS tabular cohort, NHANES, mcPHASES,
   speech, documents, and ultrasound.
 - **Step 3** — static baselines (logistic regression, random forest, gradient
   boosting, MLP, majority-class and rule baselines) with repeated stratified

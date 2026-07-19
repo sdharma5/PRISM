@@ -1,11 +1,11 @@
-# PCOS tabular cohort data configuration.
+# PMOS tabular cohort data configuration.
 #
 # Publicly available but NOT committed to this repository. When `data.path` does
-# not resolve to an existing file, scripts/prepare_pcos_tabular.py FAILS rather
+# not resolve to an existing file, scripts/prepare_pmos_tabular.py FAILS rather
 # than substituting synthetic data — preparing data is a claim that real data
 # exists. The training scripts do fall back to the synthetic fixture cohort,
 # which is what makes a fresh clone runnable end to end.
-dataset_id: pcos_tabular_public
+dataset_id: pmos_tabular_public
 dataset_version: unversioned
 
 # Canonical data location keys. `data.root` is the directory holding the
@@ -20,14 +20,14 @@ dataset_version: unversioned
 data:
   root: null
   # Relative to the resolved data root ($PRISM_DATA_ROOT). Derived from the
-  # source workbook's `Full_new` sheet by scripts/convert_pcos_xlsx.py — the
+  # source workbook's `Full_new` sheet by scripts/convert_pmos_xlsx.py — the
   # loader reads CSV only, and the Kaggle distribution ships .xlsx.
-  path: pcos_tabular/pcos_data.csv
+  path: pmos_tabular/pmos_data.csv
   # SOURCE column names, not canonical codes. The adapter maps these onto the
-  # registry codes (`patient_id`, `pcos_binary`) on the way out; naming the
+  # registry codes (`patient_id`, `pmos_binary`) on the way out; naming the
   # canonical code here makes validation fail with "missing patient id column".
   id_column: "Patient File No."
-  label_column: "PCOS (Y/N)"
+  label_column: "PMOS (Y/N)"
   group_column: null
   synthetic:
     n: 300
@@ -50,4 +50,4 @@ missingness:
   min_observed_fraction: 0.05
 
 output:
-  dir: artifacts/ingestion/pcos_tabular
+  dir: artifacts/ingestion/pmos_tabular

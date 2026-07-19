@@ -107,8 +107,8 @@ def test_corpus_wer_of_nothing_is_zero():
 
 
 def test_matching_pairs_on_code_and_attribution():
-    gold = [event("acne"), event("family_history_pcos", attribution="family_member")]
-    pred = [event("family_history_pcos", attribution="family_member"), event("acne")]
+    gold = [event("acne"), event("family_history_pmos", attribution="family_member")]
+    pred = [event("family_history_pmos", attribution="family_member"), event("acne")]
     matched, spurious, missed = match_events(gold, pred)
     assert len(matched) == 2
     assert spurious == [] and missed == []

@@ -1,4 +1,4 @@
-"""Structural validation for the PCOS tabular source.
+"""Structural validation for the PMOS tabular source.
 
 Validation is deliberately loud and pre-emptive: a column we do not recognise
 is an error, because the alternative is silently discarding a clinical variable
@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Sequence
 
-from ingestion.tabular_pcos.mapping import canonical_code_for, excluded_reason_for
+from ingestion.tabular_pmos.mapping import canonical_code_for, excluded_reason_for
 from registry.loader import load_variable_registry
 
 __all__ = [

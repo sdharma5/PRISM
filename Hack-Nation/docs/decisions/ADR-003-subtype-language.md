@@ -4,7 +4,7 @@
 
 ## Context
 
-Unsupervised clustering on a PCOS cohort will produce groups. Those groups will
+Unsupervised clustering on a PMOS cohort will produce groups. Those groups will
 be interpretable — one will have higher BMI, glucose and insulin; another higher
 LH and AMH. It is extremely tempting to call these "the metabolic subtype" and
 "the LH–AMH subtype", especially because published work describes similar

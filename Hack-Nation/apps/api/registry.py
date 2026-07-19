@@ -26,9 +26,9 @@ from evaluation.calibration import PlattCalibrator
 from inference.encoder_registry import EncoderConfigurationError, build_encoders
 from inference.evidence_coordinator import EvidenceCoordinator
 from inference.orchestrator import PatientInferenceOrchestrator
-from models.adapters.pcos.evidence_adapter import PcosEvidenceAdapter
-from models.adapters.pcos.prototype_similarity import PrototypeSimilarityModel
-from models.adapters.pcos.stability import PhenotypeStabilityEngine
+from models.adapters.pmos.evidence_adapter import PmosEvidenceAdapter
+from models.adapters.pmos.prototype_similarity import PrototypeSimilarityModel
+from models.adapters.pmos.stability import PhenotypeStabilityEngine
 
 __all__ = ["BranchStatus", "ModelRegistry", "ModelRegistryError"]
 
@@ -149,7 +149,7 @@ class ModelRegistry:
         if static_encoder is None:
             message = (
                 "The static clinical encoder is not available. It is the only branch "
-                "entitled to issue a whole-patient PCOS score, so the service cannot "
+                "entitled to issue a whole-patient PMOS score, so the service cannot "
                 "produce its primary output without it."
             )
             if require_static:
@@ -160,7 +160,7 @@ class ModelRegistry:
         if calibrator_note:
             warnings.append(calibrator_note)
 
-        adapter = PcosEvidenceAdapter(
+        adapter = PmosEvidenceAdapter(
             static_model=static_encoder,
             # Both ship working defaults. Omitting them yields empty
             # similarities and no stability verdict, which reads as "no

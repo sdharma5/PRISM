@@ -1,4 +1,4 @@
-"""Source-column mapping for the public PCOS tabular dataset.
+"""Source-column mapping for the public PMOS tabular dataset.
 
 Real-world exports of this dataset carry inconsistent header spelling: stray
 leading spaces (``" Age (yrs)"``), inconsistent capitalisation, and units baked
@@ -84,7 +84,7 @@ _SOURCE_COLUMN_CANDIDATES: dict[str, str | None] = {
     "Fast food (Y/N)": None,
     "Reg.Exercise(Y/N)": None,
     # Label
-    "PCOS (Y/N)": "pcos_binary",
+    "PMOS (Y/N)": "pmos_binary",
 }
 
 # Drop the placeholder Nones: those headers are excluded, not mapped. Keeping

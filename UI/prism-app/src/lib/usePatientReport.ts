@@ -9,10 +9,10 @@ import { useCallback, useEffect, useState } from 'react'
 import { ApiError, apiMode } from './apiClient'
 import { getModelStatus, getPatientReport } from './api'
 import { loadAssessment, onAssessmentChange } from './reportStore'
-import type { ModelStatusResponse, WebsitePCOSProfileResponse } from '@/types/api'
+import type { ModelStatusResponse, WebsitePMOSProfileResponse } from '@/types/api'
 
 export interface ReportState {
-  report: WebsitePCOSProfileResponse | null
+  report: WebsitePMOSProfileResponse | null
   status: ModelStatusResponse | null
   loading: boolean
   /** Set when the report itself could not be produced. */
@@ -31,7 +31,7 @@ function asApiError(cause: unknown): ApiError {
 }
 
 export function usePatientReport(patientId?: string): ReportState {
-  const [report, setReport] = useState<WebsitePCOSProfileResponse | null>(null)
+  const [report, setReport] = useState<WebsitePMOSProfileResponse | null>(null)
   const [status, setStatus] = useState<ModelStatusResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<ApiError | null>(null)

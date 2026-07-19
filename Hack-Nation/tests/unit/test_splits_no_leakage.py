@@ -27,7 +27,7 @@ def cohort():
 def test_repeated_stratified_kfold_is_patient_disjoint(cohort):
     manifest = make_repeated_stratified_kfold_manifest(
         cohort["patient_id"],
-        cohort["pcos_binary"],
+        cohort["pmos_binary"],
         manifest_id="m",
         dataset_id="synthetic",
         n_splits=5,
@@ -43,7 +43,7 @@ def test_repeated_stratified_kfold_is_patient_disjoint(cohort):
 def test_every_patient_is_tested_exactly_once_per_seed(cohort):
     manifest = make_repeated_stratified_kfold_manifest(
         cohort["patient_id"],
-        cohort["pcos_binary"],
+        cohort["pmos_binary"],
         manifest_id="m",
         dataset_id="synthetic",
         n_splits=4,
@@ -81,7 +81,7 @@ def test_leave_one_participant_out_holds_out_one_person(cohort):
 def test_holdout_split_is_disjoint(cohort):
     manifest = make_holdout_manifest(
         cohort["patient_id"],
-        cohort["pcos_binary"],
+        cohort["pmos_binary"],
         manifest_id="m",
         dataset_id="synthetic",
         test_size=0.25,
@@ -92,10 +92,10 @@ def test_holdout_split_is_disjoint(cohort):
 
 
 def test_reserved_holdout_never_appears_in_any_fold(cohort):
-    held = reserve_holdout_patients(cohort["patient_id"], cohort["pcos_binary"], fraction=0.2)
+    held = reserve_holdout_patients(cohort["patient_id"], cohort["pmos_binary"], fraction=0.2)
     manifest = make_repeated_stratified_kfold_manifest(
         cohort["patient_id"],
-        cohort["pcos_binary"],
+        cohort["pmos_binary"],
         manifest_id="m",
         dataset_id="synthetic",
         n_splits=4,
@@ -137,7 +137,7 @@ def test_assert_disjoint_fires_when_a_fold_touches_the_holdout():
 def test_save_and_load_round_trip(tmp_path, cohort):
     manifest = make_repeated_stratified_kfold_manifest(
         cohort["patient_id"],
-        cohort["pcos_binary"],
+        cohort["pmos_binary"],
         manifest_id="round-trip",
         dataset_id="synthetic",
         n_splits=3,
@@ -152,7 +152,7 @@ def test_fold_row_indices_do_not_overlap(cohort):
     manifest = build_split_manifest(
         "repeated_stratified_kfold",
         cohort["patient_id"].tolist(),
-        cohort["pcos_binary"].tolist(),
+        cohort["pmos_binary"].tolist(),
         None,
         manifest_id="m",
         dataset_id="synthetic",

@@ -1,18 +1,18 @@
-"""The PCOS interpretation layer over coordinated multimodal evidence.
+"""The PMOS interpretation layer over coordinated multimodal evidence.
 
-This is the ``PCOSAdapter.predict(evidence) -> PCOSProfileOutput`` contract from
+This is the ``PMOSAdapter.predict(evidence) -> PMOSProfileOutput`` contract from
 prompt_4. It is deliberately a *separate* class from the cohort-level
-:class:`~models.adapters.pcos.adapter.PcosAdapter`, which discovers exploratory
+:class:`~models.adapters.pmos.adapter.PmosAdapter`, which discovers exploratory
 profiles by clustering a whole cohort. The two answer different questions:
 
-* ``PcosAdapter``          -- "what profiles exist in this cohort?" (fit on many)
-* ``PcosEvidenceAdapter``  -- "what does this one patient's evidence show?"
+* ``PmosAdapter``          -- "what profiles exist in this cohort?" (fit on many)
+* ``PmosEvidenceAdapter``  -- "what does this one patient's evidence show?"
 
 Only the second runs at inference time for a new patient.
 
 Composition of learned and rule-based parts, per prompt_4:
 
-* **Part A, learned** -- the static clinical PCOS head, trained on the matched
+* **Part A, learned** -- the static clinical PMOS head, trained on the matched
   tabular cohort where symptoms, labs, history and derived measurements all
   belong to the same person. Genuinely supervised.
 * **Part B, rule-based** -- everything crossing modality boundaries: guideline
@@ -21,7 +21,7 @@ Composition of learned and rule-based parts, per prompt_4:
 
 The adapter never blurs the two. ``learned_components_used`` and
 ``rule_based_components_used`` are populated on every output, and the schema
-refuses a PCOS probability that is not backed by the learned head.
+refuses a PMOS probability that is not backed by the learned head.
 """
 
 from __future__ import annotations
@@ -32,18 +32,18 @@ from typing import Any, Protocol
 from evaluation.calibration import PlattCalibrator
 from features.phenotype_domains import load_domain_specs
 from inference.report_schema import CoordinatedEvidence
-from models.adapters.pcos.abstention import PcosAbstentionEngine
-from models.adapters.pcos.evidence_rules import PcosEvidenceRules
-from models.adapters.pcos.explanation import build_explanation
-from models.adapters.pcos.feature_mapper import PcosFeatureMapper
-from models.adapters.pcos.profile_output import (
+from models.adapters.pmos.abstention import PmosAbstentionEngine
+from models.adapters.pmos.evidence_rules import PmosEvidenceRules
+from models.adapters.pmos.explanation import build_explanation
+from models.adapters.pmos.feature_mapper import PmosFeatureMapper
+from models.adapters.pmos.profile_output import (
     AxisEvidenceOutput,
-    PCOSProfileOutput,
+    PMOSProfileOutput,
     PhenotypeDomainDetail,
 )
-from models.adapters.pcos.prototype_similarity import androgenic_evidence_source, summarize
+from models.adapters.pmos.prototype_similarity import androgenic_evidence_source, summarize
 
-__all__ = ["PcosEvidenceAdapter", "StaticPcosHead"]
+__all__ = ["PmosEvidenceAdapter", "StaticPmosHead"]
 
 
 @lru_cache(maxsize=1)
@@ -146,35 +146,35 @@ def _stability_payload(report: Any) -> dict[str, Any]:
     }
 
 
-class StaticPcosHead(Protocol):
+class StaticPmosHead(Protocol):
     """The trained static clinical model, as the adapter needs it."""
 
     def predict_proba_from_features(self, values: dict[str, Any]) -> float:
-        """Return P(PCOS) for one patient's canonical clinical variables."""
+        """Return P(PMOS) for one patient's canonical clinical variables."""
         ...
 
 
-class PcosEvidenceAdapter:
-    """Interpret coordinated evidence as a PCOS-specific profile."""
+class PmosEvidenceAdapter:
+    """Interpret coordinated evidence as a PMOS-specific profile."""
 
-    model_version = "pcos-evidence-adapter-0.1.0"
+    model_version = "pmos-evidence-adapter-0.1.0"
 
     def __init__(
         self,
         *,
-        static_model: StaticPcosHead | None = None,
-        feature_mapper: PcosFeatureMapper | None = None,
-        evidence_rules: PcosEvidenceRules | None = None,
-        abstention_engine: PcosAbstentionEngine | None = None,
+        static_model: StaticPmosHead | None = None,
+        feature_mapper: PmosFeatureMapper | None = None,
+        evidence_rules: PmosEvidenceRules | None = None,
+        abstention_engine: PmosAbstentionEngine | None = None,
         prototype_model: Any | None = None,
         stability_engine: Any | None = None,
         calibrator: PlattCalibrator | None = None,
     ) -> None:
         """
         Args:
-            static_model: Trained static clinical PCOS head. When None, the
+            static_model: Trained static clinical PMOS head. When None, the
                 adapter still reports axis-level evidence but abstains from any
-                whole-patient PCOS probability.
+                whole-patient PMOS probability.
             feature_mapper: Token-to-variable mapper.
             evidence_rules: Guideline axis evaluator.
             abstention_engine: Insufficient-evidence policy.
@@ -186,9 +186,9 @@ class PcosEvidenceAdapter:
                 never be fitted on the patients it scores.
         """
         self.static_model = static_model
-        self.feature_mapper = feature_mapper or PcosFeatureMapper()
-        self.evidence_rules = evidence_rules or PcosEvidenceRules()
-        self.abstention_engine = abstention_engine or PcosAbstentionEngine()
+        self.feature_mapper = feature_mapper or PmosFeatureMapper()
+        self.evidence_rules = evidence_rules or PmosEvidenceRules()
+        self.abstention_engine = abstention_engine or PmosAbstentionEngine()
         self.prototype_model = prototype_model
         self.stability_engine = stability_engine
         self.calibrator = calibrator
@@ -213,14 +213,14 @@ class PcosEvidenceAdapter:
         try:
             probability = float(self.static_model.predict_proba_from_features(mapped.values))
         except Exception as exc:  # noqa: BLE001 - a failed head must not sink the profile
-            mapped.warnings.append(f"Static PCOS head failed and was skipped: {exc}")
+            mapped.warnings.append(f"Static PMOS head failed and was skipped: {exc}")
             return None, []
-        return max(0.0, min(1.0, probability)), ["static_clinical.pcos_head"]
+        return max(0.0, min(1.0, probability)), ["static_clinical.pmos_head"]
 
     # -- public API --------------------------------------------------------
 
-    def predict(self, evidence: CoordinatedEvidence) -> PCOSProfileOutput:
-        """Produce a PCOS profile from coordinated evidence.
+    def predict(self, evidence: CoordinatedEvidence) -> PMOSProfileOutput:
+        """Produce a PMOS profile from coordinated evidence.
 
         Args:
             evidence: Output of the evidence coordinator.
@@ -239,7 +239,7 @@ class PcosEvidenceAdapter:
         )
 
         rule_based = [
-            "pcos_adapter.guideline_axis_thresholds",
+            "pmos_adapter.guideline_axis_thresholds",
             "evidence_coordinator.design_rule_weights",
         ]
 
@@ -254,7 +254,7 @@ class PcosEvidenceAdapter:
         static = evidence.static_token
         if static is not None:
             for key, value in static.structured_features.items():
-                if not key.endswith("_score") or key == "pcos_evidence_probability":
+                if not key.endswith("_score") or key == "pmos_evidence_probability":
                     continue
                 name = key[: -len("_score")]
                 if name not in known_domains:
@@ -269,7 +269,7 @@ class PcosEvidenceAdapter:
             try:
                 similarity = self.prototype_model.predict(domain_scores)
                 phenotype = dict(similarity.affinities)
-                rule_based.append("pcos_adapter.prototype_similarity")
+                rule_based.append("pmos_adapter.prototype_similarity")
             except Exception as exc:  # noqa: BLE001
                 mapped.warnings.append(f"Prototype similarity failed and was skipped: {exc}")
 
@@ -286,7 +286,7 @@ class PcosEvidenceAdapter:
                 )
                 stability_score = float(stability_report.stability_score)
                 flip_rate = float(stability_report.profile_flip_rate)
-                rule_based.append("pcos_adapter.stability_engine")
+                rule_based.append("pmos_adapter.stability_engine")
                 is_stable = bool(
                     stability_report.is_stable and not stability_report.abstain_from_profile
                 )
@@ -356,9 +356,9 @@ class PcosEvidenceAdapter:
             stability=_stability_payload(stability_report),
         )
 
-        return PCOSProfileOutput(
+        return PMOSProfileOutput(
             patient_id=evidence.patient_id,
-            pcos_evidence_probability=None if decision.abstain else probability,
+            pmos_evidence_probability=None if decision.abstain else probability,
             diagnostic_feature_evidence=axis_outputs,
             raw_model_score=probability,
             calibrated_model_score=self._calibrate(probability),

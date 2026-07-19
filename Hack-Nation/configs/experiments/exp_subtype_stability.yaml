@@ -11,7 +11,7 @@
 
 experiment_id: exp_subtype_stability
 description: >-
-  Discover data-driven profiles among PCOS-positive training participants, choose
+  Discover data-driven profiles among PMOS-positive training participants, choose
   K on measured evidence, and quantify how much of the grouping survives
   resampling, ablation and plausible measurement noise. Discovered groups are
   exploratory patterns within one cohort and are never validated clinical
@@ -24,13 +24,13 @@ data:
   root: null
   # Wide canonical cohort from scripts/build_cohort_table.py, relative to the
   # resolved data root ($PRISM_DATA_ROOT).
-  path: pcos_tabular/cohort_wide.csv
+  path: pmos_tabular/cohort_wide.csv
   id_column: patient_id
-  label_column: pcos_binary
-  # Clustering is restricted to PCOS-positive participants. Clustering a mixed
+  label_column: pmos_binary
+  # Clustering is restricted to PMOS-positive participants. Clustering a mixed
   # case/control cohort would make the dominant axis case-vs-control, which would
   # then be misread as a phenotype axis.
-  pcos_positive_only: true
+  pmos_positive_only: true
   features: null   # null = every numeric column
   synthetic:
     n_per_group: 45

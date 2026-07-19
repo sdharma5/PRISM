@@ -25,7 +25,7 @@ NON_DIAGNOSTIC = (
 )
 
 DEFAULT_OUT_OF_SCOPE = [
-    "Diagnosis of PCOS or any other condition",
+    "Diagnosis of PMOS or any other condition",
     "Screening, triage, or risk stratification of real patients",
     "Guiding, ordering, or withholding any clinical test or treatment",
     "Any deployment where a person is affected by the output",

@@ -1,8 +1,8 @@
-"""Transparent PCOS evidence rules over mapped multimodal features.
+"""Transparent PMOS evidence rules over mapped multimodal features.
 
 Two sources of truth are combined here, and they are not equals:
 
-1. **Guideline axis assessment** (:mod:`models.adapters.pcos.diagnostic_features`)
+1. **Guideline axis assessment** (:mod:`models.adapters.pmos.diagnostic_features`)
    -- published thresholds with citations, applied to canonical variables. This
    is the authoritative signal. An axis that is *met* is met because a named
    guideline says so.
@@ -26,10 +26,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from models.adapters.pcos.diagnostic_features import assess_all_axes
-from models.adapters.pcos.feature_mapper import MappedPcosFeatures
+from models.adapters.pmos.diagnostic_features import assess_all_axes
+from models.adapters.pmos.feature_mapper import MappedPmosFeatures
 
-__all__ = ["DiagnosticFeatureEvidence", "PcosEvidenceRules"]
+__all__ = ["DiagnosticFeatureEvidence", "PmosEvidenceRules"]
 
 #: Which coordinated domain informs which diagnostic axis.
 _AXIS_DOMAIN = {
@@ -44,7 +44,7 @@ _LEVEL_FOR_SCORE = ((0.66, "high"), (0.40, "moderate"))
 
 @dataclass
 class DiagnosticFeatureEvidence:
-    """Evidence for one PCOS diagnostic axis."""
+    """Evidence for one PMOS diagnostic axis."""
 
     axis: str
     level: str = "insufficient_evidence"
@@ -59,8 +59,8 @@ class DiagnosticFeatureEvidence:
     notes: list[str] = field(default_factory=list)
 
 
-class PcosEvidenceRules:
-    """Evaluate PCOS diagnostic axes from mapped multimodal evidence."""
+class PmosEvidenceRules:
+    """Evaluate PMOS diagnostic axes from mapped multimodal evidence."""
 
     def __init__(self, threshold_overrides: dict[str, dict[str, float]] | None = None) -> None:
         """
@@ -78,8 +78,8 @@ class PcosEvidenceRules:
                 return label
         return "low"
 
-    def evaluate(self, mapped: MappedPcosFeatures) -> dict[str, DiagnosticFeatureEvidence]:
-        """Assess every PCOS axis.
+    def evaluate(self, mapped: MappedPmosFeatures) -> dict[str, DiagnosticFeatureEvidence]:
+        """Assess every PMOS axis.
 
         Args:
             mapped: Canonical variables plus coordinated domain evidence.

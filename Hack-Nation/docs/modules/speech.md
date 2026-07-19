@@ -19,7 +19,7 @@ patient–clinician conversation is experimental.
 |:--|:--|
 | "My periods have been between 45 and 70 days apart for about a year." | `cycle_irregularity`, present, duration ≈ 12 months, current |
 | "I had acne in high school, but I do not have it now." | `acne`, **historical_resolved**, current = false |
-| "My sister has PCOS." | `family_history_pcos`, present, current = false |
+| "My sister has PMOS." | `family_history_pmos`, present, current = false |
 
 The third case is the one that matters most: a relative's diagnosis must never
 become the patient's. It is a canonical variable of its own, and a unit test

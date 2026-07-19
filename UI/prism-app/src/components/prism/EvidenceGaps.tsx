@@ -10,9 +10,9 @@ import { AlertCircle, HelpCircle } from 'lucide-react'
 
 import { Card, SectionHeading } from './Primitives'
 import { humanizeCode } from '@/lib/present'
-import type { WebsitePCOSProfileResponse } from '@/types/api'
+import type { WebsitePMOSProfileResponse } from '@/types/api'
 
-export default function EvidenceGaps({ report }: { report: WebsitePCOSProfileResponse }) {
+export default function EvidenceGaps({ report }: { report: WebsitePMOSProfileResponse }) {
   const missing = report.missing_evidence ?? []
   const conflicts = report.conflicting_evidence ?? []
 

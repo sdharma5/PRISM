@@ -1,6 +1,6 @@
 """2D ovary/follicle segmentation — the PRIMARY segmentation pathway.
 
-Routine PCOS ultrasound assessment is 2D transvaginal imaging. The sonographer
+Routine PMOS ultrasound assessment is 2D transvaginal imaging. The sonographer
 sweeps the probe through the ovary and reads follicles off individual B-mode
 frames; a dedicated 3D volume acquisition is an optional extra that most clinics
 do not perform. This module is therefore the default segmenter, and

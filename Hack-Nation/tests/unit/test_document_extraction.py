@@ -307,7 +307,7 @@ def test_impression_is_evidence_not_a_diagnosis(ultrasound):
     )
     assert impression.value == "present"
     codes = {f.canonical_code for f in result.findings}
-    assert "pcos_binary" not in codes
+    assert "pmos_binary" not in codes
 
 
 def test_indeterminate_beats_a_positive_keyword(parser):

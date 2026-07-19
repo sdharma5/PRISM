@@ -2,8 +2,8 @@
 
 This is the single structured record type that every ingestion adapter emits and
 that the event store persists. It is deliberately condition-agnostic: nothing in
-this module may reference PCOS-specific fields. PCOS logic belongs in
-``models/adapters/pcos/``.
+this module may reference PMOS-specific fields. PMOS logic belongs in
+``models/adapters/pmos/``.
 """
 
 from __future__ import annotations

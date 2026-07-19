@@ -49,7 +49,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from models.adapters.pcos.phenotype_heads import compute_domain_scores  # noqa: E402
+from models.adapters.pmos.phenotype_heads import compute_domain_scores  # noqa: E402
 from models.phenotype.clustering import ClusteringInput  # noqa: E402
 from schemas.phenotype import ClusteringBenchmark  # noqa: E402
 from scripts._cli import DATA_ROOT_ENV, env_path, resolve_output_dir, resolve_path  # noqa: E402
@@ -225,7 +225,7 @@ def load_cohort(config: dict[str, Any], data_root: str | Path | None = None) -> 
                 frame = frame.set_index(id_column)
             label_column = dataset.get("label_column")
             subset_ids = list(frame.index.astype(str))
-            if dataset.get("pcos_positive_only", True) and label_column in frame.columns:
+            if dataset.get("pmos_positive_only", True) and label_column in frame.columns:
                 subset_ids = [str(i) for i in frame.index[frame[label_column].astype(float) == 1.0]]
                 notes.append(
                     f"Clustering restricted to {len(subset_ids)} participants positive on "

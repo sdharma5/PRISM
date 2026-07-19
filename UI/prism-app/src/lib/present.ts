@@ -1,18 +1,18 @@
 // Wording rules for anything clinical, kept in one place so components can't
-// drift. A model score isn't a probability of having PCOS, a z-score isn't a
+// drift. A model score isn't a probability of having PMOS, a z-score isn't a
 // percentage, and an unassessable axis isn't a negative result.
 
 import type {
   AxisView,
   DomainScoreView,
-  PcosAssessmentView,
-  WebsitePCOSProfileResponse,
+  PmosAssessmentView,
+  WebsitePMOSProfileResponse,
 } from '@/types/api'
 
 // Derived from the generated interfaces: OpenAPI inlines these unions into the
 // properties that use them, so there's no named schema to generate.
 type AxisStatus = NonNullable<AxisView['status']>
-type EvidenceLevel = NonNullable<PcosAssessmentView['evidence_level']>
+type EvidenceLevel = NonNullable<PmosAssessmentView['evidence_level']>
 
 /** Human label for an evidence band. */
 export function evidenceLabel(level: EvidenceLevel | string | undefined): string {
@@ -48,7 +48,7 @@ export function evidenceTone(level: EvidenceLevel | string | undefined):
   }
 }
 
-/** Two decimals, no percent sign. Never "N% chance of PCOS". */
+/** Two decimals, no percent sign. Never "N% chance of PMOS". */
 export function formatScore(score: number | null | undefined): string {
   return score == null ? '—' : score.toFixed(2)
 }
@@ -158,7 +158,7 @@ export interface PhenotypeVerdict {
  * be both determinate and stable; either alone isn't enough. Indeterminate is a
  * normal outcome, not an error.
  */
-export function phenotypeVerdict(report: WebsitePCOSProfileResponse): PhenotypeVerdict {
+export function phenotypeVerdict(report: WebsitePMOSProfileResponse): PhenotypeVerdict {
   const phenotype = report.phenotype
   const dominant = phenotype?.dominant_profile
   const resolved = Boolean(dominant) && Boolean(phenotype?.stable_dominant_profile)
@@ -183,7 +183,7 @@ export function phenotypeVerdict(report: WebsitePCOSProfileResponse): PhenotypeV
   }
 }
 
-/** "Androgenic-leaning pattern", never "androgenic PCOS subtype". */
+/** "Androgenic-leaning pattern", never "androgenic PMOS subtype". */
 export function profileLabel(key: string): string {
   const base = key.replace(/_leaning$/, '').replace(/_/g, '–')
   const pretty = base.charAt(0).toUpperCase() + base.slice(1)

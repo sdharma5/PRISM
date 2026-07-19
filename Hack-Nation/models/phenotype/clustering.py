@@ -18,10 +18,10 @@ co-association matrix itself is a stability diagnostic.
 Design constraints enforced here
 --------------------------------
 * Clustering is only ever run on a **caller-supplied subset** of participants
-  (e.g. the PCOS-positive training split). ``run_clustering_benchmark`` raises if
+  (e.g. the PMOS-positive training split). ``run_clustering_benchmark`` raises if
   the subset is not given, so nobody can accidentally discover "subtypes" over a
   mixed case/control cohort and then interpret the case/control axis as biology.
-* No PCOS-specific logic lives here. This module knows about matrices only.
+* No PMOS-specific logic lives here. This module knows about matrices only.
 """
 
 from __future__ import annotations
@@ -286,8 +286,8 @@ def run_clustering_benchmark(
     Parameters
     ----------
     cluster_subset_ids:
-        **Required.** The participants to cluster — for the PCOS adapter this is
-        the PCOS-positive *training* split. Passing an empty subset raises rather
+        **Required.** The participants to cluster — for the PMOS adapter this is
+        the PMOS-positive *training* split. Passing an empty subset raises rather
         than defaulting to "everyone": clustering a mixed cohort and reading the
         dominant case/control axis as a phenotype axis is the single easiest way
         to manufacture a spurious subtype.
@@ -299,7 +299,7 @@ def run_clustering_benchmark(
     if not cluster_subset_ids:
         raise ValueError(
             "cluster_subset_ids is required: clustering must be restricted to an "
-            "explicit participant subset (e.g. PCOS-positive training participants)."
+            "explicit participant subset (e.g. PMOS-positive training participants)."
         )
 
     results: list[ClusteringBenchmark] = []
@@ -421,7 +421,7 @@ def select_k(
     """Rank configurations on evidence and return the best-supported one.
 
     **K is never fixed a priori — and in particular, four clusters is never
-    chosen by default just because the published PCOS literature commonly
+    chosen by default just because the published PMOS literature commonly
     reports four subtypes (the four Rotterdam phenotype combinations, and the
     reproductive/metabolic groupings of Dapas et al. 2020).** Those are
     *hypotheses to be tested against our own data*, not a prior we encode. This

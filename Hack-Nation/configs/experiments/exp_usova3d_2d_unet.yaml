@@ -4,7 +4,7 @@
 
 experiment_id: exp_usova3d_2d_unet
 description: 'Dual-head 2D U-Net on slices extracted from USOVA3D volumes. Deployment-oriented:
-  routine PCOS ultrasound is 2D. Slices are derived AFTER the volume-level split,
+  routine PMOS ultrasound is 2D. Slices are derived AFTER the volume-level split,
   so no volume contributes slices to more than one split.'
 data:
   dataset_id: usova3d

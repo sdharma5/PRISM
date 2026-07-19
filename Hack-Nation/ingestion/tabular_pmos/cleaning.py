@@ -1,4 +1,4 @@
-"""Value-level cleaning for the PCOS tabular source.
+"""Value-level cleaning for the PMOS tabular source.
 
 Cleaning here is strictly *interpretation*, never *repair*. A cell is either
 understood (returned as a typed value) or not understood (returned as ``None``

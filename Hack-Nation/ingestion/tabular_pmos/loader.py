@@ -1,4 +1,4 @@
-"""Ingestion adapter for the public PCOS clinical tabular dataset.
+"""Ingestion adapter for the public PMOS clinical tabular dataset.
 
 The dataset is cross-sectional and dataset-provided, so every emitted event
 carries ``provenance='dataset_provided'`` and
@@ -15,15 +15,15 @@ from typing import Any
 import pandas as pd
 
 from ingestion.base import BaseIngestionAdapter, file_checksum
-from ingestion.tabular_pcos.cleaning import clean_value
-from ingestion.tabular_pcos.mapping import (
+from ingestion.tabular_pmos.cleaning import clean_value
+from ingestion.tabular_pmos.mapping import (
     EXCLUDED_COLUMNS,
     SOURCE_COLUMN_MAP,
     UNIT_BY_CODE,
     canonical_code_for,
     modality_for,
 )
-from ingestion.tabular_pcos.validation import validate_columns, validate_patient_ids
+from ingestion.tabular_pmos.validation import validate_columns, validate_patient_ids
 from registry.loader import load_dataset_registry
 from schemas.dataset import ProcessingManifest
 from schemas.event import EVIDENCE_REQUIRED_MODALITIES, HormonalHealthEvent
@@ -31,10 +31,10 @@ from schemas.event import EVIDENCE_REQUIRED_MODALITIES, HormonalHealthEvent
 DEFAULT_ID_COLUMN = "Patient File No."
 
 
-class PcosTabularAdapter(BaseIngestionAdapter):
-    """Turns one PCOS tabular CSV into canonical :class:`HormonalHealthEvent` rows."""
+class PmosTabularAdapter(BaseIngestionAdapter):
+    """Turns one PMOS tabular CSV into canonical :class:`HormonalHealthEvent` rows."""
 
-    dataset_id = "pcos_tabular_public"
+    dataset_id = "pmos_tabular_public"
     adapter_version = "0.1.0"
 
     def __init__(
@@ -163,6 +163,6 @@ class PcosTabularAdapter(BaseIngestionAdapter):
         raw = self.load_raw(source)
         errors = self.validate_raw(raw)
         if errors and strict:
-            raise ValueError("PCOS tabular validation failed:\n" + "\n".join(errors))
+            raise ValueError("PMOS tabular validation failed:\n" + "\n".join(errors))
         self.warnings.extend(errors)
         return self.transform(raw)

@@ -1,4 +1,4 @@
-"""The final PCOS research output contract.
+"""The final PMOS research output contract.
 
 Scientific WHY
 --------------
@@ -96,11 +96,11 @@ class AbstentionReport(BaseModel):
     indeterminate_probability: float = 0.0
 
 
-class PcosResearchOutput(BaseModel):
+class PmosResearchOutput(BaseModel):
     """The complete, self-describing research output for one participant."""
 
     patient_id: str
-    adapter: str = "pcos"
+    adapter: str = "pmos"
     adapter_version: str = "0.1.0"
     source_dataset: str | None = None
     generated_at: str | None = None
@@ -134,5 +134,5 @@ class PcosResearchOutput(BaseModel):
         return path
 
     @classmethod
-    def read_json(cls, path: Path) -> PcosResearchOutput:
+    def read_json(cls, path: Path) -> PmosResearchOutput:
         return cls.model_validate(json.loads(Path(path).read_text()))

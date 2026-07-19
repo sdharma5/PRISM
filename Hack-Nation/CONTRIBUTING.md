@@ -33,7 +33,7 @@ make ci        # format, lint, typecheck, test, validate-registry, docs
 11. Every speech or document event links to source evidence.
 12. Unconfirmed extracted events never enter model-ready snapshots.
 13. Ultrasound output distinguishes model-generated from clinician-confirmed.
-14. PCOS subtype output uses probabilistic, research-oriented language.
+14. PMOS subtype output uses probabilistic, research-oriented language.
 15. Every model supports an indeterminate or abstain output.
 16. Run `make ci` before considering a task complete.
 17. Update the relevant docs in the same pull request.

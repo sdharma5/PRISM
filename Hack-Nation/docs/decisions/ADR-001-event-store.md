@@ -45,5 +45,5 @@ from. Missingness analysis becomes a first-class query rather than a
 reconstruction after the fact.
 
 **Condition-agnostic by construction.** The store knows about *variables*, not
-about PCOS. Adding another hormonal condition means adding registry entries and
+about PMOS. Adding another hormonal condition means adding registry entries and
 an adapter under `models/adapters/`, not reshaping the substrate.

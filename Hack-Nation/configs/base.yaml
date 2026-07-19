@@ -11,10 +11,10 @@ data:
   # which is what makes every experiment runnable in a fresh checkout.
   path: null
   format: csv
-  dataset_id: pcos_tabular_public
+  dataset_id: pmos_tabular_public
   dataset_version: "unknown"
   id_column: patient_id
-  label_column: pcos_binary
+  label_column: pmos_binary
   group_column: null
   synthetic:
     n: 300

@@ -1,6 +1,6 @@
 """3D ovary/follicle segmentation — the OPTIONAL enhanced-mode pathway.
 
-A dedicated 3D volume acquisition is not the routine clinical input for PCOS
+A dedicated 3D volume acquisition is not the routine clinical input for PMOS
 ovarian assessment; 2D transvaginal imaging is (see
 :mod:`models.ultrasound.segmenter_2d`, the primary path). A volume is worth
 having when it exists, because it is the only acquisition that supports a *true*

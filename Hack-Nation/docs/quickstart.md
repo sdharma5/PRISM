@@ -63,7 +63,7 @@ Nothing else.
 4. Run the prepare script, then the training script:
 
 ```bash
-python scripts/prepare_pcos_tabular.py --config configs/data/pcos_tabular.yaml
+python scripts/prepare_pmos_tabular.py --config configs/data/pmos_tabular.yaml
 python scripts/train_static_baselines.py --config configs/experiments/exp_static_baselines.yaml
 ```
 

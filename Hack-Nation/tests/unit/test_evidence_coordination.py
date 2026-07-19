@@ -1,4 +1,4 @@
-"""Invariants of the evidence coordination and PCOS interpretation layer.
+"""Invariants of the evidence coordination and PMOS interpretation layer.
 
 These tests guard the claims the layer is allowed to make. Most of them assert
 that something is *refused*, because the failure mode here is not a crash -- it
@@ -14,8 +14,8 @@ from inference import EvidenceCoordinator, coordinate_only
 from inference.disagreement import classify_agreement, explain_disagreement
 from inference.domain_mapper import map_token_to_domains
 from inference.report_schema import DomainEvidence, PatientEvidenceReport
-from models.adapters.pcos.evidence_adapter import PcosEvidenceAdapter
-from models.adapters.pcos.profile_output import PCOSProfileOutput
+from models.adapters.pmos.evidence_adapter import PmosEvidenceAdapter
+from models.adapters.pmos.profile_output import PMOSProfileOutput
 from schemas.modality_token import ModalityToken
 
 
@@ -180,24 +180,24 @@ def test_per_section_count_is_not_treated_as_per_ovary() -> None:
 # -- adapter ---------------------------------------------------------------
 
 
-def test_ultrasound_alone_cannot_produce_a_pcos_probability() -> None:
-    profile = PcosEvidenceAdapter().predict(coordinate_only([ultrasound_token()]))
+def test_ultrasound_alone_cannot_produce_a_pmos_probability() -> None:
+    profile = PmosEvidenceAdapter().predict(coordinate_only([ultrasound_token()]))
     assert profile.abstain is True
-    assert profile.pcos_evidence_probability is None
+    assert profile.pmos_evidence_probability is None
 
 
 def test_full_evidence_with_learned_head_produces_a_probability() -> None:
-    profile = PcosEvidenceAdapter(static_model=FakeHead()).predict(
+    profile = PmosEvidenceAdapter(static_model=FakeHead()).predict(
         coordinate_only([static_token(), ultrasound_token()])
     )
     assert profile.abstain is False
-    assert profile.pcos_evidence_probability == pytest.approx(0.78)
-    assert "static_clinical.pcos_head" in profile.learned_components_used
+    assert profile.pmos_evidence_probability == pytest.approx(0.78)
+    assert "static_clinical.pmos_head" in profile.learned_components_used
     assert profile.rule_based_components_used
 
 
 def test_guideline_met_axis_reports_high() -> None:
-    profile = PcosEvidenceAdapter(static_model=FakeHead()).predict(
+    profile = PmosEvidenceAdapter(static_model=FakeHead()).predict(
         coordinate_only([static_token(), ultrasound_token(count=24.0)])
     )
     morphology = profile.diagnostic_feature_evidence["polycystic_ovarian_morphology"]
@@ -209,7 +209,7 @@ def test_conflicting_variables_are_recorded_not_reconciled() -> None:
     """Two modalities reporting one variable differently must surface a conflict."""
     clashing = ultrasound_token()
     clashing.structured_features["anti_mullerian_hormone"] = 2.0
-    profile = PcosEvidenceAdapter(static_model=FakeHead()).predict(
+    profile = PmosEvidenceAdapter(static_model=FakeHead()).predict(
         coordinate_only([static_token(), clashing])
     )
     assert any("anti_mullerian_hormone" in c or "reported" in c for c in profile.conflicts)
@@ -220,27 +220,27 @@ def test_conflicting_variables_are_recorded_not_reconciled() -> None:
 
 def test_abstention_forbids_reporting_the_probability() -> None:
     with pytest.raises(ValidationError):
-        PCOSProfileOutput(
+        PMOSProfileOutput(
             patient_id="P1",
             abstain=True,
-            pcos_evidence_probability=0.7,
+            pmos_evidence_probability=0.7,
             rule_based_components_used=["x"],
         )
 
 
 def test_probability_requires_the_learned_head() -> None:
-    """No rule-based component may issue a whole-patient PCOS probability."""
+    """No rule-based component may issue a whole-patient PMOS probability."""
     with pytest.raises(ValidationError, match="learned static"):
-        PCOSProfileOutput(
+        PMOSProfileOutput(
             patient_id="P1",
-            pcos_evidence_probability=0.7,
-            rule_based_components_used=["pcos_adapter.guideline_axis_thresholds"],
+            pmos_evidence_probability=0.7,
+            rule_based_components_used=["pmos_adapter.guideline_axis_thresholds"],
         )
 
 
 def test_profile_must_declare_its_method() -> None:
     with pytest.raises(ValidationError, match="declare"):
-        PCOSProfileOutput(patient_id="P1")
+        PMOSProfileOutput(patient_id="P1")
 
 
 def test_joint_model_claim_is_unreachable() -> None:

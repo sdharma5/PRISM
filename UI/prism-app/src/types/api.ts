@@ -202,11 +202,11 @@ export interface PatientInferenceRequest {
   temporal_observations?: ParticipantDay[]
   /** Completed ultrasound job identifiers. Accepted so the contract is stable, but the ultrasound branch is gated off for inference; see GET /api/v1/models/status. */
   ultrasound_job_ids?: string[]
-  requested_adapter?: "pcos"
+  requested_adapter?: "pmos"
 }
 
 /** The learned whole-patient score, with the conditions for reading it. */
-export interface PcosAssessmentView {
+export interface PmosAssessmentView {
   available: boolean
   raw_model_score?: number | null
   calibrated_model_score?: number | null
@@ -298,13 +298,13 @@ export interface ValidationError {
 }
 
 /** Everything one patient-facing report needs, and nothing the UI must guess. */
-export interface WebsitePCOSProfileResponse {
+export interface WebsitePMOSProfileResponse {
   schema_version?: string
   report_id: string
   patient_id: string
   generated_at: string
   modality_coverage?: number | null
-  pcos_assessment: PcosAssessmentView
+  pmos_assessment: PmosAssessmentView
   rotterdam_axes?: Record<string, AxisView>
   phenotype?: PhenotypeView
   current_state?: CurrentStateView

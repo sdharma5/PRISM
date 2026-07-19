@@ -12,7 +12,7 @@ from a config or a README claim.
 | Dataset | Path | Size | Usable for segmentation? |
 |:--|:--|--:|:--|
 | USOVA3D | `datasets/usova3d/raw/` | 228 MB | **Yes** — the only source with masks |
-| PCOSGen (2D) | `datasets/ovarian_2d/raw/` | 188 MB | **No** — no masks, no spacing |
+| PMOSGen (2D) | `datasets/ovarian_2d/raw/` | 188 MB | **No** — no masks, no spacing |
 
 ### USOVA3D
 
@@ -111,12 +111,12 @@ annotator inherits that annotator's idiosyncrasies. Therefore:
 
 ---
 
-## 4. PCOSGen (2D) — present but unusable for segmentation
+## 4. PMOSGen (2D) — present but unusable for segmentation
 
 ```
 datasets/ovarian_2d/raw/
-├── pcosgen_train/images/*.jpg     +  class_label.xlsx
-└── pcosgen_test/images/*.jpg      +  "class label.csv"
+├── pmosgen_train/images/*.jpg     +  class_label.xlsx
+└── pmosgen_test/images/*.jpg      +  "class label.csv"
 ```
 
 * **4,679 JPEG images**, 300×300, no DICOM header, no calibration bar.
@@ -124,7 +124,7 @@ datasets/ovarian_2d/raw/
   ovary Visible / Not-visible".
 * **No segmentation masks. No pixel spacing.**
 
-Empirically confirmed: running the existing heuristic segmenter over 30 PCOSGen
+Empirically confirmed: running the existing heuristic segmenter over 30 PMOSGen
 images yields a median of **208 "follicles" per image** (range 145–483) against a
 clinical antral follicle count of 5–30. The cause is not the segmenter — without
 mm calibration the 2 mm minimum-size filter cannot be applied, so speckle is

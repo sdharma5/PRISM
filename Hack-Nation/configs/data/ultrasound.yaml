@@ -16,7 +16,7 @@ data:
 # ---------------------------------------------------------------------------
 # Acquisition model.
 #
-# Routine PCOS ovarian assessment is 2D transvaginal imaging. A dedicated 3D
+# Routine PMOS ovarian assessment is 2D transvaginal imaging. A dedicated 3D
 # volume is an optional enhanced mode that most clinics do not acquire, so it is
 # supported but is NOT the assumed input.
 #

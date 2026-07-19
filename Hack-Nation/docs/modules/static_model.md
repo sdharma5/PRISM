@@ -3,7 +3,7 @@
 ## Objective
 
 Establish a rigorous static baseline **before** building subtype or multimodal
-models. The binary PCOS target exists to verify that the data pipeline and
+models. The binary PMOS target exists to verify that the data pipeline and
 evaluation methodology work — not because binary classification is the goal.
 
 ## Pipeline

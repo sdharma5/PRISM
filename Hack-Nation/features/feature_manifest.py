@@ -104,7 +104,7 @@ def build_feature_manifest(
     manifest_id: str,
     dataset_id: str | None = None,
     dataset_version: str | None = None,
-    label_column: str | None = "pcos_binary",
+    label_column: str | None = "pmos_binary",
     transforms: list[dict[str, Any]] | None = None,
     domain_scoring: dict[str, Any] | None = None,
     notes: list[str] | None = None,

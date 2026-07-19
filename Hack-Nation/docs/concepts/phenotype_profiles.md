@@ -50,7 +50,7 @@ the registry rather than inferred from the feature list.
 un-drawn assays sat in the coverage denominator: a patient with recorded
 hirsutism and acne but no androgen panel fell below the coverage floor, and the
 entire androgenic axis abstained even though the cutaneous signs had been
-observed. Scored separately, each domain has its own denominator. In the PCOS
+observed. Scored separately, each domain has its own denominator. In the PMOS
 tabular cohort clinical androgenic coverage is 1.5/3.5 = 0.43 — **assessable
 for all 541 patients** — and biochemical coverage is 0/4.5, **unavailable for
 all 541**, because that cohort contains no androgen assay at all.

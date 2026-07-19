@@ -40,7 +40,7 @@ BANNED_PHRASES: tuple[str, ...] = (
     "diagnosed",
     "diagnostic",
     "you have",
-    "patient has pcos",
+    "patient has pmos",
     "definitive",
     "definitively",
     "proven subtype",

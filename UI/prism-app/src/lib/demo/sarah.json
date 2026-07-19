@@ -82,11 +82,11 @@
       "predicted_cycle_phase": "menstrual",
       "unavailable_reason": null
     },
-    "disclaimer": "Research prototype. This is not a diagnosis and does not establish whether you have PCOS. Discuss these results with a clinician.",
+    "disclaimer": "Research prototype. This is not a diagnosis and does not establish whether you have PMOS. Discuss these results with a clinician.",
     "generated_at": "2026-07-01T12:00:00+00:00",
     "is_diagnosis": false,
     "learned_components_used": [
-      "static_clinical.pcos_head"
+      "static_clinical.pmos_head"
     ],
     "missing_evidence": [
       "amenorrhea",
@@ -102,13 +102,13 @@
     ],
     "modality_coverage": 0.6666666666666666,
     "patient_id": "demo-sarah",
-    "pcos_assessment": {
+    "pmos_assessment": {
       "available": true,
       "calibrated": true,
       "calibrated_model_score": 0.2666991642578153,
       "evidence_level": "moderate",
       "feature_coverage": 0.4737,
-      "qualifier": "PCOS-related model score from the static-clinical branch. It reflects the clinical variables provided, not a diagnosis, and not a probability that you have PCOS.",
+      "qualifier": "PMOS-related model score from the static-clinical branch. It reflects the clinical variables provided, not a diagnosis, and not a probability that you have PMOS.",
       "raw_model_score": 0.3904838709717987,
       "source": "static_clinical",
       "unavailable_reason": null
@@ -332,8 +332,8 @@
         {
           "confidence": null,
           "confirmation_status": null,
-          "label": "pcos_adapter.guideline_axes",
-          "method": "pcos_adapter.guideline_axes",
+          "label": "pmos_adapter.guideline_axes",
+          "method": "pmos_adapter.guideline_axes",
           "model_version": null,
           "observed_at": null,
           "origin": "rule_based_interpretation",
@@ -424,7 +424,7 @@
           "amenorrhea truthy true": "2023 International Guideline: primary or secondary amenorrhoea is ovulatory dysfunction by definition.",
           "cycle_irregularity truthy true": "Participant- or clinician-reported cycle irregularity flag.",
           "cycle_length < 21.0": "2023 International Evidence-based Guideline: cycles <21 days in adults are irregular.",
-          "cycle_length > 35.0": "2023 International Evidence-based Guideline for the Assessment and Management of PCOS: cycles >35 days in adults are irregular.",
+          "cycle_length > 35.0": "2023 International Evidence-based Guideline for the Assessment and Management of PMOS: cycles >35 days in adults are irregular.",
           "menstrual_frequency_per_year < 9.0": "Rotterdam 2003 / 2023 International Guideline: fewer than 8-9 cycles per year indicates oligo-anovulation."
         }
       },
@@ -457,13 +457,13 @@
     },
     "rule_based_components_used": [
       "evidence_coordinator.design_rule_weights",
-      "pcos_adapter.guideline_axes"
+      "pmos_adapter.guideline_axes"
     ],
     "schema_version": "1.0.0",
     "supporting_evidence": [
       {
         "axis": "ovulatory_dysfunction",
-        "guideline_source": "2023 International Evidence-based Guideline for the Assessment and Management of PCOS: cycles >35 days in adults are irregular.",
+        "guideline_source": "2023 International Evidence-based Guideline for the Assessment and Management of PMOS: cycles >35 days in adults are irregular.",
         "statement": "cycle_length > 35.0",
         "variable_code": "cycle_length"
       },
@@ -531,7 +531,7 @@
     "warnings": [
       "Cross-modal evidence was combined using transparent rules rather than a jointly trained fusion model.",
       "Only 47% of the model's features were observed; the remainder were imputed with training medians and the probability is correspondingly less informative.",
-      "Current-state estimate; not a PCOS diagnosis",
+      "Current-state estimate; not a PMOS diagnosis",
       "cycle_irregularity is computed over a short observation window and cannot characterise long-term cycle regularity.",
       "1 variable(s) were reported differently by two modalities and were NOT reconciled; see conflicts.",
       "Profile assignment is unstable (bootstrap agreement 0.74, 4 domain(s) flip it). Report it as provisional or not at all.",

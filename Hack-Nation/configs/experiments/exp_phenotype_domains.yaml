@@ -13,11 +13,11 @@ description: >-
   static_clinical modality tokens. Research profiles only.
 
 data:
-  dataset_id: pcos_tabular_public
+  dataset_id: pmos_tabular_public
   dataset_version: kottarathil-2020
   # Wide canonical cohort from scripts/build_cohort_table.py, relative to the
   # resolved data root ($PRISM_DATA_ROOT). Remove to use the synthetic fixture.
-  path: pcos_tabular/cohort_wide.csv
+  path: pmos_tabular/cohort_wide.csv
   synthetic:
     n: 300
     seed: 0

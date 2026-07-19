@@ -68,7 +68,7 @@ class PatientInferenceRequest(_Base):
             "GET /api/v1/models/status."
         ),
     )
-    requested_adapter: Literal["pcos"] = "pcos"
+    requested_adapter: Literal["pmos"] = "pmos"
 
     @field_validator("clinical_features")
     @classmethod
@@ -121,7 +121,7 @@ class StaticInferenceRequest(_Base):
 
 
 class TemporalInferenceRequest(_Base):
-    """Longitudinal branch only. Cannot produce a whole-patient PCOS score."""
+    """Longitudinal branch only. Cannot produce a whole-patient PMOS score."""
 
     patient_id: str = Field(min_length=1)
     temporal_observations: list[ParticipantDay] = Field(default_factory=list, min_length=1)

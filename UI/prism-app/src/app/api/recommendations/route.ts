@@ -21,9 +21,9 @@ const LLM_BASE = process.env.LLM_BASE_URL ?? 'https://api.groq.com/openai/v1'
 const LLM_MODEL = process.env.LLM_MODEL ?? 'llama-3.3-70b-versatile'
 
 const BASE_QUERIES = [
-  'PCOS evidence-based self-management guidelines 2024',
-  'PCOS ovulatory dysfunction lifestyle intervention evidence 2024',
-  'PCOS elevated androgens testosterone management diet exercise',
+  'PMOS evidence-based self-management guidelines 2024',
+  'PMOS ovulatory dysfunction lifestyle intervention evidence 2024',
+  'PMOS elevated androgens testosterone management diet exercise',
 ]
 
 const SYSTEM_PROMPT = `You are a health information assistant inside a hormonal-health research tool.
@@ -31,7 +31,7 @@ You help patients understand evidence-based actions to discuss with their clinic
 You are NOT a clinician and are NOT providing a medical opinion.
 
 Hard rules — violation means the output will be discarded:
-1. Never use the words "diagnose", "diagnosis", or state that the patient has PCOS.
+1. Never use the words "diagnose", "diagnosis", or state that the patient has PMOS.
 2. Every recommendation must include "discuss with your clinician" or "ask your doctor".
 3. Never invent numerical thresholds not in the provided search excerpts.
 4. If a search result does not support a recommendation, do not cite it.
@@ -139,7 +139,7 @@ async function synthesize(
     return { summary: '', recommendations: [], warnings }
   }
 
-  const FORBIDDEN = ['diagnos', 'you have pcos', 'confirmed pcos']
+  const FORBIDDEN = ['diagnos', 'you have pmos', 'confirmed pmos']
   const recs: Recommendation[] = []
   for (const item of parsed.recommendations ?? []) {
     if (FORBIDDEN.some(p => item.body.toLowerCase().includes(p))) {

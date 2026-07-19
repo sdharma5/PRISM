@@ -22,7 +22,7 @@ from ingestion.speech.transcription import ScriptedTranscriptionAdapter
 
 EXAMPLE_1 = "My periods have been between 45 and 70 days apart for about a year."
 EXAMPLE_2 = "I had acne in high school, but I do not have it now."
-EXAMPLE_3 = "My sister has PCOS."
+EXAMPLE_3 = "My sister has PMOS."
 
 
 @pytest.fixture(scope="module")
@@ -90,24 +90,24 @@ def test_example_2_resolved_acne_is_historical_not_negated(transcriber, extracto
 def test_example_3_family_history_never_becomes_patient_diagnosis(transcriber, extractor) -> None:
     result = extract(transcriber, extractor, EXAMPLE_3)
 
-    event = find(result, "family_history_pcos")
+    event = find(result, "family_history_pmos")
     assert event.attribution == "family_member"
     assert event.relation == "sister"
     assert event.negated is False
 
     # The critical assertion: nothing in this utterance may produce a
-    # patient-level PCOS assertion of any kind.
+    # patient-level PMOS assertion of any kind.
     codes = {e.canonical_code for e in result.events}
-    assert "pcos_binary" not in codes, (
-        "A relative's diagnosis was written to a patient-level PCOS code. That "
-        "would contaminate every evaluation using pcos_binary as ground truth."
+    assert "pmos_binary" not in codes, (
+        "A relative's diagnosis was written to a patient-level PMOS code. That "
+        "would contaminate every evaluation using pmos_binary as ground truth."
     )
     patient_level = {
         e.canonical_code
         for e in result.events
-        if e.attribution == "patient" and "pcos" in e.canonical_code.lower()
+        if e.attribution == "patient" and "pmos" in e.canonical_code.lower()
     }
-    assert not patient_level, f"patient-attributed PCOS codes leaked: {patient_level}"
+    assert not patient_level, f"patient-attributed PMOS codes leaked: {patient_level}"
 
 
 def test_blueprint_examples_are_pinned_in_the_corpus() -> None:

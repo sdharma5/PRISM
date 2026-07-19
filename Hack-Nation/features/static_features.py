@@ -15,7 +15,7 @@ import pandas as pd
 from features.missingness import build_indicator_columns, indicator_column, missingness_summary
 from registry.loader import load_variable_registry
 
-LABEL_CODES: frozenset[str] = frozenset({"pcos_binary"})
+LABEL_CODES: frozenset[str] = frozenset({"pmos_binary"})
 ID_COLUMNS: frozenset[str] = frozenset({"patient_id"})
 
 #: Feature groups, keyed by group name -> canonical codes. Groups exist so that
@@ -60,7 +60,7 @@ FEATURE_GROUPS: dict[str, tuple[str, ...]] = {
         "fatigue",
         "mood_change",
         "pelvic_pain",
-        "family_history_pcos",
+        "family_history_pmos",
         "family_history_diabetes",
     ),
     "anthropometric": (
@@ -194,7 +194,7 @@ def derive_features(df: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, str]]:
 def build_static_features(
     df: pd.DataFrame,
     *,
-    label_column: str | None = "pcos_binary",
+    label_column: str | None = "pmos_binary",
     id_column: str = "patient_id",
     include_groups: list[str] | None = None,
     add_missingness_indicators: bool = True,

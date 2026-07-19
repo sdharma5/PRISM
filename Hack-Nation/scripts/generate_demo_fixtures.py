@@ -121,7 +121,7 @@ def main() -> int:
         else:
             path.write_text(rendered)
 
-        assessment = fixture["response"]["pcos_assessment"]
+        assessment = fixture["response"]["pmos_assessment"]
         index.append(
             {
                 "key": patient.key,

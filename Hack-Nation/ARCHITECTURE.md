@@ -82,11 +82,11 @@ and docs:
 | `models/documents/` | Document token from grounded lab events |
 | `models/ultrasound/` | Segmentation, instances, morphology |
 | `models/temporal/` | GRU current-state representation |
-| `models/adapters/pcos/` | **The only PCOS-specific code in the repository** |
+| `models/adapters/pmos/` | **The only PMOS-specific code in the repository** |
 
 The adapter boundary is the condition-agnostic guarantee. The event store, the
 encoders and the token envelope know about *variables*; they do not know what
-PCOS is. Supporting a second hormonal condition means new registry entries and a
+PMOS is. Supporting a second hormonal condition means new registry entries and a
 new adapter — not a reshaped substrate.
 
 ### 5. Tokens

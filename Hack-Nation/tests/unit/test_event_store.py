@@ -29,7 +29,7 @@ from event_store.store import AppendOnlyViolationError, EventStore
 from schemas.event import HormonalHealthEvent
 
 NOW = datetime(2026, 1, 1, 12, 0, tzinfo=UTC)
-PATIENT = "pcos_tabular_public:FAKE-001"
+PATIENT = "pmos_tabular_public:FAKE-001"
 
 
 def event(**overrides) -> HormonalHealthEvent:
@@ -46,7 +46,7 @@ def event(**overrides) -> HormonalHealthEvent:
         "extraction_confidence": 1.0,
         "confirmation_status": "not_required",
         "observed_at": NOW,
-        "source_dataset": "pcos_tabular_public",
+        "source_dataset": "pmos_tabular_public",
     }
     payload.update(overrides)
     return HormonalHealthEvent(**payload)
@@ -360,9 +360,9 @@ def test_by_time_window_excludes_undated_events_by_default():
 
 def test_trace_event_returns_the_source_receipt():
     store = EventStore()
-    stored = store.append(event(source_file_id="pcos_tabular_tiny.csv", source_file_hash="abc123"))
+    stored = store.append(event(source_file_id="pmos_tabular_tiny.csv", source_file_hash="abc123"))
     trace = trace_event(str(stored.event_id), store.events)
-    assert trace["source_file_id"] == "pcos_tabular_tiny.csv"
+    assert trace["source_file_id"] == "pmos_tabular_tiny.csv"
     assert trace["source_file_hash"] == "abc123"
     assert trace["raw_value"] == 45.0
     assert trace["raw_unit"] == "ng/dL"

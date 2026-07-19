@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: PRISM inference API
-  summary: Research-prototype PCOS evidence profiling. Not a diagnostic device.
+  summary: Research-prototype PMOS evidence profiling. Not a diagnostic device.
   version: 0.1.0
 paths:
   /api/v1/health:
@@ -61,7 +61,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WebsitePCOSProfileResponse'
+                $ref: '#/components/schemas/WebsitePMOSProfileResponse'
         '422':
           description: Validation Error
           content:
@@ -87,7 +87,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WebsitePCOSProfileResponse'
+                $ref: '#/components/schemas/WebsitePMOSProfileResponse'
         '422':
           description: Validation Error
           content:
@@ -99,7 +99,7 @@ paths:
       tags:
       - inference
       summary: Infer Temporal
-      description: Longitudinal branch only. Never yields a whole-patient PCOS score.
+      description: Longitudinal branch only. Never yields a whole-patient PMOS score.
       operationId: infer_temporal_api_v1_patients_infer_temporal_post
       requestBody:
         content:
@@ -113,7 +113,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WebsitePCOSProfileResponse'
+                $ref: '#/components/schemas/WebsitePMOSProfileResponse'
         '422':
           description: Validation Error
           content:
@@ -150,7 +150,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WebsitePCOSProfileResponse'
+                $ref: '#/components/schemas/WebsitePMOSProfileResponse'
         '422':
           description: Validation Error
           content:
@@ -1253,9 +1253,9 @@ components:
             ultrasound branch is gated off for inference; see GET /api/v1/models/status.
         requested_adapter:
           type: string
-          const: pcos
+          const: pmos
           title: Requested Adapter
-          default: pcos
+          default: pmos
       additionalProperties: false
       type: object
       required:
@@ -1271,7 +1271,7 @@ components:
         who has entered symptoms but has no wearable history is the common case, not
 
         an error.'
-    PcosAssessmentView:
+    PmosAssessmentView:
       properties:
         available:
           type: boolean
@@ -1326,7 +1326,7 @@ components:
       type: object
       required:
       - available
-      title: PcosAssessmentView
+      title: PmosAssessmentView
       description: The learned whole-patient score, with the conditions for reading it.
     PhenotypeView:
       properties:
@@ -1587,7 +1587,7 @@ components:
       description: 'Longitudinal branch only.
 
 
-        This route deliberately cannot produce a whole-patient PCOS score: only the
+        This route deliberately cannot produce a whole-patient PMOS score: only the
 
         static branch is entitled to one, and no amount of cycle data substitutes
 
@@ -1635,7 +1635,7 @@ components:
       - msg
       - type
       title: ValidationError
-    WebsitePCOSProfileResponse:
+    WebsitePMOSProfileResponse:
       properties:
         schema_version:
           type: string
@@ -1657,8 +1657,8 @@ components:
             minimum: 0.0
           - type: 'null'
           title: Modality Coverage
-        pcos_assessment:
-          $ref: '#/components/schemas/PcosAssessmentView'
+        pmos_assessment:
+          $ref: '#/components/schemas/PmosAssessmentView'
         rotterdam_axes:
           additionalProperties:
             $ref: '#/components/schemas/AxisView'
@@ -1724,13 +1724,13 @@ components:
           type: string
           title: Disclaimer
           default: Research prototype. This is not a diagnosis and does not establish whether you have
-            PCOS. Discuss these results with a clinician.
+            PMOS. Discuss these results with a clinician.
       additionalProperties: false
       type: object
       required:
       - report_id
       - patient_id
       - generated_at
-      - pcos_assessment
-      title: WebsitePCOSProfileResponse
+      - pmos_assessment
+      title: WebsitePMOSProfileResponse
       description: Everything one patient-facing report needs, and nothing the UI must guess.
